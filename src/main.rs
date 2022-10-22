@@ -83,9 +83,9 @@ fn ui<B: Backend>(f: &mut Frame<B>) {
         .constraints(
             [
                 // Request List Tab
-                Constraint::Percentage(10),
-                Constraint::Percentage(85),
-                Constraint::Percentage(5),
+                Constraint::Length(3),
+                Constraint::Min(1),
+                Constraint::Length(2),
             ]
             .as_ref(),
         )
@@ -100,13 +100,13 @@ fn ui<B: Backend>(f: &mut Frame<B>) {
     let request_layout = Layout::default()
         .direction(Direction::Vertical)
         .margin(1)
-        .constraints([Constraint::Percentage(10), Constraint::Percentage(90)].as_ref())
+        .constraints([Constraint::Length(3), Constraint::Min(1)].as_ref())
         .split(content_layout[0]);
 
     let header_layout = Layout::default()
         .direction(Direction::Horizontal)
         .margin(0)
-        .constraints([Constraint::Percentage(10), Constraint::Percentage(90)].as_ref())
+        .constraints([Constraint::Length(7), Constraint::Min(1)].as_ref())
         .split(request_layout[0]);
 
     let method = Paragraph::new("GET")
