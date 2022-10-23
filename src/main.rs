@@ -64,18 +64,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>) -> io::Result<()> {
 }
 
 fn ui<B: Backend>(f: &mut Frame<B>) {
-    // Wrapping block for a group
-    // Just draw the block and the group on the same area and build the group
-    // with at least a margin of 1
     let size = f.size();
-
-    // // Surrounding block
-    // let block = Block::default()
-    //     .borders(Borders::ALL)
-    //     .title("Main block with round corners")
-    //     .title_alignment(Alignment::Center)
-    //     .border_type(BorderType::Rounded);
-    // f.render_widget(block, size);
 
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -91,11 +80,43 @@ fn ui<B: Backend>(f: &mut Frame<B>) {
         )
         .split(f.size());
 
+    // Tablist
+    let tabs_spans = vec![
+        Spans::from(vec![Span::from("1 Tab Meu bom")]),
+        Spans::from(vec![Span::from("2 Tabs")]),
+        Spans::from(vec![Span::from("3 Tab")]),
+        Spans::from(vec![Span::from("4 Tab")]),
+    ];
+    let tabs = Tabs::new(tabs_spans)
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded)
+                .title("Tabs"),
+        )
+        .select(0)
+        // .style(Style::default().fg(Color::Cyan))
+        .highlight_style(
+            Style::default()
+                .add_modifier(Modifier::BOLD)
+                .bg(Color::Black),
+        );
+    f.render_widget(tabs, chunks[0]);
+
+    // Layout geral
     let content_layout = Layout::default()
         .direction(Direction::Horizontal)
         .margin(0)
         .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
         .split(chunks[1]);
+
+    // REQUEST
+    let request_block = Block::default()
+        .borders(Borders::ALL)
+        .title("Request")
+        .title_alignment(Alignment::Center)
+        .border_type(BorderType::Rounded);
+    f.render_widget(request_block, content_layout[0]);
 
     let request_layout = Layout::default()
         .direction(Direction::Vertical)
@@ -128,14 +149,7 @@ fn ui<B: Backend>(f: &mut Frame<B>) {
         .border_type(BorderType::Rounded);
     f.render_widget(body, request_layout[1]);
 
-    // Block ALL Request
-    let request_block = Block::default()
-        .borders(Borders::ALL)
-        .title("Request")
-        .title_alignment(Alignment::Center)
-        .border_type(BorderType::Rounded);
-    f.render_widget(request_block, content_layout[0]);
-
+    // RESPONSE SECTION
     let response_block = Block::default()
         .borders(Borders::ALL)
         .title("Response")
@@ -143,80 +157,25 @@ fn ui<B: Backend>(f: &mut Frame<B>) {
         .border_type(BorderType::Rounded);
     f.render_widget(response_block, content_layout[1]);
 
-    // let request_tab_list = Block::default()
-    //     .title("Request History")
-    //     .title_alignment(Alignment::Left)
-    //     .border_type(BorderType::Rounded)
-    //     .borders(Borders::ALL);
-    // f.render_widget(request_tab_list, chunks[0]);
+    let response_layout = Layout::default()
+        .direction(Direction::Vertical)
+        .margin(1)
+        .constraints([Constraint::Length(1), Constraint::Min(1)].as_ref())
+        .split(content_layout[1]);
 
-    let tabs_spans = vec![
-        Spans::from(vec![Span::from("1 Tab Meu bom")]),
-        Spans::from(vec![Span::from("2 Tabs")]),
-        Spans::from(vec![Span::from("3 Tab")]),
-        Spans::from(vec![Span::from("4 Tab")]),
-    ];
-    let tabs = Tabs::new(tabs_spans)
-        .block(
-            Block::default()
-                .borders(Borders::ALL)
-                .border_type(BorderType::Rounded)
-                .title("Tabs"),
-        )
-        .select(0)
-        // .style(Style::default().fg(Color::Cyan))
-        .highlight_style(
-            Style::default()
-                .add_modifier(Modifier::BOLD)
-                .bg(Color::Black),
-        );
-    f.render_widget(tabs, chunks[0]);
+    let status_code = Paragraph::new(" 200 ")
+        .style(Style::default().bg(Color::Green).fg(Color::Black))
+        .alignment(Alignment::Center);
+    f.render_widget(status_code, response_layout[0]);
 
+    let body_response = Block::default()
+        .borders(Borders::ALL)
+        .title("BODY / Headers / Options")
+        .title_alignment(Alignment::Left)
+        .border_type(BorderType::Rounded);
+    f.render_widget(body_response, response_layout[1]);
+
+    // LOG SECTION
     let log_block = Block::default().borders(Borders::TOP).title("Logs");
     f.render_widget(log_block, chunks[2]);
-
-    // // Top two inner blocks
-    // let top_chunks = Layout::default()
-    //     .direction(Direction::Horizontal)
-    //     .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
-    //     .split(chunks[0]);
-
-    // // Top left inner block with green background
-    // let block = Block::default()
-    //     .title(vec![
-    //         Span::styled("With", Style::default().fg(Color::Yellow)),
-    //         Span::from(" background"),
-    //     ])
-    //     .style(Style::default().bg(Color::Green));
-    // f.render_widget(block, top_chunks[0]);
-
-    // // Top right inner block with styled title aligned to the right
-    // let block = Block::default()
-    //     .title(Span::styled(
-    //         "Styled title",
-    //         Style::default()
-    //             .fg(Color::White)
-    //             .bg(Color::Red)
-    //             .add_modifier(Modifier::BOLD),
-    //     ))
-    //     .title_alignment(Alignment::Right);
-    // f.render_widget(block, top_chunks[1]);
-
-    // // Bottom two inner blocks
-    // let bottom_chunks = Layout::default()
-    //     .direction(Direction::Horizontal)
-    //     .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
-    //     .split(chunks[1]);
-
-    // // Bottom left block with all default borders
-    // let block = Block::default().title("With borders").borders(Borders::ALL);
-    // f.render_widget(block, bottom_chunks[0]);
-
-    // Bottom right block with styled left and right border
-    // let block = Block::default()
-    //     .title("With styled borders and doubled borders")
-    //     .border_style(Style::default().fg(Color::Cyan))
-    //     .borders(Borders::LEFT | Borders::RIGHT)
-    //     .border_type(BorderType::Double);
-    // f.render_widget(block, bottom_chunks[1]);
 }
