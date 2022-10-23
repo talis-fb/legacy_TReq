@@ -28,43 +28,36 @@ use tui::{
 //     widget: Box<dyn Widget>,
 // }
 
-pub struct UI<'a, B: Backend> {
+pub struct UI {
     // layouts: HashMap<String, Rect>,
     // components: Vec<Component>,
-    terminal: &'a mut Terminal<B>, //Box<Terminal<dyn Backend>>,
-                                   // terminal: Box<Terminal<dyn Backend>>,
+    terminal: Terminal<CrosstermBackend<std::io::Stdout>>, //Box<Terminal<dyn Backend>>,
+                                                           // terminal: Box<Terminal<dyn Backend>>,
 }
 
-// impl<B: Backend> Default for UI<B> {
-//     fn default(terminal: &mut Terminal<B>) -> Option<Self> {
-//         enable_raw_mode().unwrap_or(());
-//         let mut stdout = io::stdout();
-//         execute!(stdout, EnterAlternateScreen, EnableMouseCapture).unwrap_or(());
-//         // let backend = CrosstermBackend::new(stdout);
-//         // let mut terminal = Terminal::new(backend).unwrap();
-//         Some(UI { terminal })
-//     }
-// }
-
-impl<'a, B: Backend> UI<'a, B> {
-    pub fn init(terminal: &'a mut Terminal<B>) -> Option<Self> {
-        enable_raw_mode().unwrap_or(());
+impl Default for UI {
+    fn default() -> Self {
+        enable_raw_mode().unwrap();
         let mut stdout = io::stdout();
         execute!(stdout, EnterAlternateScreen, EnableMouseCapture).unwrap_or(());
-        let ui = UI { terminal };
-        Some(ui)
+        let stdout = io::stdout();
+        let backend = CrosstermBackend::new(stdout);
+        let terminal = Terminal::new(backend).unwrap();
+        UI { terminal }
     }
+}
 
-    // pub fn close(&mut self) -> () {
-    //     disable_raw_mode().unwrap();
-    //     execute!(
-    //         self.terminal.backend_mut(),
-    //         LeaveAlternateScreen,
-    //         DisableMouseCapture
-    //     )
-    //     .unwrap();
-    //     self.terminal.show_cursor().unwrap();
-    // }
+impl UI {
+    pub fn close(&mut self) -> () {
+        disable_raw_mode().unwrap();
+        execute!(
+            self.terminal.backend_mut(),
+            LeaveAlternateScreen,
+            DisableMouseCapture
+        )
+        .unwrap();
+        self.terminal.show_cursor().unwrap();
+    }
 
     pub fn render(&mut self) {
         self.terminal
