@@ -2,6 +2,8 @@
 #[allow(unused_variables)]
 use std::collections::HashMap;
 
+use crate::app::App;
+
 // use tui::layout::Layout as Rect;
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
@@ -28,25 +30,30 @@ use tui::{
 //     widget: Box<dyn Widget>,
 // }
 
-pub struct UI {
+pub trait UiTrait<'a> {
+    fn init(app: &'a App) -> Self;
+}
+
+pub struct UI<'a> {
     // layouts: HashMap<String, Rect>,
     // components: Vec<Component>,
     terminal: Terminal<CrosstermBackend<std::io::Stdout>>,
+    app: &'a App,
 }
 
-impl Default for UI {
-    fn default() -> Self {
+impl<'a> UiTrait<'a> for UI<'a> {
+    fn init(app: &'a App) -> Self {
         enable_raw_mode().unwrap();
         let mut stdout = io::stdout();
         execute!(stdout, EnterAlternateScreen, EnableMouseCapture).unwrap_or(());
         let stdout = io::stdout();
         let backend = CrosstermBackend::new(stdout);
         let terminal = Terminal::new(backend).unwrap();
-        UI { terminal }
+        UI { terminal, app }
     }
 }
 
-impl UI {
+impl UI<'_> {
     pub fn close(&mut self) -> () {
         disable_raw_mode().unwrap();
         execute!(
@@ -78,12 +85,19 @@ impl UI {
                     .split(f.size());
 
                 // Tablist
-                let tabs_spans = vec![
-                    Spans::from(vec![Span::from("1 Tab Meu bom")]),
-                    Spans::from(vec![Span::from("2 Tabs")]),
-                    Spans::from(vec![Span::from("3 Tab")]),
-                    Spans::from(vec![Span::from("4 Tab")]),
-                ];
+                let tabs_spans = self
+                    .app
+                    .get_requests()
+                    .into_iter()
+                    .map(|req| Spans::from(vec![Span::from(req.name.clone())]))
+                    .collect();
+
+                // let tabs_spans = vec![
+                //     Spans::from(vec![Span::from("1 Tab Meu bom")]),
+                //     Spans::from(vec![Span::from("2 Tabs")]),
+                //     Spans::from(vec![Span::from("3 Tab")]),
+                //     Spans::from(vec![Span::from("4 Tab")]),
+                // ];
                 let tabs = Tabs::new(tabs_spans)
                     .block(
                         Block::default()
