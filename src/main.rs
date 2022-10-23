@@ -4,6 +4,8 @@ use std::{error::Error, io};
 mod ui;
 use ui::UI;
 
+mod events;
+
 fn main() -> Result<(), Box<dyn Error>> {
     // setup terminal
     let mut app_ui = UI::default();
