@@ -92,12 +92,6 @@ impl UI<'_> {
                     .map(|req| Spans::from(vec![Span::from(req.name.clone())]))
                     .collect();
 
-                // let tabs_spans = vec![
-                //     Spans::from(vec![Span::from("1 Tab Meu bom")]),
-                //     Spans::from(vec![Span::from("2 Tabs")]),
-                //     Spans::from(vec![Span::from("3 Tab")]),
-                //     Spans::from(vec![Span::from("4 Tab")]),
-                // ];
                 let tabs = Tabs::new(tabs_spans)
                     .block(
                         Block::default()
@@ -105,12 +99,12 @@ impl UI<'_> {
                             .border_type(BorderType::Rounded)
                             .title("Tabs"),
                     )
-                    .select(0)
-                    // .style(Style::default().fg(Color::Cyan))
+                    .select(self.app.current_request)
                     .highlight_style(
                         Style::default()
                             .add_modifier(Modifier::BOLD)
-                            .bg(Color::Black),
+                            .bg(Color::Black)
+                            .fg(Color::LightYellow),
                     );
                 f.render_widget(tabs, chunks[0]);
 
