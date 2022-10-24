@@ -4,12 +4,18 @@ pub type EventListenerFn = fn();
 
 #[derive(Clone, Eq, PartialEq, Hash)]
 pub enum EVENTS {
+    Null,
+
     // Navigation
     Up,
     Down,
     Left,
     Right,
     Edit,
+    GoToTabList,
+    GoToRequestBody,
+    GoToResponseBody,
+    GoToUrl,
 
     // Request
     BodyResponseEdit,

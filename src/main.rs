@@ -11,6 +11,8 @@ mod events;
 mod request;
 use request::Request;
 
+mod keymaps;
+
 fn main() -> Result<(), Box<dyn Error>> {
     // setup terminal
     let mut app = App::default();
