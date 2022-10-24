@@ -4,29 +4,42 @@ use std::collections::HashMap;
 
 pub type CommandsMap = HashMap<KeyCode, Command>;
 
+#[derive(PartialEq, Eq, Debug)]
 pub struct Command {
     command: EVENTS,
 
     // This is used only if the key has other commands if other keys is pressed
     // if this box is NOT None, then the command above is ignored
-    subcommands: Option<Box<CommandsMap>>,
+    subcommands: Option<CommandsMap>,
 }
 
 pub trait KeyMapTrait {
-    fn get(c: char) -> EVENTS;
     fn init_default_commandmap() -> CommandsMap;
 }
 
-pub struct KeyMap {
-    default: Box<CommandsMap>,
-    current: Box<CommandsMap>,
+pub struct KeyMap<'a> {
+    default: &'a CommandsMap,
+    current: &'a CommandsMap,
 }
 
-impl KeyMapTrait for KeyMap {
-    fn get(c: char) -> EVENTS {
-        // TODO: Make it work
-        EVENTS::Down
+impl KeyMap<'_> {
+    fn get_command(&mut self, key: KeyCode) -> Option<&EVENTS> {
+        if let Some(i) = self.current.get(&key) {
+            // If there is a subcommands it ignores the command and change
+            // the state of current Keymap to the inside 'subcommands'
+            if let Some(subcommands) = &i.subcommands {
+                self.current = &subcommands;
+                return None;
+            }
+
+            // Otherwise... Return the command normaly
+            return Some(&i.command);
+        }
+        None
     }
+}
+
+impl KeyMapTrait for KeyMap<'_> {
     fn init_default_commandmap() -> CommandsMap {
         HashMap::from([
             (
@@ -60,14 +73,14 @@ impl KeyMapTrait for KeyMap {
             (
                 KeyCode::Char('g'),
                 Command {
-                    subcommands: Some(Box::from(HashMap::from([(
+                    command: EVENTS::Null,
+                    subcommands: Some(HashMap::from([(
                         KeyCode::Char('g'),
                         Command {
                             command: EVENTS::GoToTabList,
                             subcommands: None,
                         },
-                    )]))),
-                    command: EVENTS::Null,
+                    )])),
                 },
             ),
             (
@@ -85,5 +98,52 @@ impl KeyMapTrait for KeyMap {
                 },
             ),
         ])
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn should_init_and_be_defined() {
+        let keymap = KeyMap::init_default_commandmap();
+
+        // Basics Commands
+        assert_eq!(
+            keymap.get(&KeyCode::Char('k')),
+            Some(&Command {
+                command: EVENTS::Up,
+                subcommands: None
+            })
+        );
+    }
+
+    #[test]
+    fn should_get_commands_of_single_keymap() {
+        let command_map = KeyMap::init_default_commandmap();
+        let mut keymap = KeyMap {
+            default: &command_map,
+            current: &command_map,
+        };
+
+        // Simple commands
+        let up = keymap.get_command(KeyCode::Char('k'));
+        assert_eq!(up, Some(&EVENTS::Up));
+    }
+    #[test]
+    fn should_get_commands_of_complex_keymap() {
+        let command_map = KeyMap::init_default_commandmap();
+        let mut keymap = KeyMap {
+            default: &command_map,
+            current: &command_map,
+        };
+
+        let g = keymap.get_command(KeyCode::Char('g'));
+        assert_eq!(g, None);
+
+        let g = keymap.get_command(KeyCode::Char('g'));
+        assert_ne!(g, None);
+        // assert_eq!(g, Some(&EVENTS::GoToTabList)); // This can change
     }
 }
