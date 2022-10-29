@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 pub type EventListenerFn = fn();
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
 pub enum EVENTS {
     Null,
 

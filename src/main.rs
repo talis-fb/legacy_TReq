@@ -15,13 +15,24 @@ mod request;
 use request::Request;
 
 mod keymaps;
+use keymaps::KeyMap;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // setup terminal
-    let mut app = App::default();
+    // setup commands keys
+    let commands = KeyMap::default_commandmap();
+    let keymap = KeyMap {
+        default: &commands,
+        current: &commands,
+    };
+
+    // Init app
+    let mut app = App::init(&keymap);
+
+    // Start with a empty request
     app.create_request(Request::default());
 
-    let mut app_ui: UI = UI::init(&app);
+    // Init UI
+    let mut app_ui = UI::init(&app);
 
     loop {
         app_ui.render();

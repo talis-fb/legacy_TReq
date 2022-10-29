@@ -18,10 +18,8 @@ use tui::{
 };
 
 pub struct UI<'a> {
-    // layouts: HashMap<String, Rect>,
-    // components: Vec<Component>,
     terminal: Terminal<CrosstermBackend<std::io::Stdout>>,
-    app: &'a App,
+    app: &'a App<'a>,
 }
 
 impl<'a> UI<'a> {

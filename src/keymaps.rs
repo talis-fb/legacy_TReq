@@ -1,8 +1,9 @@
 use crate::events::EVENTS;
 use crossterm::event::KeyCode;
 use std::collections::HashMap;
+use std::rc::Rc;
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, Debug, Clone)]
 pub struct Command {
     command: EVENTS,
 
@@ -13,14 +14,15 @@ pub struct Command {
 
 pub type CommandsMap = HashMap<KeyCode, Command>;
 
+#[derive(Clone)]
 pub struct KeyMap<'a> {
-    default: &'a CommandsMap,
-    current: &'a CommandsMap,
+    pub default: &'a CommandsMap,
+    pub current: &'a CommandsMap,
 }
 
 impl KeyMap<'_> {
     /// Generate the default KeyMap setting
-    pub fn init_default_commandmap() -> CommandsMap {
+    pub fn default_commandmap() -> CommandsMap {
         HashMap::from([
             (
                 KeyCode::Char('j'),
@@ -104,7 +106,7 @@ mod tests {
 
     #[test]
     fn should_init_and_be_defined() {
-        let keymap = KeyMap::init_default_commandmap();
+        let keymap = KeyMap::default_commandmap();
 
         // Basics Commands
         assert_eq!(
@@ -118,7 +120,7 @@ mod tests {
 
     #[test]
     fn should_get_command_of_single_keymaps() {
-        let command_map = KeyMap::init_default_commandmap();
+        let command_map = KeyMap::default_commandmap();
         let mut keymap = KeyMap {
             default: &command_map,
             current: &command_map,
@@ -131,7 +133,7 @@ mod tests {
 
     #[test]
     fn should_get_command_of_compound_keymaps() {
-        let command_map = KeyMap::init_default_commandmap();
+        let command_map = KeyMap::default_commandmap();
         let mut keymap = KeyMap {
             default: &command_map,
             current: &command_map,
@@ -146,7 +148,7 @@ mod tests {
 
     #[test]
     fn should_reset_keymap_when_a_undefined_key_is_pressed() {
-        let command_map = KeyMap::init_default_commandmap();
+        let command_map = KeyMap::default_commandmap();
         let mut keymap = KeyMap {
             default: &command_map,
             current: &command_map,
