@@ -1,10 +1,7 @@
-#[allow(dead_code)]
-#[allow(unused_variables)]
 use std::collections::HashMap;
 
 use crate::app::App;
 
-// use tui::layout::Layout as Rect;
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
     execute,
@@ -20,20 +17,6 @@ use tui::{
     Frame, Terminal,
 };
 
-// pub struct Layouts {
-//     header: Rect,
-//     content: Rect,
-//     footer: Rect,
-// }
-// pub struct Component<'a> {
-//     layout: &'a Rect,
-//     widget: Box<dyn Widget>,
-// }
-
-pub trait UiTrait<'a> {
-    fn init(app: &'a App) -> Self;
-}
-
 pub struct UI<'a> {
     // layouts: HashMap<String, Rect>,
     // components: Vec<Component>,
@@ -41,8 +24,8 @@ pub struct UI<'a> {
     app: &'a App,
 }
 
-impl<'a> UiTrait<'a> for UI<'a> {
-    fn init(app: &'a App) -> Self {
+impl<'a> UI<'a> {
+    pub fn init(app: &'a App) -> Self {
         enable_raw_mode().unwrap();
         let mut stdout = io::stdout();
         execute!(stdout, EnterAlternateScreen, EnableMouseCapture).unwrap_or(());
@@ -51,9 +34,7 @@ impl<'a> UiTrait<'a> for UI<'a> {
         let terminal = Terminal::new(backend).unwrap();
         UI { terminal, app }
     }
-}
 
-impl UI<'_> {
     pub fn close(&mut self) -> () {
         disable_raw_mode().unwrap();
         execute!(

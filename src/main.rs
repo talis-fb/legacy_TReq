@@ -1,8 +1,11 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_imports)]
 use crossterm::event::{self, Event, KeyCode};
 use std::{error::Error, io};
 
 mod ui;
-use ui::{UiTrait, UI};
+use ui::UI;
 
 mod app;
 use app::App;
@@ -18,7 +21,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut app = App::default();
     app.create_request(Request::default());
 
-    let mut app_ui: UI = UiTrait::init(&app);
+    let mut app_ui: UI = UI::init(&app);
 
     loop {
         app_ui.render();

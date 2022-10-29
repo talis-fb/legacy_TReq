@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use std::collections::hash_map::HashMap;
 
 use tui::layout::Rect;
