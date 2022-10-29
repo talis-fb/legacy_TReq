@@ -2,8 +2,6 @@ use crate::events::EVENTS;
 use crossterm::event::KeyCode;
 use std::collections::HashMap;
 
-pub type CommandsMap = HashMap<KeyCode, Command>;
-
 #[derive(PartialEq, Eq, Debug)]
 pub struct Command {
     command: EVENTS,
@@ -13,9 +11,7 @@ pub struct Command {
     subcommands: Option<CommandsMap>,
 }
 
-pub trait KeyMapTrait {
-    fn init_default_commandmap() -> CommandsMap;
-}
+pub type CommandsMap = HashMap<KeyCode, Command>;
 
 pub struct KeyMap<'a> {
     default: &'a CommandsMap,
@@ -23,24 +19,8 @@ pub struct KeyMap<'a> {
 }
 
 impl KeyMap<'_> {
-    fn get_command(&mut self, key: KeyCode) -> Option<&EVENTS> {
-        if let Some(i) = self.current.get(&key) {
-            // If there is a subcommands it ignores the command and change
-            // the state of current Keymap to the inside 'subcommands'
-            if let Some(subcommands) = &i.subcommands {
-                self.current = &subcommands;
-                return None;
-            }
-
-            // Otherwise... Return the command normaly
-            return Some(&i.command);
-        }
-        None
-    }
-}
-
-impl KeyMapTrait for KeyMap<'_> {
-    fn init_default_commandmap() -> CommandsMap {
+    /// Generate the default KeyMap setting
+    pub fn init_default_commandmap() -> CommandsMap {
         HashMap::from([
             (
                 KeyCode::Char('j'),
@@ -99,6 +79,23 @@ impl KeyMapTrait for KeyMap<'_> {
             ),
         ])
     }
+
+    pub fn get_command(&mut self, key: KeyCode) -> Option<&EVENTS> {
+        if let Some(i) = self.current.get(&key) {
+            // If there is a subcommands it ignores the command and change
+            // the state of current Keymap to the inside 'subcommands'
+            if let Some(subcommands) = &i.subcommands {
+                self.current = &subcommands;
+                return None;
+            }
+
+            // Otherwise... Return the command normaly
+            return Some(&i.command);
+        }
+        // Anyway, it reset to default keymap and return None
+        self.current = self.default;
+        None
+    }
 }
 
 #[cfg(test)]
@@ -120,7 +117,7 @@ mod tests {
     }
 
     #[test]
-    fn should_get_commands_of_single_keymap() {
+    fn should_get_command_of_single_keymaps() {
         let command_map = KeyMap::init_default_commandmap();
         let mut keymap = KeyMap {
             default: &command_map,
@@ -131,8 +128,9 @@ mod tests {
         let up = keymap.get_command(KeyCode::Char('k'));
         assert_eq!(up, Some(&EVENTS::Up));
     }
+
     #[test]
-    fn should_get_commands_of_complex_keymap() {
+    fn should_get_command_of_compound_keymaps() {
         let command_map = KeyMap::init_default_commandmap();
         let mut keymap = KeyMap {
             default: &command_map,
@@ -144,6 +142,25 @@ mod tests {
 
         let g = keymap.get_command(KeyCode::Char('g'));
         assert_ne!(g, None);
-        // assert_eq!(g, Some(&EVENTS::GoToTabList)); // This can change
+    }
+
+    #[test]
+    fn should_reset_keymap_when_a_undefined_key_is_pressed() {
+        let command_map = KeyMap::init_default_commandmap();
+        let mut keymap = KeyMap {
+            default: &command_map,
+            current: &command_map,
+        };
+
+        let g = keymap.get_command(KeyCode::Char('g'));
+        assert_eq!(g, None);
+
+        // This is a undefined command
+        let g = keymap.get_command(KeyCode::Char('_'));
+        assert_eq!(g, None);
+
+        // It should reset to default and execute normal commands
+        let up = keymap.get_command(KeyCode::Char('k'));
+        assert_eq!(up, Some(&EVENTS::Up));
     }
 }
