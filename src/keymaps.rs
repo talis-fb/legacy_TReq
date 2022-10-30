@@ -82,7 +82,7 @@ impl KeyMap<'_> {
         ])
     }
 
-    pub fn get_command(&mut self, key: &KeyCode) -> Option<&EVENTS> {
+    pub fn get_command(&mut self, key: KeyCode) -> Option<&EVENTS> {
         if let Some(i) = self.current.get(&key) {
             // If there is a subcommands it ignores the command and change
             // the state of current Keymap to the inside 'subcommands'

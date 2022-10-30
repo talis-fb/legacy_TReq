@@ -17,6 +17,10 @@ use request::Request;
 mod keymaps;
 use keymaps::KeyMap;
 
+mod commands;
+
+mod states;
+
 fn main() -> Result<(), Box<dyn Error>> {
     // setup commands keys
     let commands = KeyMap::default_commandmap();
@@ -42,7 +46,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
             let d = app
                 .keymap
-                .get_command(&key.code)
+                .get_command(key.code)
                 .unwrap_or(&events::EVENTS::Null);
         }
     }
