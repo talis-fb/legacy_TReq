@@ -26,21 +26,24 @@ fn main() -> Result<(), Box<dyn Error>> {
     };
 
     // Init app
-    let mut app = App::init(&keymap);
-
+    let mut app = App::init(keymap);
     // Start with a empty request
     app.create_request(Request::default());
 
     // Init UI
-    let mut app_ui = UI::init(&app);
-
+    let mut app_ui = UI::init();
     loop {
-        app_ui.render();
+        app_ui.render(&app);
 
         if let Event::Key(key) = event::read()? {
             if let KeyCode::Char('q') = key.code {
                 break;
             }
+
+            let d = app
+                .keymap
+                .get_command(&key.code)
+                .unwrap_or(&events::EVENTS::Null);
         }
     }
 

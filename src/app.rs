@@ -1,3 +1,5 @@
+use crate::events::EVENTS;
+use crossterm::event::KeyCode;
 use std::collections::hash_map::HashMap;
 
 use tui::layout::Rect;
@@ -10,11 +12,11 @@ use crate::request::{Request, METHODS};
 pub struct App<'a> {
     request_history: Vec<Request>,
     pub current_request: usize,
-    pub keymap: &'a KeyMap<'a>,
+    pub keymap: KeyMap<'a>,
 }
 
 impl App<'_> {
-    pub fn init<'a>(keymap: &'a KeyMap) -> App<'a> {
+    pub fn init(keymap: KeyMap) -> App {
         App {
             request_history: vec![],
             current_request: 0,

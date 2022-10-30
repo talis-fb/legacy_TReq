@@ -17,20 +17,20 @@ use tui::{
     Frame, Terminal,
 };
 
-pub struct UI<'a> {
+pub struct UI {
     terminal: Terminal<CrosstermBackend<std::io::Stdout>>,
-    app: &'a App<'a>,
+    // app: &'a App<'a>,
 }
 
-impl<'a> UI<'a> {
-    pub fn init(app: &'a App) -> Self {
+impl UI {
+    pub fn init(/* app: &'a App */) -> Self {
         enable_raw_mode().unwrap();
         let mut stdout = io::stdout();
         execute!(stdout, EnterAlternateScreen, EnableMouseCapture).unwrap_or(());
         let stdout = io::stdout();
         let backend = CrosstermBackend::new(stdout);
         let terminal = Terminal::new(backend).unwrap();
-        UI { terminal, app }
+        UI { terminal }
     }
 
     pub fn close(&mut self) -> () {
@@ -44,7 +44,7 @@ impl<'a> UI<'a> {
         self.terminal.show_cursor().unwrap();
     }
 
-    pub fn render(&mut self) {
+    pub fn render(&mut self, app: &App) {
         self.terminal
             .draw(|f| {
                 let size = f.size();
@@ -64,8 +64,7 @@ impl<'a> UI<'a> {
                     .split(f.size());
 
                 // Tablist
-                let tabs_spans = self
-                    .app
+                let tabs_spans = app
                     .get_requests()
                     .into_iter()
                     .map(|req| Spans::from(vec![Span::from(req.name.clone())]))
@@ -78,7 +77,7 @@ impl<'a> UI<'a> {
                             .border_type(BorderType::Rounded)
                             .title("Tabs"),
                     )
-                    .select(self.app.current_request)
+                    .select(app.current_request)
                     .highlight_style(
                         Style::default()
                             .add_modifier(Modifier::BOLD)
