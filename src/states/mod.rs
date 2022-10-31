@@ -3,25 +3,49 @@ use crate::commands::{self, Command, CommandsList};
 use crate::events::EVENTS;
 use std::collections::HashMap;
 
-type Func<'a> = fn(app: &'a mut App) -> Result<(), &'a str>;
+type CommandFunc = fn(app: &mut App) -> Result<(), String>;
 
-pub struct BodyMap {
-    maps: HashMap<EVENTS, Func<'static>>,
+pub trait State {
+    fn init() -> Self;
+    fn get_command_of_event(&self, event: &EVENTS) -> Option<CommandFunc>;
 }
 
-pub trait State<'a> {
-    fn get_command_of_event(m: &'a BodyMap, event: &'a EVENTS) -> Option<Func<'static>>;
+// Default
+pub struct DefaultState {
+    maps: HashMap<EVENTS, CommandFunc>,
 }
-
-pub type StateMap = HashMap<EVENTS, Box<dyn Command>>;
-
+impl State for DefaultState {
+    fn init() -> Self {
+        Self {
+            maps: HashMap::from([
+                (EVENTS::Up, CommandsList::add_new_tab()),
+                (EVENTS::Down, CommandsList::add_new_tab()),
+                (EVENTS::Left, CommandsList::add_new_tab()),
+            ]),
+        }
+    }
+    fn get_command_of_event(&self, event: &EVENTS) -> Option<CommandFunc> {
+        let command = self.maps.get(event)?;
+        Some(*command)
+    }
+}
 // ---------------------
 // List of all State....
 // ---------------------
-
-impl State<'_> for BodyMap {
-    fn get_command_of_event<'a>(m: &'a BodyMap, event: &'a EVENTS) -> Option<Func<'static>> {
-        let command = m.maps.get(event)?;
+pub struct TabActiveState {
+    maps: HashMap<EVENTS, CommandFunc>,
+}
+impl State for TabActiveState {
+    fn init() -> Self {
+        Self {
+            maps: HashMap::from([
+                (EVENTS::Edit, CommandsList::add_new_tab()),
+                (EVENTS::Switch, CommandsList::add_new_tab()),
+            ]),
+        }
+    }
+    fn get_command_of_event(&self, event: &EVENTS) -> Option<CommandFunc> {
+        let command = self.maps.get(event)?;
         Some(*command)
     }
 }
