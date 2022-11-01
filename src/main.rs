@@ -2,6 +2,7 @@
 #![allow(unused_variables)]
 #![allow(unused_imports)]
 use crossterm::event::{self, Event, KeyCode};
+use states::{DefaultState, State};
 use std::{error::Error, io};
 
 mod ui;
@@ -33,9 +34,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut app = App::init(keymap);
     // Start with a empty request
     app.create_request(Request::default());
+    app.create_request(Request::default());
+    app.create_request(Request::default());
+    app.create_request(Request::default());
 
     // Init UI
     let mut app_ui = UI::init();
+
+    let states = DefaultState::init();
+
     loop {
         app_ui.render(&app);
 
@@ -44,10 +51,19 @@ fn main() -> Result<(), Box<dyn Error>> {
                 break;
             }
 
-            let d = app
+            let event_key = app
                 .keymap
                 .get_command(key.code)
                 .unwrap_or(&events::EVENTS::Null);
+
+            let dd =
+                <states::DefaultState as State>::get_command_of_event(&states.maps, &event_key)
+                    .unwrap_or(|app: &mut App| Ok(()));
+            let res = dd(&mut app);
+            match res {
+                Ok(i) => {}
+                Err(i) => {}
+            }
         }
     }
 

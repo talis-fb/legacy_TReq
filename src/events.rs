@@ -14,6 +14,8 @@ pub enum EVENTS {
     Edit,
     Switch,
     GoToTabList,
+    GoToNextTab,
+    GoToPreviousTab,
     GoToRequestBody,
     GoToResponseBody,
     GoToUrl,

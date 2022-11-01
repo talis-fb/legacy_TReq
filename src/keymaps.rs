@@ -56,13 +56,29 @@ impl KeyMap<'_> {
                 KeyCode::Char('g'),
                 Command {
                     command: EVENTS::Null,
-                    subcommands: Some(HashMap::from([(
-                        KeyCode::Char('g'),
-                        Command {
-                            command: EVENTS::GoToTabList,
-                            subcommands: None,
-                        },
-                    )])),
+                    subcommands: Some(HashMap::from([
+                        (
+                            KeyCode::Char('g'),
+                            Command {
+                                command: EVENTS::GoToTabList,
+                                subcommands: None,
+                            },
+                        ),
+                        (
+                            KeyCode::Char('t'),
+                            Command {
+                                command: EVENTS::GoToNextTab,
+                                subcommands: None,
+                            },
+                        ),
+                        (
+                            KeyCode::Char('T'),
+                            Command {
+                                command: EVENTS::GoToPreviousTab,
+                                subcommands: None,
+                            },
+                        ),
+                    ])),
                 },
             ),
             (
@@ -92,6 +108,7 @@ impl KeyMap<'_> {
             }
 
             // Otherwise... Return the command normaly
+            self.current = self.default;
             return Some(&i.command);
         }
         // Anyway, it reset to default keymap and return None
@@ -141,9 +158,13 @@ mod tests {
 
         let g = keymap.get_command(KeyCode::Char('g'));
         assert_eq!(g, None);
-
         let g = keymap.get_command(KeyCode::Char('g'));
         assert_ne!(g, None);
+
+        let g2 = keymap.get_command(KeyCode::Char('g'));
+        assert_eq!(g2, None);
+        let g2 = keymap.get_command(KeyCode::Char('t'));
+        assert_ne!(g2, None);
     }
 
     #[test]
