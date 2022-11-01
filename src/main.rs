@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 #![allow(unused_imports)]
+use commands::CommandsList;
 use crossterm::event::{self, Event, KeyCode};
 use states::{DefaultState, State};
 use std::{error::Error, io};
@@ -41,7 +42,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Init UI
     let mut app_ui = UI::init();
 
-    let states = DefaultState::init();
+    let default_states = DefaultState::init();
+    let current_state = states::TabActiveState::init();
 
     loop {
         app_ui.render(&app);
@@ -56,13 +58,24 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .get_command(key.code)
                 .unwrap_or(&events::EVENTS::Null);
 
-            let dd =
-                <states::DefaultState as State>::get_command_of_event(&states.maps, &event_key)
-                    .unwrap_or(|app: &mut App| Ok(()));
-            let res = dd(&mut app);
-            match res {
-                Ok(i) => {}
-                Err(i) => {}
+            let command = if let Some(v) =
+                states::get_command_of_event(&current_state.maps, &event_key)
+            {
+                v
+            } else {
+                if let Some(v) = states::get_command_of_event(&default_states.maps, &event_key) {
+                    v
+                } else {
+                    CommandsList::do_nothing()
+                }
+            };
+
+            // states::get_command_of_event(&default_states.maps, &event_key)
+            //     .unwrap_or(|app: &mut App| Ok(()));
+
+            let res = command(&mut app);
+            if let Err(e) = res {
+                //
             }
         }
     }

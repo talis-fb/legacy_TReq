@@ -21,6 +21,24 @@ pub struct KeyMap<'a> {
 }
 
 impl KeyMap<'_> {
+    pub fn get_command(&mut self, key: KeyCode) -> Option<&EVENTS> {
+        if let Some(i) = self.current.get(&key) {
+            // If there is a subcommands it ignores the command and change
+            // the state of current Keymap to the inside 'subcommands'
+            if let Some(subcommands) = &i.subcommands {
+                self.current = &subcommands;
+                return None;
+            }
+
+            // Otherwise... Return the command normaly
+            self.current = self.default;
+            return Some(&i.command);
+        }
+        // Anyway, it reset to default keymap and return None
+        self.current = self.default;
+        None
+    }
+
     /// Generate the default KeyMap setting
     pub fn default_commandmap() -> CommandsMap {
         HashMap::from([
@@ -96,24 +114,6 @@ impl KeyMap<'_> {
                 },
             ),
         ])
-    }
-
-    pub fn get_command(&mut self, key: KeyCode) -> Option<&EVENTS> {
-        if let Some(i) = self.current.get(&key) {
-            // If there is a subcommands it ignores the command and change
-            // the state of current Keymap to the inside 'subcommands'
-            if let Some(subcommands) = &i.subcommands {
-                self.current = &subcommands;
-                return None;
-            }
-
-            // Otherwise... Return the command normaly
-            self.current = self.default;
-            return Some(&i.command);
-        }
-        // Anyway, it reset to default keymap and return None
-        self.current = self.default;
-        None
     }
 }
 

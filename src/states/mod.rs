@@ -8,12 +8,11 @@ type CommandFunc = fn(app: &mut App) -> Result<(), String>;
 
 pub trait State {
     fn init() -> Self;
-    fn get_command_of_event(maps: &Map, event: &EVENTS) -> Option<CommandFunc> {
-        // println!("AAAA");
-        let command = maps.get(event)?;
-        // println!("BBBB");
-        Some(*command)
-    }
+}
+
+pub fn get_command_of_event(maps: &Map, event: &EVENTS) -> Option<CommandFunc> {
+    let command = maps.get(event)?;
+    Some(*command)
 }
 
 // Default
@@ -26,6 +25,7 @@ impl State for DefaultState {
             maps: HashMap::from([
                 // (EVENTS::Up, CommandsList::add_new_tab()),
                 (EVENTS::GoToNextTab, CommandsList::go_to_next_tab()),
+                (EVENTS::GoToPreviousTab, CommandsList::go_to_previous_tab()),
                 // (EVENTS::Left, CommandsList::add_new_tab()),
             ]),
         }
@@ -35,7 +35,7 @@ impl State for DefaultState {
 // List of all State....
 // ---------------------
 pub struct TabActiveState {
-    maps: Map,
+    pub maps: Map,
 }
 impl State for TabActiveState {
     fn init() -> Self {
