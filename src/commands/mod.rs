@@ -19,6 +19,11 @@ impl CommandsList {
             Ok(())
         }
     }
+
+    pub fn err() -> CommandFunc {
+        |app: &mut App| Err("Ai".to_string())
+    }
+
     pub fn go_to_previous_tab() -> CommandFunc {
         |app: &mut App| {
             if app.current_request == 0 {

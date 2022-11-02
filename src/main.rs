@@ -3,6 +3,7 @@
 #![allow(unused_imports)]
 use commands::CommandsList;
 use crossterm::event::{self, Event, KeyCode};
+use events::EVENTS;
 use states::{DefaultState, State};
 use std::{error::Error, io};
 
@@ -53,20 +54,18 @@ fn main() -> Result<(), Box<dyn Error>> {
                 break;
             }
 
-            let event_key = app
-                .keymap
-                .get_command(key.code)
-                .unwrap_or(&events::EVENTS::Null);
+            let event_key = app.get_command(key.code).unwrap_or(&EVENTS::Null);
 
+            let ev = event_key.clone();
             let command = states::get_command_of_event_with_states(
                 vec![&current_state.maps, &default_states.maps],
-                &event_key,
+                &ev,
             )
             .unwrap_or(CommandsList::do_nothing());
 
             let res = command(&mut app);
             if let Err(e) = res {
-                //
+                app.set_log("Erro na execução de um comando".to_string());
             }
         }
     }

@@ -5,6 +5,7 @@ pub type EventListenerFn = fn();
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub enum EVENTS {
     Null,
+    SubCommand, // When user press a key that has subcommands from it
 
     // Navigation
     Up,

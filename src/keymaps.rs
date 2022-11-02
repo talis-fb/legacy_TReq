@@ -27,7 +27,7 @@ impl KeyMap<'_> {
             // the state of current Keymap to the inside 'subcommands'
             if let Some(subcommands) = &i.subcommands {
                 self.current = &subcommands;
-                return None;
+                return Some(&EVENTS::SubCommand);
             }
 
             // Otherwise... Return the command normaly

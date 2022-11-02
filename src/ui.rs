@@ -160,7 +160,17 @@ impl UI {
 
                 // LOG SECTION
                 let log_block = Block::default().borders(Borders::TOP).title("Logs");
-                f.render_widget(log_block, chunks[2]);
+                let log_text = Paragraph::new(app.log.clone())
+                    .alignment(Alignment::Left)
+                    .block(log_block.clone());
+
+                // Command queue
+                let log_command_queue = Paragraph::new(app.get_keys_queue().clone())
+                    .alignment(Alignment::Right)
+                    .block(log_block.clone());
+
+                f.render_widget(log_text, chunks[2]);
+                f.render_widget(log_command_queue, chunks[2]);
             })
             .unwrap();
     }

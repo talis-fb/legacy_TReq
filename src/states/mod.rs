@@ -16,7 +16,7 @@ pub fn get_command_of_event_with_states(maps: Vec<&Map>, event: &EVENTS) -> Opti
             return Some(*command);
         }
     }
-    Some(CommandsList::do_nothing())
+    None
 }
 pub fn get_command_of_event(maps: &Map, event: &EVENTS) -> Option<CommandFunc> {
     let command = maps.get(event)?;
@@ -31,7 +31,7 @@ impl State for DefaultState {
     fn init() -> Self {
         Self {
             maps: HashMap::from([
-                // (EVENTS::Up, CommandsList::add_new_tab()),
+                (EVENTS::Up, CommandsList::err()),
                 (EVENTS::GoToNextTab, CommandsList::go_to_next_tab()),
                 (EVENTS::GoToPreviousTab, CommandsList::go_to_previous_tab()),
                 // (EVENTS::Left, CommandsList::add_new_tab()),
@@ -55,3 +55,20 @@ impl State for TabActiveState {
         }
     }
 }
+
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     #[test]
+//     fn should_get_commands_of_a_map() {
+//         let state = DefaultState::init();
+//         let event = EVENTS::GoToNextTab;
+//         let command = get_command_of_event(&state.maps, &event).unwrap();
+//         let op = CommandsList::go_to_next_tab();
+//         assert!(
+//             // get_command_of_event(&state.maps, &event).unwrap() as CommandFunc,
+//             CommandsList::go_to_next_tab() as CommandFunc
+//                 == CommandsList::go_to_next_tab() as CommandFunc // state.maps.get(&event).unwrap()
+//         );
+//     }
+// }
