@@ -3,9 +3,11 @@ use crate::commands::{self, CommandsList};
 use crate::events::EVENTS;
 use std::collections::HashMap;
 
+pub mod active_request;
 pub mod active_request_body;
 pub mod active_request_headers;
 pub mod active_request_url;
+pub mod active_response;
 pub mod active_response_body;
 pub mod active_response_headers;
 pub mod active_tablist;
@@ -16,13 +18,16 @@ pub type CommandFunc = fn(app: &mut App) -> Result<(), String>;
 
 #[derive(PartialEq, Eq, Clone)]
 pub enum StatesNames {
-    TabActive,
     Default,
+    TabList,
+    Url,
     Request,
     RequestHeader,
     RequestBody,
+    Response,
     ResponseHeader,
     ResponseBody,
+    Log,
 }
 
 pub trait State {

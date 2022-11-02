@@ -8,6 +8,9 @@ use std::collections::HashMap;
 pub type CommandFunc = fn(app: &mut App) -> Result<(), String>;
 
 mod jumps;
+mod logs;
+mod request;
+mod response;
 mod tabs;
 
 pub struct CommandsList {}

@@ -7,14 +7,16 @@ pub struct TabActiveState {
 }
 impl State for TabActiveState {
     fn get_state_name(&self) -> StatesNames {
-        StatesNames::TabActive
+        StatesNames::TabList
     }
     fn init() -> Self {
         Self {
             maps: HashMap::from([
-                (EVENTS::Edit, CommandsList::add_new_tab()),
+                (EVENTS::Edit, CommandsList::rename_tab()),
                 (EVENTS::Switch, CommandsList::go_to_next_tab()),
                 (EVENTS::New, CommandsList::add_new_tab()),
+                (EVENTS::Up, CommandsList::do_nothing()),
+                (EVENTS::Down, CommandsList::go_to_request_section()),
             ]),
         }
     }
