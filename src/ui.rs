@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     app::App,
-    states::{StatesNames, TabActiveState},
+    states::{active_tablist::TabActiveState, StatesNames},
 };
 
 use crossterm::{
@@ -22,11 +22,10 @@ use tui::{
 
 pub struct UI {
     terminal: Terminal<CrosstermBackend<std::io::Stdout>>,
-    // app: &'a App<'a>,
 }
 
 impl UI {
-    pub fn init(/* app: &'a App */) -> Self {
+    pub fn init() -> Self {
         enable_raw_mode().unwrap();
         let mut stdout = io::stdout();
         execute!(stdout, EnterAlternateScreen, EnableMouseCapture).unwrap_or(());

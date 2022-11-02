@@ -4,7 +4,7 @@
 use commands::CommandsList;
 use crossterm::event::{self, Event, KeyCode};
 use events::EVENTS;
-use states::{DefaultState, State};
+use states::{default::DefaultState, State};
 use std::{error::Error, io};
 
 mod ui;
@@ -36,15 +36,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut app = App::init(keymap);
     // Start with a empty request
     app.create_request(Request::default());
-    app.create_request(Request::default());
-    app.create_request(Request::default());
-    app.create_request(Request::default());
 
     // Init UI
     let mut app_ui = UI::init();
 
     let default_states = DefaultState::init();
-    let current_state = states::TabActiveState::init();
+    let current_state = states::active_tablist::TabActiveState::init();
 
     loop {
         app_ui.render(&app);
@@ -54,17 +51,15 @@ fn main() -> Result<(), Box<dyn Error>> {
                 break;
             }
 
-            let event_key = app.get_command(key.code).unwrap_or(&EVENTS::Null);
-
-            let ev = event_key.clone();
+            let event_key = app.get_event_of_key(key.code).unwrap_or(&EVENTS::Null);
             let command = states::get_command_of_event_with_states(
                 vec![&current_state.maps, &default_states.maps],
-                &ev,
+                &event_key,
             )
             .unwrap_or(CommandsList::do_nothing());
 
-            let res = command(&mut app);
-            if let Err(e) = res {
+            let command_result = command(&mut app);
+            if let Err(e) = command_result {
                 app.set_log("Erro na execução de um comando".to_string());
             }
         }

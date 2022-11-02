@@ -1,5 +1,5 @@
 use crate::events::EVENTS;
-use crate::states::{DefaultState, State};
+use crate::states::{default::DefaultState, State};
 use crossterm::event::KeyCode;
 use std::collections::hash_map::HashMap;
 
@@ -35,7 +35,7 @@ impl App<'_> {
         }
     }
 
-    pub fn get_command(&mut self, key: KeyCode) -> Option<&EVENTS> {
+    pub fn get_event_of_key(&mut self, key: KeyCode) -> Option<&EVENTS> {
         let event = self.keymap.get_command(key);
 
         // Manage the 'keys_queue' based in event received
@@ -80,5 +80,3 @@ impl App<'_> {
         self.keys_queue = "".to_string()
     }
 }
-
-// STATE MANAGENT
