@@ -11,7 +11,7 @@ mod ui;
 use ui::UI;
 
 mod app;
-use app::App;
+use app::{App, InputMode};
 
 mod events;
 mod request;
@@ -23,6 +23,8 @@ use keymaps::KeyMap;
 mod commands;
 
 mod states;
+
+mod input;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // setup commands keys
@@ -40,25 +42,27 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Init UI
     let mut app_ui = UI::init();
 
-    let default_states = DefaultState::init();
-    let mut current_state = states::active_tablist::TabActiveState::init();
-
     loop {
         app_ui.render(&app);
 
         if let Event::Key(key) = event::read()? {
+            if let InputMode::Insert = app.get_mode() {
+                app.edit_input_mode(key.code);
+                continue;
+            }
+
             if let KeyCode::Char('q') = key.code {
                 break;
             }
 
-            let event_key = app.get_event_of_key(key.code).unwrap_or(&EVENTS::Null);
-
-            // For dont borrow error
-            let ev = event_key.clone();
+            let event_key = app
+                .get_event_of_key(key.code)
+                .unwrap_or(&EVENTS::Null)
+                .clone();
 
             let command = states::get_command_of_event_with_states(
                 vec![app.current_state.get_map(), app.default_state.get_map()],
-                &ev,
+                &event_key,
             )
             .unwrap_or(CommandsList::do_nothing());
 

@@ -32,9 +32,9 @@ impl State for DefaultState {
                     EVENTS::GoToResponseBody,
                     Commands::go_to_response_body_section(),
                 ),
+                (EVENTS::GoToLogs, Commands::go_to_log_section()),
                 (EVENTS::RenameTab, Commands::rename_tab()),
                 (EVENTS::DeleteTab, Commands::delete_tab()),
-                // (EVENTS::Left, Commands::add_new_tab()),
             ]),
         }
     }

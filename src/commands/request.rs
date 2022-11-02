@@ -8,7 +8,11 @@ impl CommandsList {
     }
     pub fn edit_request_body() -> CommandFunc {
         |app: &mut App| {
-            app.current_state = Box::new(states::active_tablist::TabActiveState::init());
+            app.set_input_mode_with_callback(|app: &mut App, s: String| {
+                let mut req = app.get_current_request().clone();
+                req.set_url(s.clone());
+                app.set_current_request(req);
+            });
             Ok(())
         }
     }
@@ -26,7 +30,11 @@ impl CommandsList {
     }
     pub fn edit_request_url() -> CommandFunc {
         |app: &mut App| {
-            app.current_state = Box::new(states::active_tablist::TabActiveState::init());
+            app.set_input_mode_with_callback(|app: &mut App, s: String| {
+                let mut req = app.get_current_request().clone();
+                req.set_url(s.clone());
+                app.set_current_request(req);
+            });
             Ok(())
         }
     }

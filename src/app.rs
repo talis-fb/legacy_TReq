@@ -9,6 +9,14 @@ use tui::widgets::Widget;
 use crate::keymaps::KeyMap;
 use crate::request::{Request, METHODS};
 
+use crate::input::InputBuffer;
+
+#[derive(Clone)]
+pub enum InputMode {
+    Normal,
+    Insert,
+}
+
 // #[derive(Default)]
 pub struct App<'a> {
     request_history: Vec<Request>,
@@ -16,6 +24,8 @@ pub struct App<'a> {
     pub keymap: KeyMap<'a>,
     pub log: String,
     keys_queue: String,
+    mode: InputMode,
+    input_buffer: InputBuffer,
 
     // States
     pub default_state: Box<dyn State>,
@@ -32,8 +42,41 @@ impl App<'_> {
             keys_queue: "".to_string(),
             default_state: Box::new(DefaultState::init()),
             current_state: Box::new(DefaultState::init()),
+            mode: InputMode::Normal,
+            input_buffer: InputBuffer::init(),
         }
     }
+
+    // Input Mode
+    pub fn get_mode(&self) -> InputMode {
+        self.mode.clone()
+    }
+    pub fn set_input_mode_with_callback(&mut self, callback: fn(&mut App, String)) {
+        self.input_buffer.set_callback(callback);
+        self.mode = InputMode::Insert;
+    }
+    pub fn edit_input_mode(&mut self, key: KeyCode) {
+        match key {
+            KeyCode::Enter => {
+                let cl = self.input_buffer.on_close;
+                let s = self.input_buffer.buffer.clone();
+                cl(self, s);
+                self.input_buffer.buffer = String::new();
+                self.mode = InputMode::Normal;
+            }
+            KeyCode::Backspace => {
+                self.input_buffer.pop_char();
+            }
+            KeyCode::Char(i) => {
+                self.append_keys_queue(i);
+                self.input_buffer.append_char(i);
+            }
+            _ => {
+                self.mode = InputMode::Normal;
+            }
+        }
+    }
+    // ----------
 
     pub fn get_event_of_key(&mut self, key: KeyCode) -> Option<&EVENTS> {
         let event = self.keymap.get_command(key);

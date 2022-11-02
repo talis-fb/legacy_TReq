@@ -35,8 +35,8 @@ impl Request {
         self.name = name.to_string();
     }
 
-    pub fn set_url(&mut self, url: &str) {
-        self.url = url.to_string();
+    pub fn set_url(&mut self, url: String) {
+        self.url = url;
     }
 
     pub fn set_method(&mut self, method: METHODS) {

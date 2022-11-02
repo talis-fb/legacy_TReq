@@ -131,18 +131,23 @@ impl UI {
                     .split(request_layout[0]);
 
                 let method = Paragraph::new("GET")
-                    .style(Style::default().bg(Color::Blue).fg(Color::Black))
                     .style(style_if_state_is(StatesNames::Url))
+                    .style(Style::default().bg(Color::Blue).fg(Color::Black))
                     .alignment(Alignment::Center);
                 f.render_widget(method, header_layout[0]);
 
-                let url = Block::default()
+                let url_block = Block::default()
                     .borders(Borders::ALL)
                     .title("URL")
                     .title_alignment(Alignment::Left)
                     .style(style_if_state_is(StatesNames::Url))
                     .border_type(BorderType::Rounded);
-                f.render_widget(url, header_layout[1]);
+                let url_text = Paragraph::new(app.get_current_request().url.clone())
+                    .alignment(Alignment::Left)
+                    .block(url_block.clone());
+                // f.render_widget(url, header_layout[1]);
+                // println!("{}", app.get_current_request().url.clone());
+                f.render_widget(url_text, header_layout[1]);
 
                 let body = Block::default()
                     .borders(Borders::ALL)
