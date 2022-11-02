@@ -58,20 +58,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .get_command(key.code)
                 .unwrap_or(&events::EVENTS::Null);
 
-            let command = if let Some(v) =
-                states::get_command_of_event(&current_state.maps, &event_key)
-            {
-                v
-            } else {
-                if let Some(v) = states::get_command_of_event(&default_states.maps, &event_key) {
-                    v
-                } else {
-                    CommandsList::do_nothing()
-                }
-            };
-
-            // states::get_command_of_event(&default_states.maps, &event_key)
-            //     .unwrap_or(|app: &mut App| Ok(()));
+            let command = states::get_command_of_event_with_states(
+                vec![&current_state.maps, &default_states.maps],
+                &event_key,
+            )
+            .unwrap_or(CommandsList::do_nothing());
 
             let res = command(&mut app);
             if let Err(e) = res {

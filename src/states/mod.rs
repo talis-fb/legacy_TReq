@@ -10,6 +10,14 @@ pub trait State {
     fn init() -> Self;
 }
 
+pub fn get_command_of_event_with_states(maps: Vec<&Map>, event: &EVENTS) -> Option<CommandFunc> {
+    for m in maps.iter() {
+        if let Some(command) = m.get(event) {
+            return Some(*command);
+        }
+    }
+    Some(CommandsList::do_nothing())
+}
 pub fn get_command_of_event(maps: &Map, event: &EVENTS) -> Option<CommandFunc> {
     let command = maps.get(event)?;
     Some(*command)
