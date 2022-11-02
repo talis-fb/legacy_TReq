@@ -13,7 +13,8 @@ impl State for TabActiveState {
         Self {
             maps: HashMap::from([
                 (EVENTS::Edit, CommandsList::add_new_tab()),
-                (EVENTS::Switch, CommandsList::add_new_tab()),
+                (EVENTS::Switch, CommandsList::go_to_next_tab()),
+                (EVENTS::New, CommandsList::add_new_tab()),
             ]),
         }
     }

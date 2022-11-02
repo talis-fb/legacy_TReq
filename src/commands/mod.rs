@@ -7,7 +7,7 @@ use std::collections::HashMap;
 
 pub type CommandFunc = fn(app: &mut App) -> Result<(), String>;
 
-mod moves;
+mod jumps;
 mod tabs;
 
 pub struct CommandsList {}

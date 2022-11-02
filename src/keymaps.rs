@@ -43,6 +43,27 @@ impl KeyMap<'_> {
     pub fn default_commandmap() -> CommandsMap {
         HashMap::from([
             (
+                KeyCode::Enter,
+                Command {
+                    command: EVENTS::Submit,
+                    subcommands: None,
+                },
+            ),
+            (
+                KeyCode::Char('e'),
+                Command {
+                    command: EVENTS::Edit,
+                    subcommands: None,
+                },
+            ),
+            (
+                KeyCode::Tab,
+                Command {
+                    command: EVENTS::Switch,
+                    subcommands: None,
+                },
+            ),
+            (
                 KeyCode::Char('j'),
                 Command {
                     command: EVENTS::Down,
@@ -100,16 +121,16 @@ impl KeyMap<'_> {
                 },
             ),
             (
-                KeyCode::Tab,
+                KeyCode::Char('G'),
                 Command {
-                    command: EVENTS::Edit,
+                    command: EVENTS::GoToLogs,
                     subcommands: None,
                 },
             ),
             (
-                KeyCode::Char('e'),
+                KeyCode::Char('n'),
                 Command {
-                    command: EVENTS::Edit,
+                    command: EVENTS::New,
                     subcommands: None,
                 },
             ),

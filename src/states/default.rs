@@ -1,5 +1,5 @@
 use crate::events::EVENTS;
-use crate::states::{CommandFunc, CommandsList, Map, State, StatesNames};
+use crate::states::{CommandFunc, CommandsList as Commands, Map, State, StatesNames};
 use std::collections::HashMap;
 
 pub struct DefaultState {
@@ -12,14 +12,20 @@ impl State for DefaultState {
     fn init() -> Self {
         Self {
             maps: HashMap::from([
-                (EVENTS::Up, CommandsList::go_to_tab_section()),
-                (EVENTS::Down, CommandsList::go_to_tab_section()),
-                (EVENTS::Right, CommandsList::go_to_tab_section()),
-                (EVENTS::Left, CommandsList::go_to_tab_section()),
-                (EVENTS::GoToNextTab, CommandsList::go_to_next_tab()),
-                (EVENTS::GoToPreviousTab, CommandsList::go_to_previous_tab()),
-                (EVENTS::GoToTabList, CommandsList::go_to_tab_section()),
-                // (EVENTS::Left, CommandsList::add_new_tab()),
+                // General Move
+                (EVENTS::Up, Commands::go_to_tab_section()),
+                (EVENTS::Down, Commands::go_to_log_section()),
+                (EVENTS::Right, Commands::go_to_response_section()),
+                (EVENTS::Left, Commands::go_to_request_section()),
+                // Jumps
+                (EVENTS::GoToNextTab, Commands::go_to_next_tab()),
+                (EVENTS::GoToPreviousTab, Commands::go_to_previous_tab()),
+                (EVENTS::GoToTabList, Commands::go_to_tab_section()),
+                (EVENTS::GoToRequestBody, Commands::go_to_request_section()),
+                (EVENTS::GoToResponseBody, Commands::go_to_response_section()),
+                (EVENTS::RenameTab, Commands::rename_tab()),
+                (EVENTS::DeleteTab, Commands::delete_tab()),
+                // (EVENTS::Left, Commands::add_new_tab()),
             ]),
         }
     }

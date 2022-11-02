@@ -7,26 +7,44 @@ pub enum EVENTS {
     Null,
     SubCommand, // When user press a key that has subcommands from it
 
-    // Navigation
+    // Main actions
+    Edit,
+    Switch,
+    Submit,
+    Undo,
+    New,
+
+    // General Moves
     Up,
     Down,
     Left,
     Right,
-    Edit,
-    Switch,
+
+    // Jumps to sections
     GoToTabList,
+    GoToRequest,
+    GoToResponse,
+    GoToLogs,
+
+    // Moves Tabs
     GoToNextTab,
     GoToPreviousTab,
+
+    // Moves Request
     GoToRequestBody,
-    GoToResponseBody,
     GoToUrl,
 
-    // Request
-    BodyResponseEdit,
+    // Moves Response
+    GoToResponseBody,
+    GoToResponseHeaders,
+
+    // Edit Tabs
+    RenameTab,
+    DeleteTab,
+
+    // Edit Request
+    RequestBodyEdit,
+    RequestHeadersEdit,
     UrlEdit,
     MethodEdit,
-    SubmitRequest,
-
-    // Response
-    BodyRequestEdit,
 }

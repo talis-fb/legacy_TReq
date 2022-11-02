@@ -9,12 +9,12 @@ impl CommandsList {
             Ok(())
         }
     }
-    // pub fn go_to_request_section() -> CommandFunc {
-    //     |app: &mut App| {
-    //         app.current_state = Box::new(states::active_request_body::/**/));
-    //         Ok(())
-    //     }
-    // }
+    pub fn go_to_request_section() -> CommandFunc {
+        |app: &mut App| {
+            // app.current_state = Box::new(states::active_request_body::/**/));
+            Ok(())
+        }
+    }
     pub fn go_to_response_section() -> CommandFunc {
         |app: &mut App| {
             app.current_state = Box::new(states::active_tablist::TabActiveState::init());

@@ -33,4 +33,28 @@ impl CommandsList {
             Ok(())
         }
     }
+
+    pub fn rename_tab() -> CommandFunc {
+        |app: &mut App| {
+            let req = Request::default();
+            app.create_request(req);
+            Ok(())
+        }
+    }
+
+    pub fn delete_tab() -> CommandFunc {
+        |app: &mut App| {
+            let req = Request::default();
+            app.create_request(req);
+            Ok(())
+        }
+    }
+
+    pub fn go_to_tab(n: usize) -> CommandFunc {
+        |app: &mut App| {
+            let req = Request::default();
+            app.create_request(req);
+            Ok(())
+        }
+    }
 }
