@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    app::App,
+    app::{App, InputMode},
     states::{active_tablist::TabActiveState, StatesNames},
 };
 
@@ -16,7 +16,7 @@ use tui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Span, Spans},
-    widgets::{Block, BorderType, Borders, Paragraph, Tabs, Widget},
+    widgets::{Block, BorderType, Borders, Clear, Paragraph, Tabs, Widget},
     Frame, Terminal,
 };
 
@@ -203,7 +203,46 @@ impl UI {
 
                 f.render_widget(log_text, chunks[2]);
                 f.render_widget(log_command_queue, chunks[2]);
+
+                // INPUT MODE
+                if let InputMode::Insert = app.get_mode() {
+                    let popup_block = Block::default()
+                        .title("[ESC] - QUIT     [ENTER] - FINISH")
+                        .borders(Borders::ALL);
+                    let popup_text = Paragraph::new(app.get_text_input_mode())
+                        .alignment(Alignment::Left)
+                        .block(popup_block.clone());
+                    let area = centered_rect(60, 10, size);
+                    f.render_widget(Clear, area); //this clears out the background
+                    f.render_widget(popup_text, area);
+                }
             })
             .unwrap();
     }
+}
+
+fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
+    let popup_layout = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints(
+            [
+                Constraint::Percentage((100 - percent_y) / 2),
+                Constraint::Percentage(percent_y),
+                Constraint::Percentage((100 - percent_y) / 2),
+            ]
+            .as_ref(),
+        )
+        .split(r);
+
+    Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints(
+            [
+                Constraint::Percentage((100 - percent_x) / 2),
+                Constraint::Percentage(percent_x),
+                Constraint::Percentage((100 - percent_x) / 2),
+            ]
+            .as_ref(),
+        )
+        .split(popup_layout[1])[1]
 }

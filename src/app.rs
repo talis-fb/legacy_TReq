@@ -55,6 +55,9 @@ impl App<'_> {
         self.input_buffer.set_callback(callback);
         self.mode = InputMode::Insert;
     }
+    pub fn get_text_input_mode(&self) -> String {
+        self.input_buffer.buffer.clone()
+    }
     pub fn edit_input_mode(&mut self, key: KeyCode) {
         match key {
             KeyCode::Enter => {
@@ -71,9 +74,10 @@ impl App<'_> {
                 self.append_keys_queue(i);
                 self.input_buffer.append_char(i);
             }
-            _ => {
+            KeyCode::Esc => {
                 self.mode = InputMode::Normal;
             }
+            _ => {}
         }
     }
     // ----------
