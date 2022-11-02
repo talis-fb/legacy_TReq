@@ -41,7 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut app_ui = UI::init();
 
     let default_states = DefaultState::init();
-    let current_state = states::active_tablist::TabActiveState::init();
+    let mut current_state = states::active_tablist::TabActiveState::init();
 
     loop {
         app_ui.render(&app);

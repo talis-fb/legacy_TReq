@@ -3,11 +3,10 @@ use crate::commands::{self, CommandsList};
 use crate::events::EVENTS;
 use std::collections::HashMap;
 
-pub mod active_request;
+pub mod active_logs;
 pub mod active_request_body;
 pub mod active_request_headers;
 pub mod active_request_url;
-pub mod active_response;
 pub mod active_response_body;
 pub mod active_response_headers;
 pub mod active_tablist;
@@ -16,15 +15,13 @@ pub mod default;
 pub type Map = HashMap<EVENTS, CommandFunc>;
 pub type CommandFunc = fn(app: &mut App) -> Result<(), String>;
 
-#[derive(PartialEq, Eq, Clone)]
+#[derive(PartialEq, Eq, Clone, Debug)]
 pub enum StatesNames {
     Default,
     TabList,
     Url,
-    Request,
-    RequestHeader,
+    RequestHeaders,
     RequestBody,
-    Response,
     ResponseHeader,
     ResponseBody,
     Log,

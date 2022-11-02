@@ -7,15 +7,15 @@ pub struct TabActiveState {
 }
 impl State for TabActiveState {
     fn get_state_name(&self) -> StatesNames {
-        StatesNames::RequestHeader
+        StatesNames::RequestHeaders
     }
     fn init() -> Self {
         Self {
             maps: HashMap::from([
                 (EVENTS::Edit, CommandsList::edit_request_body()),
                 (EVENTS::Switch, CommandsList::switch_request_options()),
-                (EVENTS::Up, CommandsList::go_to_tab_section()),
-                (EVENTS::Down, CommandsList::go_to_body_section()),
+                (EVENTS::Up, CommandsList::go_to_url_section()),
+                (EVENTS::Down, CommandsList::go_to_log_section()),
             ]),
         }
     }

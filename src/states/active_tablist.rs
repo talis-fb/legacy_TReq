@@ -16,7 +16,7 @@ impl State for TabActiveState {
                 (EVENTS::Switch, CommandsList::go_to_next_tab()),
                 (EVENTS::New, CommandsList::add_new_tab()),
                 (EVENTS::Up, CommandsList::do_nothing()),
-                (EVENTS::Down, CommandsList::go_to_request_section()),
+                (EVENTS::Down, CommandsList::go_to_url_section()),
             ]),
         }
     }

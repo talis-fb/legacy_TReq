@@ -12,9 +12,11 @@ impl State for TabActiveState {
     fn init() -> Self {
         Self {
             maps: HashMap::from([
-                (EVENTS::Edit, CommandsList::rename_tab()),
+                (EVENTS::Edit, CommandsList::go_to_log_section()),
                 (EVENTS::Switch, CommandsList::go_to_next_tab()),
                 (EVENTS::New, CommandsList::add_new_tab()),
+                (EVENTS::Up, CommandsList::go_to_tab_section()),
+                (EVENTS::Down, CommandsList::go_to_request_body_section()),
             ]),
         }
     }

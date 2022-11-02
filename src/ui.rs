@@ -49,13 +49,17 @@ impl UI {
     pub fn render(&mut self, app: &App) {
         self.terminal
             .draw(|f| {
+                let current_state = app.current_state.get_state_name();
                 let style_if_state_is = |state: StatesNames| {
-                    if state == app.current_state.get_state_name() {
+                    if state == current_state {
+                        // println!("{:?}", state);
                         Style::default().fg(Color::LightYellow)
                     } else {
                         Style::default()
                     }
                 };
+
+                // ---------------
 
                 let size = f.size();
 
@@ -87,7 +91,7 @@ impl UI {
                             .border_type(BorderType::Rounded)
                             .title("Tabs"),
                     )
-                    .style(style_if_state_is(StatesNames::TabActive))
+                    .style(style_if_state_is(StatesNames::TabList))
                     .select(app.current_request)
                     .highlight_style(
                         Style::default()
@@ -109,6 +113,8 @@ impl UI {
                     .borders(Borders::ALL)
                     .title("Request")
                     .title_alignment(Alignment::Center)
+                    .style(style_if_state_is(StatesNames::RequestBody))
+                    .style(style_if_state_is(StatesNames::RequestHeaders))
                     .border_type(BorderType::Rounded);
                 f.render_widget(request_block, content_layout[0]);
 
@@ -126,6 +132,7 @@ impl UI {
 
                 let method = Paragraph::new("GET")
                     .style(Style::default().bg(Color::Blue).fg(Color::Black))
+                    .style(style_if_state_is(StatesNames::Url))
                     .alignment(Alignment::Center);
                 f.render_widget(method, header_layout[0]);
 
@@ -133,6 +140,7 @@ impl UI {
                     .borders(Borders::ALL)
                     .title("URL")
                     .title_alignment(Alignment::Left)
+                    .style(style_if_state_is(StatesNames::Url))
                     .border_type(BorderType::Rounded);
                 f.render_widget(url, header_layout[1]);
 
@@ -140,6 +148,7 @@ impl UI {
                     .borders(Borders::ALL)
                     .title("BODY / Headers / Options")
                     .title_alignment(Alignment::Left)
+                    .style(style_if_state_is(StatesNames::RequestBody))
                     .border_type(BorderType::Rounded);
                 f.render_widget(body, request_layout[1]);
 
@@ -148,6 +157,8 @@ impl UI {
                     .borders(Borders::ALL)
                     .title("Response")
                     .title_alignment(Alignment::Center)
+                    .style(style_if_state_is(StatesNames::ResponseBody))
+                    .style(style_if_state_is(StatesNames::ResponseHeader))
                     .border_type(BorderType::Rounded);
                 f.render_widget(response_block, content_layout[1]);
 
@@ -166,11 +177,16 @@ impl UI {
                     .borders(Borders::ALL)
                     .title("BODY / Headers / Options")
                     .title_alignment(Alignment::Left)
+                    .style(style_if_state_is(StatesNames::ResponseBody))
                     .border_type(BorderType::Rounded);
                 f.render_widget(body_response, response_layout[1]);
 
                 // LOG SECTION
-                let log_block = Block::default().borders(Borders::TOP).title("Logs");
+                let log_block = Block::default()
+                    .borders(Borders::TOP)
+                    // .style(Style::default().fg(Color::LightYellow))
+                    .style(style_if_state_is(StatesNames::Log))
+                    .title("Logs");
                 let log_text = Paragraph::new(app.log.clone())
                     .alignment(Alignment::Left)
                     .block(log_block.clone());

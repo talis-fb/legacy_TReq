@@ -3,12 +3,6 @@ use crate::states::{self, State};
 use crate::App;
 
 impl CommandsList {
-    pub fn go_to_url_section() -> CommandFunc {
-        |app: &mut App| Ok(())
-    }
-    pub fn go_to_body_section() -> CommandFunc {
-        |app: &mut App| Ok(())
-    }
     pub fn switch_request_options() -> CommandFunc {
         |app: &mut App| Ok(())
     }

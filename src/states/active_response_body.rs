@@ -2,10 +2,10 @@ use crate::events::EVENTS;
 use crate::states::{CommandFunc, CommandsList, Map, State, StatesNames};
 use std::collections::HashMap;
 
-pub struct TabActiveState {
+pub struct RequestBodyActiveState {
     pub maps: Map,
 }
-impl State for TabActiveState {
+impl State for RequestBodyActiveState {
     fn get_state_name(&self) -> StatesNames {
         StatesNames::ResponseBody
     }
