@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
-use crate::app::App;
+use crate::{
+    app::App,
+    states::{StatesNames, TabActiveState},
+};
 
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
@@ -47,6 +50,14 @@ impl UI {
     pub fn render(&mut self, app: &App) {
         self.terminal
             .draw(|f| {
+                let style_if_state_is = |state: StatesNames| {
+                    if state == app.current_state.get_state_name() {
+                        Style::default().fg(Color::LightYellow)
+                    } else {
+                        Style::default()
+                    }
+                };
+
                 let size = f.size();
 
                 let chunks = Layout::default()
@@ -77,6 +88,7 @@ impl UI {
                             .border_type(BorderType::Rounded)
                             .title("Tabs"),
                     )
+                    .style(style_if_state_is(StatesNames::TabActive))
                     .select(app.current_request)
                     .highlight_style(
                         Style::default()

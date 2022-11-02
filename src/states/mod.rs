@@ -6,8 +6,22 @@ use std::collections::HashMap;
 type Map = HashMap<EVENTS, CommandFunc>;
 type CommandFunc = fn(app: &mut App) -> Result<(), String>;
 
+#[derive(PartialEq, Eq, Clone)]
+pub enum StatesNames {
+    TabActive,
+    Default,
+    Request,
+    RequestHeader,
+    RequestBody,
+    ResponseHeader,
+    ResponseBody,
+}
+
 pub trait State {
-    fn init() -> Self;
+    fn get_state_name(&self) -> StatesNames;
+    fn init() -> Self
+    where
+        Self: Sized;
 }
 
 pub fn get_command_of_event_with_states(maps: Vec<&Map>, event: &EVENTS) -> Option<CommandFunc> {
@@ -28,12 +42,16 @@ pub struct DefaultState {
     pub maps: Map,
 }
 impl State for DefaultState {
+    fn get_state_name(&self) -> StatesNames {
+        StatesNames::Default
+    }
     fn init() -> Self {
         Self {
             maps: HashMap::from([
                 (EVENTS::Up, CommandsList::err()),
                 (EVENTS::GoToNextTab, CommandsList::go_to_next_tab()),
                 (EVENTS::GoToPreviousTab, CommandsList::go_to_previous_tab()),
+                (EVENTS::GoToTabList, CommandsList::go_to_tab_section()),
                 // (EVENTS::Left, CommandsList::add_new_tab()),
             ]),
         }
@@ -46,6 +64,9 @@ pub struct TabActiveState {
     pub maps: Map,
 }
 impl State for TabActiveState {
+    fn get_state_name(&self) -> StatesNames {
+        StatesNames::TabActive
+    }
     fn init() -> Self {
         Self {
             maps: HashMap::from([

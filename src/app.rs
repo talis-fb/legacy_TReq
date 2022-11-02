@@ -1,4 +1,5 @@
 use crate::events::EVENTS;
+use crate::states::{DefaultState, State};
 use crossterm::event::KeyCode;
 use std::collections::hash_map::HashMap;
 
@@ -15,6 +16,10 @@ pub struct App<'a> {
     pub keymap: KeyMap<'a>,
     pub log: String,
     keys_queue: String,
+
+    // States
+    default_state: Box<dyn State>,
+    pub current_state: Box<dyn State>,
 }
 
 impl App<'_> {
@@ -25,17 +30,22 @@ impl App<'_> {
             keymap,
             log: "".to_string(),
             keys_queue: "".to_string(),
+            default_state: Box::new(DefaultState::init()),
+            current_state: Box::new(DefaultState::init()),
         }
     }
 
     pub fn get_command(&mut self, key: KeyCode) -> Option<&EVENTS> {
-        let ev = self.keymap.get_command(key);
-        if let Some(EVENTS::SubCommand) = ev {
+        let event = self.keymap.get_command(key);
+
+        // Manage the 'keys_queue' based in event received
+        if let Some(EVENTS::SubCommand) = event {
             self.keys_queue.push('g');
         } else {
             self.keys_queue.clear();
         }
-        ev
+
+        event
     }
 
     pub fn get_requests(&self) -> &Vec<Request> {

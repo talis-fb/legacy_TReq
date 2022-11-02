@@ -1,4 +1,8 @@
-use crate::{app::App, request::Request};
+use crate::{
+    app::App,
+    request::Request,
+    states::{self, State},
+};
 use std::collections::HashMap;
 
 type CommandFunc = fn(app: &mut App) -> Result<(), String>;
@@ -8,6 +12,19 @@ impl CommandsList {
     pub fn do_nothing() -> CommandFunc {
         |app: &mut App| Ok(())
     }
+
+    pub fn err() -> CommandFunc {
+        |app: &mut App| Err("Ai".to_string())
+    }
+
+    // Go to Section
+    pub fn go_to_tab_section() -> CommandFunc {
+        |app: &mut App| {
+            app.current_state = Box::new(states::TabActiveState::init());
+            Ok(())
+        }
+    }
+    // -------------
 
     pub fn go_to_next_tab() -> CommandFunc {
         |app: &mut App| {
@@ -20,10 +37,6 @@ impl CommandsList {
         }
     }
 
-    pub fn err() -> CommandFunc {
-        |app: &mut App| Err("Ai".to_string())
-    }
-
     pub fn go_to_previous_tab() -> CommandFunc {
         |app: &mut App| {
             if app.current_request == 0 {
@@ -34,6 +47,7 @@ impl CommandsList {
             Ok(())
         }
     }
+
     pub fn add_new_tab() -> CommandFunc {
         |app: &mut App| {
             let req = Request::default();
