@@ -6,6 +6,9 @@ pub struct RequestBodyActiveState {
     pub maps: Map,
 }
 impl State for RequestBodyActiveState {
+    fn get_map(&self) -> &Map {
+        &self.maps
+    }
     fn get_state_name(&self) -> StatesNames {
         StatesNames::ResponseBody
     }

@@ -6,6 +6,9 @@ pub struct TabActiveState {
     pub maps: Map,
 }
 impl State for TabActiveState {
+    fn get_map(&self) -> &Map {
+        &self.maps
+    }
     fn get_state_name(&self) -> StatesNames {
         StatesNames::ResponseHeader
     }

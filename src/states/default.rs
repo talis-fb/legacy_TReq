@@ -6,6 +6,9 @@ pub struct DefaultState {
     pub maps: Map,
 }
 impl State for DefaultState {
+    fn get_map(&self) -> &Map {
+        &self.maps
+    }
     fn get_state_name(&self) -> StatesNames {
         StatesNames::Default
     }

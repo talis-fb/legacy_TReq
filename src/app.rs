@@ -18,7 +18,7 @@ pub struct App<'a> {
     keys_queue: String,
 
     // States
-    default_state: Box<dyn State>,
+    pub default_state: Box<dyn State>,
     pub current_state: Box<dyn State>,
 }
 

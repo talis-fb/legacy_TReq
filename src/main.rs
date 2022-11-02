@@ -52,9 +52,13 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
 
             let event_key = app.get_event_of_key(key.code).unwrap_or(&EVENTS::Null);
+
+            // For dont borrow error
+            let ev = event_key.clone();
+
             let command = states::get_command_of_event_with_states(
-                vec![&current_state.maps, &default_states.maps],
-                &event_key,
+                vec![app.current_state.get_map(), app.default_state.get_map()],
+                &ev,
             )
             .unwrap_or(CommandsList::do_nothing());
 

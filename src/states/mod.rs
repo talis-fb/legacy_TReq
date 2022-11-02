@@ -29,6 +29,7 @@ pub enum StatesNames {
 
 pub trait State {
     fn get_state_name(&self) -> StatesNames;
+    fn get_map(&self) -> &Map;
     fn init() -> Self
     where
         Self: Sized;
