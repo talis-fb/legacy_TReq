@@ -1,6 +1,6 @@
 use crate::app::App;
-use crate::commands::{self, CommandsList};
-use crate::events::EVENTS;
+use crate::commands::{self, Commands};
+use crate::events::Actions;
 use std::collections::HashMap;
 
 pub mod active_logs;
@@ -12,7 +12,7 @@ pub mod active_response_headers;
 pub mod active_tablist;
 pub mod default;
 
-pub type Map = HashMap<EVENTS, CommandFunc>;
+pub type Map = HashMap<Actions, CommandFunc>;
 pub type CommandFunc = fn(app: &mut App) -> Result<(), String>;
 
 #[derive(PartialEq, Eq, Clone, Debug)]
@@ -35,7 +35,7 @@ pub trait State {
         Self: Sized;
 }
 
-pub fn get_command_of_event_with_states(maps: Vec<&Map>, event: &EVENTS) -> Option<CommandFunc> {
+pub fn get_command_of_event_with_states(maps: Vec<&Map>, event: &Actions) -> Option<CommandFunc> {
     for m in maps.iter() {
         if let Some(command) = m.get(event) {
             return Some(*command);
@@ -43,7 +43,7 @@ pub fn get_command_of_event_with_states(maps: Vec<&Map>, event: &EVENTS) -> Opti
     }
     None
 }
-pub fn get_command_of_event(maps: &Map, event: &EVENTS) -> Option<CommandFunc> {
+pub fn get_command_of_event(maps: &Map, event: &Actions) -> Option<CommandFunc> {
     let command = maps.get(event)?;
     Some(*command)
 }

@@ -1,10 +1,10 @@
-use crate::commands::{CommandFunc, CommandsList};
+use crate::commands::{Command, Commands};
 use crate::request::Request;
 use crate::states::{self, State};
 use crate::App;
 
-impl CommandsList {
-    pub fn go_to_next_tab() -> CommandFunc {
+impl Commands {
+    pub fn go_to_next_tab() -> Command {
         |app: &mut App| {
             if app.current_request >= app.get_requests().len() - 1 {
                 app.current_request = 0;
@@ -15,7 +15,7 @@ impl CommandsList {
         }
     }
 
-    pub fn go_to_previous_tab() -> CommandFunc {
+    pub fn go_to_previous_tab() -> Command {
         |app: &mut App| {
             if app.current_request == 0 {
                 app.current_request = app.get_requests().len() - 1;
@@ -26,7 +26,7 @@ impl CommandsList {
         }
     }
 
-    pub fn add_new_tab() -> CommandFunc {
+    pub fn add_new_tab() -> Command {
         |app: &mut App| {
             let req = Request::default();
             app.create_request(req);
@@ -34,7 +34,7 @@ impl CommandsList {
         }
     }
 
-    pub fn rename_tab() -> CommandFunc {
+    pub fn rename_tab() -> Command {
         |app: &mut App| {
             let req = Request::default();
             app.create_request(req);
@@ -42,7 +42,7 @@ impl CommandsList {
         }
     }
 
-    pub fn delete_tab() -> CommandFunc {
+    pub fn delete_tab() -> Command {
         |app: &mut App| {
             let req = Request::default();
             app.create_request(req);
@@ -50,7 +50,7 @@ impl CommandsList {
         }
     }
 
-    pub fn go_to_tab(n: usize) -> CommandFunc {
+    pub fn go_to_tab(n: usize) -> Command {
         |app: &mut App| {
             let req = Request::default();
             app.create_request(req);

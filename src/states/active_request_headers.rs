@@ -1,5 +1,5 @@
-use crate::events::EVENTS;
-use crate::states::{CommandFunc, CommandsList, Map, State, StatesNames};
+use crate::events::Actions;
+use crate::states::{CommandFunc, Commands, Map, State, StatesNames};
 use std::collections::HashMap;
 
 pub struct TabActiveState {
@@ -15,10 +15,10 @@ impl State for TabActiveState {
     fn init() -> Self {
         Self {
             maps: HashMap::from([
-                (EVENTS::Edit, CommandsList::edit_request_body()),
-                (EVENTS::Switch, CommandsList::switch_request_options()),
-                (EVENTS::Up, CommandsList::go_to_url_section()),
-                (EVENTS::Down, CommandsList::go_to_log_section()),
+                (Actions::Edit, Commands::edit_request_body()),
+                (Actions::Switch, Commands::switch_request_options()),
+                (Actions::Up, Commands::go_to_url_section()),
+                (Actions::Down, Commands::go_to_log_section()),
             ]),
         }
     }

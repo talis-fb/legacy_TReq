@@ -1,5 +1,5 @@
-use crate::events::EVENTS;
-use crate::states::{CommandFunc, CommandsList as Commands, Map, State, StatesNames};
+use crate::events::Actions;
+use crate::states::{CommandFunc, Commands as Commands, Map, State, StatesNames};
 use std::collections::HashMap;
 
 pub struct DefaultState {
@@ -16,25 +16,25 @@ impl State for DefaultState {
         Self {
             maps: HashMap::from([
                 // General Move
-                (EVENTS::Up, Commands::go_to_tab_section()),
-                (EVENTS::Down, Commands::go_to_log_section()),
-                (EVENTS::Right, Commands::go_to_response_body_section()),
-                (EVENTS::Left, Commands::go_to_request_body_section()),
+                (Actions::Up, Commands::go_to_tab_section()),
+                (Actions::Down, Commands::go_to_log_section()),
+                (Actions::Right, Commands::go_to_response_body_section()),
+                (Actions::Left, Commands::go_to_request_body_section()),
                 // Jumps
-                (EVENTS::GoToNextTab, Commands::go_to_next_tab()),
-                (EVENTS::GoToPreviousTab, Commands::go_to_previous_tab()),
-                (EVENTS::GoToTabList, Commands::go_to_tab_section()),
+                (Actions::GoToNextTab, Commands::go_to_next_tab()),
+                (Actions::GoToPreviousTab, Commands::go_to_previous_tab()),
+                (Actions::GoToTabList, Commands::go_to_tab_section()),
                 (
-                    EVENTS::GoToRequestBody,
+                    Actions::GoToRequestBody,
                     Commands::go_to_request_body_section(),
                 ),
                 (
-                    EVENTS::GoToResponseBody,
+                    Actions::GoToResponseBody,
                     Commands::go_to_response_body_section(),
                 ),
-                (EVENTS::GoToLogs, Commands::go_to_log_section()),
-                (EVENTS::RenameTab, Commands::rename_tab()),
-                (EVENTS::DeleteTab, Commands::delete_tab()),
+                (Actions::GoToLogs, Commands::go_to_log_section()),
+                (Actions::RenameTab, Commands::rename_tab()),
+                (Actions::DeleteTab, Commands::delete_tab()),
             ]),
         }
     }

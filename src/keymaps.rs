@@ -1,11 +1,11 @@
-use crate::events::EVENTS;
+use crate::events::Actions;
 use crossterm::event::KeyCode;
 use std::collections::HashMap;
 use std::rc::Rc;
 
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub struct Command {
-    command: EVENTS,
+    command: Actions,
 
     // This is used only if the key has other commands if other keys is pressed
     // if this box is NOT None, then the command above is ignored
@@ -21,13 +21,13 @@ pub struct KeyMap<'a> {
 }
 
 impl KeyMap<'_> {
-    pub fn get_command(&mut self, key: KeyCode) -> Option<&EVENTS> {
+    pub fn get_command(&mut self, key: KeyCode) -> Option<&Actions> {
         if let Some(i) = self.current.get(&key) {
             // If there is a subcommands it ignores the command and change
             // the state of current Keymap to the inside 'subcommands'
             if let Some(subcommands) = &i.subcommands {
                 self.current = &subcommands;
-                return Some(&EVENTS::SubCommand);
+                return Some(&Actions::SubCommand);
             }
 
             // Otherwise... Return the command normaly
@@ -45,75 +45,75 @@ impl KeyMap<'_> {
             (
                 KeyCode::Enter,
                 Command {
-                    command: EVENTS::Submit,
+                    command: Actions::Submit,
                     subcommands: None,
                 },
             ),
             (
                 KeyCode::Char('e'),
                 Command {
-                    command: EVENTS::Edit,
+                    command: Actions::Edit,
                     subcommands: None,
                 },
             ),
             (
                 KeyCode::Tab,
                 Command {
-                    command: EVENTS::Switch,
+                    command: Actions::Switch,
                     subcommands: None,
                 },
             ),
             (
                 KeyCode::Char('j'),
                 Command {
-                    command: EVENTS::Down,
+                    command: Actions::Down,
                     subcommands: None,
                 },
             ),
             (
                 KeyCode::Char('k'),
                 Command {
-                    command: EVENTS::Up,
+                    command: Actions::Up,
                     subcommands: None,
                 },
             ),
             (
                 KeyCode::Char('l'),
                 Command {
-                    command: EVENTS::Right,
+                    command: Actions::Right,
                     subcommands: None,
                 },
             ),
             (
                 KeyCode::Char('h'),
                 Command {
-                    command: EVENTS::Left,
+                    command: Actions::Left,
                     subcommands: None,
                 },
             ),
             (
                 KeyCode::Char('g'),
                 Command {
-                    command: EVENTS::Null,
+                    command: Actions::Null,
                     subcommands: Some(HashMap::from([
                         (
                             KeyCode::Char('g'),
                             Command {
-                                command: EVENTS::GoToTabList,
+                                command: Actions::GoToTabList,
                                 subcommands: None,
                             },
                         ),
                         (
                             KeyCode::Char('t'),
                             Command {
-                                command: EVENTS::GoToNextTab,
+                                command: Actions::GoToNextTab,
                                 subcommands: None,
                             },
                         ),
                         (
                             KeyCode::Char('T'),
                             Command {
-                                command: EVENTS::GoToPreviousTab,
+                                command: Actions::GoToPreviousTab,
                                 subcommands: None,
                             },
                         ),
@@ -123,14 +123,14 @@ impl KeyMap<'_> {
             (
                 KeyCode::Char('G'),
                 Command {
-                    command: EVENTS::GoToLogs,
+                    command: Actions::GoToLogs,
                     subcommands: None,
                 },
             ),
             (
                 KeyCode::Char('n'),
                 Command {
-                    command: EVENTS::New,
+                    command: Actions::New,
                     subcommands: None,
                 },
             ),
@@ -150,7 +150,7 @@ mod tests {
         assert_eq!(
             keymap.get(&KeyCode::Char('k')),
             Some(&Command {
-                command: EVENTS::Up,
+                command: Actions::Up,
                 subcommands: None
             })
         );
@@ -166,7 +166,7 @@ mod tests {
 
         // Simple commands
         let up = keymap.get_command(KeyCode::Char('k'));
-        assert_eq!(up, Some(&EVENTS::Up));
+        assert_eq!(up, Some(&Actions::Up));
     }
 
     #[test]
@@ -178,12 +178,12 @@ mod tests {
         };
 
         let g = keymap.get_command(KeyCode::Char('g'));
-        assert_eq!(g, Some(&EVENTS::SubCommand));
+        assert_eq!(g, Some(&Actions::SubCommand));
         let g = keymap.get_command(KeyCode::Char('g'));
         assert_ne!(g, None);
 
         let g2 = keymap.get_command(KeyCode::Char('g'));
-        assert_eq!(g2, Some(&EVENTS::SubCommand));
+        assert_eq!(g2, Some(&Actions::SubCommand));
         let g2 = keymap.get_command(KeyCode::Char('t'));
         assert_ne!(g2, None);
     }
@@ -197,7 +197,7 @@ mod tests {
         };
 
         let g = keymap.get_command(KeyCode::Char('g'));
-        assert_eq!(g, Some(&EVENTS::SubCommand));
+        assert_eq!(g, Some(&Actions::SubCommand));
 
         // This is a undefined command
         let g = keymap.get_command(KeyCode::Char('_'));
@@ -205,6 +205,6 @@ mod tests {
 
         // It should reset to default and execute normal commands
         let up = keymap.get_command(KeyCode::Char('k'));
-        assert_eq!(up, Some(&EVENTS::Up));
+        assert_eq!(up, Some(&Actions::Up));
     }
 }

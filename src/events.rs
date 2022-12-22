@@ -3,7 +3,7 @@ use std::collections::HashMap;
 pub type EventListenerFn = fn();
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
-pub enum EVENTS {
+pub enum Actions {
     Null,
     SubCommand, // When user press a key that has subcommands from it
 

@@ -1,5 +1,5 @@
-use crate::events::EVENTS;
-use crate::states::{CommandFunc, CommandsList, Map, State, StatesNames};
+use crate::events::Actions;
+use crate::states::{CommandFunc, Commands, Map, State, StatesNames};
 use std::collections::HashMap;
 
 pub struct RequestBodyActiveState {
@@ -15,8 +15,8 @@ impl State for RequestBodyActiveState {
     fn init() -> Self {
         Self {
             maps: HashMap::from([
-                (EVENTS::Edit, CommandsList::do_nothing()),
-                (EVENTS::Switch, CommandsList::do_nothing()),
+                (Actions::Edit, Commands::do_nothing()),
+                (Actions::Switch, Commands::do_nothing()),
             ]),
         }
     }

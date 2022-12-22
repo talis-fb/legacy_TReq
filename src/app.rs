@@ -1,4 +1,4 @@
-use crate::events::EVENTS;
+use crate::events::Actions;
 use crate::states::{default::DefaultState, State};
 use crossterm::event::KeyCode;
 use std::collections::hash_map::HashMap;
@@ -61,17 +61,20 @@ impl App<'_> {
     pub fn edit_input_mode(&mut self, key: KeyCode) {
         match key {
             KeyCode::Enter => {
-                let cl = self.input_buffer.on_close;
-                let s = self.input_buffer.buffer.clone();
-                cl(self, s);
+                let callback = self.input_buffer.on_close;
+                let content = self.input_buffer.buffer.clone();
+                callback(self, content);
+
+                // Reset Buffer
                 self.input_buffer.buffer = String::new();
+
+                // Come back to normal mode
                 self.mode = InputMode::Normal;
             }
             KeyCode::Backspace => {
                 self.input_buffer.pop_char();
             }
             KeyCode::Char(i) => {
-                self.append_keys_queue(i);
                 self.input_buffer.append_char(i);
             }
             KeyCode::Esc => {
@@ -82,11 +85,11 @@ impl App<'_> {
     }
     // ----------
 
-    pub fn get_event_of_key(&mut self, key: KeyCode) -> Option<&EVENTS> {
+    pub fn get_event_of_key(&mut self, key: KeyCode) -> Option<&Actions> {
         let event = self.keymap.get_command(key);
 
         // Manage the 'keys_queue' based in event received
-        if let Some(EVENTS::SubCommand) = event {
+        if let Some(Actions::SubCommand) = event {
             self.keys_queue.push('g');
         } else {
             self.keys_queue.clear();

@@ -1,16 +1,18 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 #![allow(unused_imports)]
-use commands::CommandsList;
+use commands::Commands;
 use crossterm::event::{self, Event, KeyCode};
-use events::EVENTS;
+use events::Actions;
 use states::{default::DefaultState, State};
 use std::{error::Error, io};
 
 mod ui;
+
 use ui::UI;
 
 mod app;
+
 use app::{App, InputMode};
 
 mod events;
@@ -40,10 +42,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     app.create_request(Request::default());
 
     // Init UI
-    let mut app_ui = UI::init();
+    let mut view = UI::init();
 
     loop {
-        app_ui.render(&app);
+        view.render(&app);
 
         if let Event::Key(key) = event::read()? {
             if let InputMode::Insert = app.get_mode() {
@@ -57,14 +59,14 @@ fn main() -> Result<(), Box<dyn Error>> {
 
             let event_key = app
                 .get_event_of_key(key.code)
-                .unwrap_or(&EVENTS::Null)
+                .unwrap_or(&Actions::Null)
                 .clone();
 
             let command = states::get_command_of_event_with_states(
                 vec![app.current_state.get_map(), app.default_state.get_map()],
                 &event_key,
             )
-            .unwrap_or(CommandsList::do_nothing());
+            .unwrap_or(Commands::do_nothing());
 
             let command_result = command(&mut app);
             if let Err(e) = command_result {
@@ -73,7 +75,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    app_ui.close();
+    view.close();
 
     Ok(())
 }
