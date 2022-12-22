@@ -1,4 +1,4 @@
-use crate::events::Actions;
+use crate::base::actions::Actions;
 use crate::states::{default::DefaultState, State};
 use crossterm::event::KeyCode;
 use std::collections::hash_map::HashMap;
@@ -6,10 +6,10 @@ use std::collections::hash_map::HashMap;
 use tui::layout::Rect;
 use tui::widgets::Widget;
 
-use crate::keymaps::KeyMap;
-use crate::request::{Request, METHODS};
+use crate::input::keymaps::KeyMap;
+use crate::base::web::request::{Request, METHODS};
 
-use crate::input::InputBuffer;
+use crate::input::input::InputKeyboardBuffer;
 
 #[derive(Clone)]
 pub enum InputMode {
@@ -25,7 +25,7 @@ pub struct App<'a> {
     pub log: String,
     keys_queue: String,
     mode: InputMode,
-    input_buffer: InputBuffer,
+    input_buffer: InputKeyboardBuffer,
 
     // States
     pub default_state: Box<dyn State>,
@@ -43,7 +43,7 @@ impl App<'_> {
             default_state: Box::new(DefaultState::init()),
             current_state: Box::new(DefaultState::init()),
             mode: InputMode::Normal,
-            input_buffer: InputBuffer::init(),
+            input_buffer: InputKeyboardBuffer::init(),
         }
     }
 
@@ -94,7 +94,6 @@ impl App<'_> {
         } else {
             self.keys_queue.clear();
         }
-
         event
     }
 

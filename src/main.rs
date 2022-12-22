@@ -3,30 +3,24 @@
 #![allow(unused_imports)]
 use commands::Commands;
 use crossterm::event::{self, Event, KeyCode};
-use events::Actions;
+use base::actions::Actions;
 use states::{default::DefaultState, State};
 use std::{error::Error, io};
 
-mod ui;
-
-use ui::UI;
-
+// mod 
 mod app;
-
-use app::{App, InputMode};
-
-mod events;
-mod request;
-use request::Request;
-
-mod keymaps;
-use keymaps::KeyMap;
-
-mod commands;
-
-mod states;
+use app::states;
+use app::app::{App, InputMode};
 
 mod input;
+use input::keymaps::KeyMap;
+
+mod base;
+use base::{commands, actions};
+use base::web::request::Request;
+
+mod view;
+use view::ui::UI;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // setup commands keys

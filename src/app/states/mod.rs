@@ -1,6 +1,6 @@
-use crate::app::App;
+use crate::app::app::App;
 use crate::commands::{self, Commands};
-use crate::events::Actions;
+use crate::actions::Actions;
 use std::collections::HashMap;
 
 pub mod active_logs;

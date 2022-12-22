@@ -1,16 +1,16 @@
-use crate::events::Actions;
+use crate::actions::Actions;
 use crate::states::{CommandFunc, Commands, Map, State, StatesNames};
 use std::collections::HashMap;
 
-pub struct RequestBodyActiveState {
+pub struct TabActiveState {
     pub maps: Map,
 }
-impl State for RequestBodyActiveState {
+impl State for TabActiveState {
     fn get_map(&self) -> &Map {
         &self.maps
     }
     fn get_state_name(&self) -> StatesNames {
-        StatesNames::ResponseBody
+        StatesNames::ResponseHeader
     }
     fn init() -> Self {
         Self {

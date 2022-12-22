@@ -1,4 +1,4 @@
-use crate::events::Actions;
+use crate::actions::Actions;
 use crate::states::{CommandFunc, Commands as Commands, Map, State, StatesNames};
 use std::collections::HashMap;
 

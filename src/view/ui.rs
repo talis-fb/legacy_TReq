@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    app::{App, InputMode},
+    app::app::{App, InputMode},
     states::{active_tablist::TabActiveState, StatesNames},
 };
 

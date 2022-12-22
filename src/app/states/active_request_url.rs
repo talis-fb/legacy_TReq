@@ -1,4 +1,4 @@
-use crate::events::Actions;
+use crate::actions::Actions;
 use crate::states::{CommandFunc, Commands, Map, State, StatesNames};
 use std::collections::HashMap;
 
@@ -10,15 +10,16 @@ impl State for TabActiveState {
         &self.maps
     }
     fn get_state_name(&self) -> StatesNames {
-        StatesNames::Log
+        StatesNames::Url
     }
     fn init() -> Self {
         Self {
             maps: HashMap::from([
-                (Actions::Edit, Commands::do_nothing()),
-                (Actions::Switch, Commands::do_nothing()),
-                (Actions::Up, Commands::go_to_request_body_section()),
-                (Actions::Down, Commands::do_nothing()),
+                (Actions::Edit, Commands::edit_request_url()),
+                (Actions::Switch, Commands::go_to_next_tab()),
+                (Actions::New, Commands::add_new_tab()),
+                (Actions::Up, Commands::go_to_tab_section()),
+                (Actions::Down, Commands::go_to_request_body_section()),
             ]),
         }
     }

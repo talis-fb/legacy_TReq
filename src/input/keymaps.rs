@@ -1,4 +1,4 @@
-use crate::events::Actions;
+use crate::base::actions::Actions;
 use crossterm::event::KeyCode;
 use std::collections::HashMap;
 use std::rc::Rc;

@@ -1,13 +1,13 @@
-use crate::app::App;
+use crate::app::app::App;
 
 #[derive(Clone)]
-pub struct InputBuffer {
+pub struct InputKeyboardBuffer {
     pub buffer: String,
     pub on_close: fn(&mut App, String),
 }
-impl InputBuffer {
+impl InputKeyboardBuffer {
     pub fn init() -> Self {
-        InputBuffer {
+        InputKeyboardBuffer {
             buffer: "".to_string(),
             on_close: |app: &mut App, s: String| {},
         }
