@@ -6,8 +6,8 @@ use std::collections::hash_map::HashMap;
 use tui::layout::Rect;
 use tui::widgets::Widget;
 
-use crate::input::keymaps::KeyMap;
 use crate::base::web::request::{Request, METHODS};
+use crate::input::listener::KeyboardListerner;
 
 use crate::input::input::InputKeyboardBuffer;
 
@@ -21,7 +21,7 @@ pub enum InputMode {
 pub struct App<'a> {
     request_history: Vec<Request>,
     pub current_request: usize,
-    pub keymap: KeyMap<'a>,
+    pub keymap: KeyboardListerner<'a>,
     pub log: String,
     keys_queue: String,
     mode: InputMode,
@@ -33,7 +33,7 @@ pub struct App<'a> {
 }
 
 impl App<'_> {
-    pub fn init(keymap: KeyMap) -> App {
+    pub fn init(keymap: KeyboardListerner) -> App {
         App {
             request_history: vec![],
             current_request: 0,

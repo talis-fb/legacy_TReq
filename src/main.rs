@@ -1,38 +1,38 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 #![allow(unused_imports)]
+use base::actions::Actions;
 use commands::Commands;
 use crossterm::event::{self, Event, KeyCode};
-use base::actions::Actions;
 use states::{default::DefaultState, State};
 use std::{error::Error, io};
 
-// mod 
+// mod
 mod app;
-use app::states;
 use app::app::{App, InputMode};
+use app::states;
 
 mod input;
-use input::keymaps::KeyMap;
+use input::keymaps::default_keymap_factory;
+use input::listener::KeyboardListerner;
 
 mod base;
-use base::{commands, actions};
 use base::web::request::Request;
+use base::{actions, commands};
 
 mod view;
 use view::ui::UI;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // setup commands keys
-    let commands = KeyMap::default_commandmap();
-    let keymap = KeyMap {
+    let commands = default_keymap_factory();
+    let keymap = KeyboardListerner {
         default: &commands,
         current: &commands,
     };
 
-    // Init app
+    // Init app -> start with a empty request
     let mut app = App::init(keymap);
-    // Start with a empty request
     app.create_request(Request::default());
 
     // Init UI
