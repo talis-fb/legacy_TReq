@@ -1,25 +1,8 @@
-use crate::{
-    app::app::App,
-    base::web::request::Request,
-    states::{self, State},
-};
-use std::collections::HashMap;
+use crate::app::app::App;
 
 pub type Command = fn(app: &mut App) -> Result<(), String>;
 
-mod jumps;
-mod logs;
-mod request;
-mod response;
-mod tabs;
+mod commands;
+pub struct Commands;
 
-pub struct Commands {}
-impl Commands {
-    pub fn do_nothing() -> Command {
-        |app: &mut App| Ok(())
-    }
-
-    pub fn err() -> Command {
-        |app: &mut App| Err("Ai".to_string())
-    }
-}
+pub mod handler;

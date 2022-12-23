@@ -1,5 +1,5 @@
 use crate::commands::{Command, Commands};
-use crate::states::{self, State};
+use crate::states::{self, State, States};
 use crate::App;
 
 impl Commands {
@@ -18,7 +18,7 @@ impl Commands {
     }
     pub fn edit_request_headers() -> Command {
         |app: &mut App| {
-            app.current_state = Box::new(states::active_tablist::TabActiveState::init());
+            app.state_manager.set_state(States::TabActiveState::init());
             Ok(())
         }
     }

@@ -1,16 +1,16 @@
 use crate::actions::Actions;
-use crate::states::{CommandFunc, Commands, Map, State, StatesNames};
+use crate::states::{Commands, CommandsMap, State, StatesNames};
 use std::collections::HashMap;
 
-pub struct TabActiveState {
-    pub maps: Map,
+pub struct ResponseHeadersState {
+    pub maps: CommandsMap,
 }
-impl State for TabActiveState {
-    fn get_map(&self) -> &Map {
-        &self.maps
-    }
+impl State for ResponseHeadersState {
     fn get_state_name(&self) -> StatesNames {
         StatesNames::ResponseHeader
+    }
+    fn get_map(&self) -> &CommandsMap {
+        &self.maps
     }
     fn init() -> Self {
         Self {

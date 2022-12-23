@@ -2,6 +2,8 @@ use std::collections::HashMap;
 
 pub type EventListenerFn = fn();
 
+pub mod manager;
+
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub enum Actions {
     Null,

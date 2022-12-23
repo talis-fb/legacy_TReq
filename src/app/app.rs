@@ -1,4 +1,5 @@
-use crate::base::actions::Actions;
+use crate::base::actions::{manager::ActionsManager, Actions};
+use crate::base::commands::{handler::CommandHandler, Command, Commands};
 use crate::states::{default::DefaultState, State};
 use crossterm::event::KeyCode;
 use std::collections::hash_map::HashMap;
@@ -11,16 +12,19 @@ use crate::input::listener::KeyboardListerner;
 
 use crate::input::input::InputKeyboardBuffer;
 
+use super::states::empty::EmptyState;
+use super::states::manager::StateManager;
+
 #[derive(Clone)]
 pub enum InputMode {
     Normal,
     Insert,
 }
 
-// #[derive(Default)]
 pub struct App<'a> {
-    request_history: Vec<Request>,
     pub current_request: usize,
+    request_history: Vec<Request>,
+
     pub keymap: KeyboardListerner<'a>,
     pub log: String,
     keys_queue: String,
@@ -28,22 +32,41 @@ pub struct App<'a> {
     input_buffer: InputKeyboardBuffer,
 
     // States
-    pub default_state: Box<dyn State>,
-    pub current_state: Box<dyn State>,
+    pub state_manager: StateManager,
+
+    // Actions
+    pub action_manager: ActionsManager,
+
+    // Commands
+    pub command_handler: CommandHandler,
 }
 
-impl App<'_> {
-    pub fn init(keymap: KeyboardListerner) -> App {
-        App {
-            request_history: vec![],
+impl<'a> App<'a> {
+    pub fn init(
+        keymap: KeyboardListerner<'a>,
+        state_manager: StateManager,
+        action_manager: ActionsManager,
+        command_handler: CommandHandler
+    ) -> Self {
+        // let state_manager = StateManager::init(DefaultState::init(), EmptyState::init());
+        // let action_manager = ActionsManager {
+        //     state_manager: &state_manager,
+        // };
+        // let command_handler = CommandHandler {};
+
+        Self {
             current_request: 0,
+            request_history: vec![],
+
             keymap,
             log: "".to_string(),
             keys_queue: "".to_string(),
-            default_state: Box::new(DefaultState::init()),
-            current_state: Box::new(DefaultState::init()),
             mode: InputMode::Normal,
             input_buffer: InputKeyboardBuffer::init(),
+
+            state_manager,
+            action_manager,
+            command_handler,
         }
     }
 

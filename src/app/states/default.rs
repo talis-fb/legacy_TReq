@@ -1,16 +1,16 @@
 use crate::actions::Actions;
-use crate::states::{CommandFunc, Commands, Map, State, StatesNames};
+use crate::states::{Commands, CommandsMap, State, StatesNames};
 use std::collections::HashMap;
 
 pub struct DefaultState {
-    pub maps: Map,
+    pub maps: CommandsMap,
 }
 impl State for DefaultState {
-    fn get_map(&self) -> &Map {
-        &self.maps
-    }
     fn get_state_name(&self) -> StatesNames {
         StatesNames::Default
+    }
+    fn get_map(&self) -> &CommandsMap {
+        &self.maps
     }
     fn init() -> Self {
         Self {

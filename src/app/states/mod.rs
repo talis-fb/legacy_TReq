@@ -1,8 +1,25 @@
 use crate::actions::Actions;
 use crate::app::app::App;
-use crate::commands::{self, Commands};
+use crate::commands::{self, Command, Commands};
 use std::collections::HashMap;
 
+// States Names
+pub mod states_names;
+pub use states_names::*;
+
+pub mod manager;
+
+pub type CommandsMap = HashMap<Actions, Command>;
+
+pub trait State {
+    fn get_map(&self) -> &CommandsMap;
+    fn get_state_name(&self) -> StatesNames;
+    fn init() -> Self
+    where
+        Self: Sized;
+}
+
+// List of all States ------------------
 pub mod active_logs;
 pub mod active_request_body;
 pub mod active_request_headers;
@@ -11,56 +28,17 @@ pub mod active_response_body;
 pub mod active_response_headers;
 pub mod active_tablist;
 pub mod default;
+pub mod empty;
 
-pub type Map = HashMap<Actions, CommandFunc>;
-pub type CommandFunc = fn(app: &mut App) -> Result<(), String>;
-
-#[derive(PartialEq, Eq, Clone, Debug)]
-pub enum StatesNames {
-    Default,
-    TabList,
-    Url,
-    RequestHeaders,
-    RequestBody,
-    ResponseHeader,
-    ResponseBody,
-    Log,
+pub mod States {
+    use super::*;
+    pub use active_logs::LogsState;
+    pub use active_request_body::RequestActiveState;
+    pub use active_request_headers::RequestHeaderActiveState;
+    pub use active_request_url::RequestUrlActiveState;
+    pub use active_response_body::ResponseBodyActiveState;
+    pub use active_response_headers::ResponseHeadersState;
+    pub use active_tablist::TabActiveState;
+    pub use default::DefaultState;
+    pub use empty::EmptyState;
 }
-
-pub trait State {
-    fn get_state_name(&self) -> StatesNames;
-    fn get_map(&self) -> &Map;
-    fn init() -> Self
-    where
-        Self: Sized;
-}
-
-pub fn get_command_of_event_with_states(maps: Vec<&Map>, event: &Actions) -> Option<CommandFunc> {
-    for m in maps.iter() {
-        if let Some(command) = m.get(event) {
-            return Some(*command);
-        }
-    }
-    None
-}
-pub fn get_command_of_event(maps: &Map, event: &Actions) -> Option<CommandFunc> {
-    let command = maps.get(event)?;
-    Some(*command)
-}
-
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//     #[test]
-//     fn should_get_commands_of_a_map() {
-//         let state = DefaultState::init();
-//         let event = EVENTS::GoToNextTab;
-//         let command = get_command_of_event(&state.maps, &event).unwrap();
-//         let op = CommandsList::go_to_next_tab();
-//         assert!(
-//             // get_command_of_event(&state.maps, &event).unwrap() as CommandFunc,
-//             CommandsList::go_to_next_tab() as CommandFunc
-//                 == CommandsList::go_to_next_tab() as CommandFunc // state.maps.get(&event).unwrap()
-//         );
-//     }
-// }
