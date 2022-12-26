@@ -49,7 +49,12 @@ impl UI {
     pub fn render(&mut self, app: &App) {
         self.terminal
             .draw(|f| {
-                let current_state = app.state_manager.as_ref().unwrap().get_state().get_state_name();
+                let current_state = app
+                    .state_manager
+                    .as_ref()
+                    .unwrap()
+                    .get_state()
+                    .get_state_name();
                 let style_if_state_is = |state: StatesNames| {
                     if state == current_state {
                         // println!("{:?}", state);

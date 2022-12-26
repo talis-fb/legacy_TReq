@@ -6,13 +6,15 @@ use app::states::manager::StateManager;
 use base::actions::manager::ActionsManager;
 use base::actions::Actions;
 use base::commands::handler::CommandHandler;
+use base::web::client::WebClient;
+use base::web::repository::reqwest::ReqwestClientRepository;
 use commands::Commands;
 use crossterm::event::{self, Event, KeyCode};
 use states::{default::DefaultState, State};
 use std::{error::Error, io};
 
-mod utils;
 mod app;
+mod utils;
 use app::app::{App, InputMode};
 use app::states;
 
@@ -28,13 +30,20 @@ use base::{actions, commands};
 mod view;
 use view::ui::UI;
 
-fn main() -> Result<(), Box<dyn Error>> {
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
     // App Dependecies
     let commands = default_keymap_factory();
-    let keymap = KeyboardListerner { default: &commands, current: &commands };
+    let keymap = KeyboardListerner {
+        default: &commands,
+        current: &commands,
+    };
     let state_manager = StateManager::init(DefaultState::init(), EmptyState::init());
     let action_manager = ActionsManager {};
     let command_handler = CommandHandler {};
+
+    // let web_client = WebClient::init(ReqwestClientRepository::default());
 
     // Init app -> start with a empty request
     let mut app = App::default();
@@ -42,6 +51,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     app.set_state_manager(state_manager);
     app.set_action_manager(action_manager);
     app.set_command_handler(command_handler);
+    // app.set_web_client(web_client);
 
     app.create_request(Request::default());
 
@@ -66,7 +76,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .unwrap_or(&Actions::Null)
                 .clone();
 
-            let command = app.get_command_of_action(action_to_exec).unwrap_or(Commands::do_nothing()).clone();
+            let command = app
+                .get_command_of_action(action_to_exec)
+                .unwrap_or(Commands::do_nothing())
+                .clone();
 
             let command_result = CommandHandler::execute(&mut app, command);
 

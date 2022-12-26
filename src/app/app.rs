@@ -1,5 +1,7 @@
 use crate::base::actions::{manager::ActionsManager, Actions};
 use crate::base::commands::{handler::CommandHandler, Command, Commands};
+use crate::base::web::client::WebClient;
+use crate::base::web::repository::HttpClientRepository;
 use crate::states::{default::DefaultState, State};
 use crossterm::event::KeyCode;
 use std::collections::hash_map::HashMap;
@@ -12,9 +14,9 @@ use crate::input::listener::KeyboardListerner;
 
 use crate::input::input::InputKeyboardBuffer;
 
-use super::states::States;
 use super::states::empty::EmptyState;
 use super::states::manager::StateManager;
+use super::states::States;
 
 #[derive(Clone)]
 pub enum InputMode {
@@ -22,7 +24,7 @@ pub enum InputMode {
     Insert,
 }
 
-pub struct App<'a> {
+pub struct App<'a > {
     pub current_request: usize,
     request_history: Vec<Request>,
 
@@ -42,6 +44,10 @@ pub struct App<'a> {
 
     // Commands
     pub command_handler: Option<CommandHandler>,
+
+
+    // Web Client
+    // pub client_web: Option<WebClient<T>>
 }
 
 impl Default for App<'_> {
@@ -58,22 +64,23 @@ impl Default for App<'_> {
             state_manager: None,
             action_manager: None,
             command_handler: None,
+            // client_web: None
         }
     }
 }
 
 impl<'a> App<'a> {
     // Builders --------
-    pub fn set_keymap(&mut self, keymap:KeyboardListerner<'a>) -> () {
+    pub fn set_keymap(&mut self, keymap: KeyboardListerner<'a>) -> () {
         self.keymap = Some(keymap)
     }
-    pub fn set_state_manager(&mut self, state_manager:StateManager) -> () {
+    pub fn set_state_manager(&mut self, state_manager: StateManager) -> () {
         self.state_manager = Some(state_manager)
     }
-    pub fn set_action_manager(&mut self, action_manager:ActionsManager) -> () {
+    pub fn set_action_manager(&mut self, action_manager: ActionsManager) -> () {
         self.action_manager = Some(action_manager)
     }
-    pub fn set_command_handler(&mut self, command_handler:CommandHandler) -> () {
+    pub fn set_command_handler(&mut self, command_handler: CommandHandler) -> () {
         self.command_handler = Some(command_handler)
     }
 
@@ -89,8 +96,17 @@ impl<'a> App<'a> {
     // Commands
     pub fn get_command_of_action(&self, action: Actions) -> Option<Command> {
         let state_manager = self.state_manager.as_ref()?;
-        self.action_manager.as_ref()?.get_command_of_action(action, &state_manager)
+        self.action_manager
+            .as_ref()?
+            .get_command_of_action(action, &state_manager)
     }
+
+
+    // Web client
+    // pub fn set_web_client(&mut self, client: impl HttpClientRepository) -> () {
+    //     self.client_web = client
+    // }
+
 
     // Input Mode ------
     pub fn get_mode(&self) -> InputMode {
