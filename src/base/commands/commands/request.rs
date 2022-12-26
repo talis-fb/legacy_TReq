@@ -18,7 +18,7 @@ impl Commands {
     }
     pub fn edit_request_headers() -> Command {
         |app: &mut App| {
-            app.state_manager.set_state(States::TabActiveState::init());
+            app.set_new_state(States::TabActiveState::init());
             Ok(())
         }
     }

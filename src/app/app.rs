@@ -12,6 +12,7 @@ use crate::input::listener::KeyboardListerner;
 
 use crate::input::input::InputKeyboardBuffer;
 
+use super::states::States;
 use super::states::empty::EmptyState;
 use super::states::manager::StateManager;
 
@@ -25,52 +26,73 @@ pub struct App<'a> {
     pub current_request: usize,
     request_history: Vec<Request>,
 
-    pub keymap: KeyboardListerner<'a>,
     pub log: String,
     keys_queue: String,
     mode: InputMode,
     input_buffer: InputKeyboardBuffer,
 
+    // KeyboardListerner
+    pub keymap: Option<KeyboardListerner<'a>>,
+
     // States
-    pub state_manager: StateManager,
+    pub state_manager: Option<StateManager>,
 
     // Actions
-    pub action_manager: ActionsManager,
+    pub action_manager: Option<ActionsManager>,
 
     // Commands
-    pub command_handler: CommandHandler,
+    pub command_handler: Option<CommandHandler>,
 }
 
-impl<'a> App<'a> {
-    pub fn init(
-        keymap: KeyboardListerner<'a>,
-        state_manager: StateManager,
-        action_manager: ActionsManager,
-        command_handler: CommandHandler
-    ) -> Self {
-        // let state_manager = StateManager::init(DefaultState::init(), EmptyState::init());
-        // let action_manager = ActionsManager {
-        //     state_manager: &state_manager,
-        // };
-        // let command_handler = CommandHandler {};
-
+impl Default for App<'_> {
+    fn default() -> Self {
         Self {
             current_request: 0,
             request_history: vec![],
-
-            keymap,
-            log: "".to_string(),
-            keys_queue: "".to_string(),
+            log: String::from(""),
+            keys_queue: String::from(""),
             mode: InputMode::Normal,
             input_buffer: InputKeyboardBuffer::init(),
 
-            state_manager,
-            action_manager,
-            command_handler,
+            keymap: None,
+            state_manager: None,
+            action_manager: None,
+            command_handler: None,
         }
     }
+}
 
-    // Input Mode
+impl<'a> App<'a> {
+    // Builders --------
+    pub fn set_keymap(&mut self, keymap:KeyboardListerner<'a>) -> () {
+        self.keymap = Some(keymap)
+    }
+    pub fn set_state_manager(&mut self, state_manager:StateManager) -> () {
+        self.state_manager = Some(state_manager)
+    }
+    pub fn set_action_manager(&mut self, action_manager:ActionsManager) -> () {
+        self.action_manager = Some(action_manager)
+    }
+    pub fn set_command_handler(&mut self, command_handler:CommandHandler) -> () {
+        self.command_handler = Some(command_handler)
+    }
+
+    // Manage States
+    pub fn set_new_state(&mut self, new_state: impl State + 'static) -> Option<()> {
+        self.state_manager.as_mut()?.set_state(new_state);
+        Some(())
+    }
+    pub fn get_state(&self, new_state: impl State + 'static) -> Option<&Box<dyn State>> {
+        Some(self.state_manager.as_ref()?.get_state())
+    }
+
+    // Commands
+    pub fn get_command_of_action(&self, action: Actions) -> Option<Command> {
+        let state_manager = self.state_manager.as_ref()?;
+        self.action_manager.as_ref()?.get_command_of_action(action, &state_manager)
+    }
+
+    // Input Mode ------
     pub fn get_mode(&self) -> InputMode {
         self.mode.clone()
     }
@@ -109,7 +131,7 @@ impl<'a> App<'a> {
     // ----------
 
     pub fn get_event_of_key(&mut self, key: KeyCode) -> Option<&Actions> {
-        let event = self.keymap.get_command(key);
+        let event = self.keymap.as_mut()?.get_command(key);
 
         // Manage the 'keys_queue' based in event received
         if let Some(Actions::SubCommand) = event {

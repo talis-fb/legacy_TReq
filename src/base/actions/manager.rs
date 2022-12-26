@@ -5,6 +5,7 @@ use crate::{
 };
 use crossterm::event::Event;
 
+#[derive(Clone)]
 pub struct ActionsManager {
     // state_manager: &'a StateManager,
 }
