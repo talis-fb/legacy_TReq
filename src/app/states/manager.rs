@@ -5,6 +5,8 @@ pub struct StateManager {
     current_state: Option<Box<dyn State>>,
     default_state: Box<dyn State>,
 
+    // Always on
+    // TODO: if some keys conflit with current_state, the global one needs to be ignored
     global_state: Box<dyn State>,
 }
 impl StateManager {
@@ -17,7 +19,9 @@ impl StateManager {
     }
 
     pub fn get_state(&self) -> &Box<dyn State> {
-        self.current_state.as_ref().map_or(&self.default_state, |s| s)
+        self.current_state
+            .as_ref()
+            .map_or(&self.default_state, |s| s)
     }
 
     pub fn set_state(&mut self, new_state: impl State + 'static) {

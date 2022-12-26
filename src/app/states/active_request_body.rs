@@ -19,6 +19,7 @@ impl State for RequestActiveState {
                 (Actions::Switch, Commands::switch_request_options()),
                 (Actions::Up, Commands::go_to_url_section()),
                 (Actions::Down, Commands::go_to_log_section()),
+                (Actions::Right, Commands::go_to_response_body_section()),
             ]),
         }
     }

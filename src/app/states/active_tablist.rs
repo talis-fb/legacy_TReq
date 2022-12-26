@@ -18,8 +18,13 @@ impl State for TabActiveState {
                 (Actions::Edit, Commands::rename_tab()),
                 (Actions::Switch, Commands::go_to_next_tab()),
                 (Actions::New, Commands::add_new_tab()),
+
                 (Actions::Up, Commands::do_nothing()),
+                (Actions::Right, Commands::go_to_response_body_section()),
+
+                (Actions::Left, Commands::go_to_url_section()),
                 (Actions::Down, Commands::go_to_url_section()),
+
             ]),
         }
     }
