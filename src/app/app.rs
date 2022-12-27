@@ -2,9 +2,12 @@ use crate::base::actions::{manager::ActionsManager, Actions};
 use crate::base::commands::{handler::CommandHandler, Command, Commands};
 use crate::base::web::client::WebClient;
 use crate::base::web::repository::HttpClientRepository;
+use crate::base::web::repository::reqwest::ReqwestClientRepository;
 use crate::states::{default::DefaultState, State};
 use crossterm::event::KeyCode;
 use std::collections::hash_map::HashMap;
+use std::sync::Arc;
+use std::thread;
 
 use tui::layout::Rect;
 use tui::widgets::Widget;
@@ -24,7 +27,7 @@ pub enum InputMode {
     Insert,
 }
 
-pub struct App<'a > {
+pub struct App<'a> {
     pub current_request: usize,
     request_history: Vec<Request>,
 
@@ -45,9 +48,8 @@ pub struct App<'a > {
     // Commands
     pub command_handler: Option<CommandHandler>,
 
-
     // Web Client
-    // pub client_web: Option<WebClient<T>>
+    pub client_web: Option<Arc<WebClient<ReqwestClientRepository>>>
 }
 
 impl Default for App<'_> {
@@ -64,7 +66,7 @@ impl Default for App<'_> {
             state_manager: None,
             action_manager: None,
             command_handler: None,
-            // client_web: None
+            client_web: None
         }
     }
 }
@@ -103,9 +105,18 @@ impl<'a> App<'a> {
 
 
     // Web client
-    // pub fn set_web_client(&mut self, client: impl HttpClientRepository) -> () {
-    //     self.client_web = client
-    // }
+    pub fn set_web_client(&mut self, client: WebClient<ReqwestClientRepository>) -> () {
+        self.client_web = Some(Arc::new(client))
+    }
+
+    pub fn submit(&self) -> () {
+        let request = self.get_current_request().clone();
+        let client = self.client_web.as_ref().unwrap().clone();
+
+        tokio::task::spawn(async move {
+            let response = client.submit(request).await;
+        });
+    }
 
 
     // Input Mode ------

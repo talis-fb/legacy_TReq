@@ -43,7 +43,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let action_manager = ActionsManager {};
     let command_handler = CommandHandler {};
 
-    // let web_client = WebClient::init(ReqwestClientRepository::default());
+    let web_client:WebClient<ReqwestClientRepository> = WebClient::init(ReqwestClientRepository::default());
 
     // Init app -> start with a empty request
     let mut app = App::default();
@@ -51,7 +51,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.set_state_manager(state_manager);
     app.set_action_manager(action_manager);
     app.set_command_handler(command_handler);
-    // app.set_web_client(web_client);
+    app.set_web_client(web_client);
 
     app.create_request(Request::default());
 

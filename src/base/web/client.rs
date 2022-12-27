@@ -4,10 +4,16 @@ use super::repository::HttpClientRepository;
 use super::request::METHODS;
 use super::{request::Request, response::Response};
 
-#[derive(Default, Clone)]
+use std::sync::mpsc::{self, Sender, Receiver};
+
+// #[derive(Default, Clone)]
 pub struct WebClient<T: HttpClientRepository> {
     http_client: T,
-    // pub draft: Option<Request>,
+
+    // sender: Sender<Request>,
+    // receiver: Receiver<Request>,
+
+    draft: Option<Request>,
     // response: Option<Response>,
 }
 
@@ -16,16 +22,23 @@ where
     T: HttpClientRepository,
 {
 
-    fn init(repository: T) -> Self {
-        Self { http_client: repository }
+    pub fn init(repository: T) -> Self {
+        // let (sender, receiver): (Sender<Request>, Receiver<Request>) = mpsc::channel();
+
+        Self { http_client: repository, draft: None }
+        // Self { http_client: repository, sender, receiver, draft: None }
         // draft: None,
         // response: None
     }
 
-    async fn submit(&self, request_to_do:Request) -> Result<Response, String> {
+    pub fn set_request(&mut self) -> () {
+
+    }
+
+    pub async fn submit(&self, request_to_do:Request) -> Result<Response, String> {
         let Request {
             url, headers, body, ..
-        } = request_to_do.clone();
+        } = request_to_do;
 
         let response = match request_to_do.method {
             METHODS::GET => self.http_client.call_get(url, headers).await,
