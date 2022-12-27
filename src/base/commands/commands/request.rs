@@ -9,9 +9,10 @@ impl Commands {
     pub fn edit_request_body() -> Command {
         |app: &mut App| {
             app.set_input_mode_with_callback(|app: &mut App, s: String| {
-                let mut req = app.get_current_request().clone();
-                req.set_url(s.clone());
-                app.set_current_request(req);
+                let data_store = app.get_data_store_mut();
+                let mut req = (*data_store.get_request()).clone();
+                req.set_url(s);
+                data_store.update_request(req);
             });
             Ok(())
         }
@@ -31,9 +32,10 @@ impl Commands {
     pub fn edit_request_url() -> Command {
         |app: &mut App| {
             app.set_input_mode_with_callback(|app: &mut App, s: String| {
-                let mut req = app.get_current_request().clone();
-                req.set_url(s.clone());
-                app.set_current_request(req);
+                let data_store = app.get_data_store_mut();
+                let mut req = (*data_store.get_request()).clone();
+                req.set_url(s);
+                data_store.update_request(req);
             });
             Ok(())
         }

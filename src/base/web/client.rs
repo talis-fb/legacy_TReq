@@ -4,38 +4,25 @@ use super::repository::HttpClientRepository;
 use super::request::METHODS;
 use super::{request::Request, response::Response};
 
-use std::sync::mpsc::{self, Sender, Receiver};
+use std::sync::mpsc::{self, Receiver, Sender};
 
-// #[derive(Default, Clone)]
 pub struct WebClient<T: HttpClientRepository> {
     http_client: T,
-
-    // sender: Sender<Request>,
-    // receiver: Receiver<Request>,
-
-    draft: Option<Request>,
-    // response: Option<Response>,
+    response: Option<Response>
 }
 
 impl<T> WebClient<T>
 where
     T: HttpClientRepository,
 {
-
     pub fn init(repository: T) -> Self {
-        // let (sender, receiver): (Sender<Request>, Receiver<Request>) = mpsc::channel();
-
-        Self { http_client: repository, draft: None }
-        // Self { http_client: repository, sender, receiver, draft: None }
-        // draft: None,
-        // response: None
+        Self {
+            http_client: repository,
+            response: None
+        }
     }
 
-    pub fn set_request(&mut self) -> () {
-
-    }
-
-    pub async fn submit(&self, request_to_do:Request) -> Result<Response, String> {
+    pub async fn submit(&self, request_to_do: Request) -> Result<Response, String> {
         let Request {
             url, headers, body, ..
         } = request_to_do;

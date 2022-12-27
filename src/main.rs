@@ -6,6 +6,7 @@ use app::states::manager::StateManager;
 use base::actions::manager::ActionsManager;
 use base::actions::Actions;
 use base::commands::handler::CommandHandler;
+use base::store::DataStore;
 use base::web::client::WebClient;
 use base::web::repository::reqwest::ReqwestClientRepository;
 use commands::Commands;
@@ -30,7 +31,6 @@ use base::{actions, commands};
 mod view;
 use view::ui::UI;
 
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     // App Dependecies
@@ -43,7 +43,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let action_manager = ActionsManager {};
     let command_handler = CommandHandler {};
 
-    let web_client:WebClient<ReqwestClientRepository> = WebClient::init(ReqwestClientRepository::default());
+    let data_store = DataStore::init(vec![]);
+
+    let web_client: WebClient<ReqwestClientRepository> =
+        WebClient::init(ReqwestClientRepository::default());
 
     // Init app -> start with a empty request
     let mut app = App::default();
@@ -52,8 +55,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.set_action_manager(action_manager);
     app.set_command_handler(command_handler);
     app.set_web_client(web_client);
+    app.set_data_store(data_store);
 
-    app.create_request(Request::default());
+    // app.create_request(Request::default());
 
     // Init UI
     let mut view = UI::init();

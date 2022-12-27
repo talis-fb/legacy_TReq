@@ -1,8 +1,8 @@
 use crate::base::actions::{manager::ActionsManager, Actions};
 use crate::base::commands::{handler::CommandHandler, Command, Commands};
 use crate::base::web::client::WebClient;
-use crate::base::web::repository::HttpClientRepository;
 use crate::base::web::repository::reqwest::ReqwestClientRepository;
+use crate::base::web::repository::HttpClientRepository;
 use crate::states::{default::DefaultState, State};
 use crossterm::event::KeyCode;
 use std::collections::hash_map::HashMap;
@@ -21,6 +21,8 @@ use super::states::empty::EmptyState;
 use super::states::manager::StateManager;
 use super::states::States;
 
+use crate::base::store::DataStore;
+
 #[derive(Clone)]
 pub enum InputMode {
     Normal,
@@ -28,13 +30,13 @@ pub enum InputMode {
 }
 
 pub struct App<'a> {
-    pub current_request: usize,
-    request_history: Vec<Request>,
-
     pub log: String,
     keys_queue: String,
     mode: InputMode,
     input_buffer: InputKeyboardBuffer,
+
+    // Datas
+    pub data_store: Option<DataStore>,
 
     // KeyboardListerner
     pub keymap: Option<KeyboardListerner<'a>>,
@@ -49,30 +51,32 @@ pub struct App<'a> {
     pub command_handler: Option<CommandHandler>,
 
     // Web Client
-    pub client_web: Option<Arc<WebClient<ReqwestClientRepository>>>
+    pub client_web: Option<Arc<WebClient<ReqwestClientRepository>>>,
 }
 
 impl Default for App<'_> {
     fn default() -> Self {
         Self {
-            current_request: 0,
-            request_history: vec![],
             log: String::from(""),
             keys_queue: String::from(""),
             mode: InputMode::Normal,
             input_buffer: InputKeyboardBuffer::init(),
 
+            data_store: None,
             keymap: None,
             state_manager: None,
             action_manager: None,
             command_handler: None,
-            client_web: None
+            client_web: None,
         }
     }
 }
 
 impl<'a> App<'a> {
     // Builders --------
+    pub fn set_data_store(&mut self, data_store:DataStore) -> () {
+        self.data_store = Some(data_store)
+    }
     pub fn set_keymap(&mut self, keymap: KeyboardListerner<'a>) -> () {
         self.keymap = Some(keymap)
     }
@@ -110,12 +114,24 @@ impl<'a> App<'a> {
     }
 
     pub fn submit(&self) -> () {
-        let request = self.get_current_request().clone();
+        let request = self.data_store.as_ref().unwrap().get_request().clone();
         let client = self.client_web.as_ref().unwrap().clone();
 
+        // let cb = self.data_store.as_ref().unwrap().set_response;
+
         tokio::task::spawn(async move {
-            let response = client.submit(request).await;
+            let response = client.submit( (*request).clone() ).await;
+            // self
         });
+    }
+
+    // Data store
+    pub fn get_data_store(&self) -> &DataStore {
+        self.data_store.as_ref().unwrap()
+    }
+
+    pub fn get_data_store_mut(&mut self) -> &mut DataStore {
+        self.data_store.as_mut().unwrap()
     }
 
 
@@ -167,22 +183,6 @@ impl<'a> App<'a> {
             self.keys_queue.clear();
         }
         event
-    }
-
-    pub fn get_requests(&self) -> &Vec<Request> {
-        &self.request_history
-    }
-
-    pub fn get_current_request(&self) -> &Request {
-        &self.request_history[self.current_request]
-    }
-
-    pub fn create_request(&mut self, req: Request) -> () {
-        self.request_history.push(req);
-    }
-
-    pub fn set_current_request(&mut self, req: Request) -> () {
-        self.request_history[self.current_request] = req;
     }
 
     pub fn set_log(&mut self, log: String) -> () {

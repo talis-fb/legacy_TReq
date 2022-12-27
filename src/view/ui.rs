@@ -84,6 +84,7 @@ impl UI {
 
                 // Tablist
                 let tabs_spans = app
+                    .get_data_store()
                     .get_requests()
                     .into_iter()
                     .map(|req| Spans::from(vec![Span::from(req.name.clone())]))
@@ -97,7 +98,7 @@ impl UI {
                             .title("Tabs"),
                     )
                     .style(style_if_state_is(StatesNames::TabList))
-                    .select(app.current_request)
+                    .select(app.get_data_store().request_ind())
                     .highlight_style(
                         Style::default()
                             .add_modifier(Modifier::BOLD)
@@ -147,7 +148,7 @@ impl UI {
                     .title_alignment(Alignment::Left)
                     .style(style_if_state_is(StatesNames::Url))
                     .border_type(BorderType::Rounded);
-                let url_text = Paragraph::new(app.get_current_request().url.clone())
+                let url_text = Paragraph::new(app.get_data_store().get_request().url.clone())
                     .alignment(Alignment::Left)
                     .block(url_block.clone());
                 // f.render_widget(url, header_layout[1]);
