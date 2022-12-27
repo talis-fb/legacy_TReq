@@ -21,7 +21,7 @@ impl StateManager {
     pub fn get_state(&self) -> &Box<dyn State> {
         self.current_state
             .as_ref()
-            .map_or(&self.default_state, |s| s)
+            .unwrap_or(&self.default_state)
     }
 
     pub fn set_state(&mut self, new_state: impl State + 'static) {
@@ -35,12 +35,5 @@ impl StateManager {
     pub fn get_command_map(&self) -> CommandsMap {
         let main_state = self.get_state();
         main_state.get_map().clone()
-
-        // let global_state = self.global_state.get_map().clone();
-
-        // global_state.extend(main_state.into_iter().filter(|(k, v)| { !global_state.contains_key(k) }));
-        // let aa = main_state.into_iter().map(|f| {
-        // })
-        // main_state.extend(global_state.iter())
     }
 }

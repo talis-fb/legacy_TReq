@@ -6,7 +6,7 @@ use super::web::{request::Request, response::Response};
 pub struct DataStore {
     request_history: Vec<Request>,
 
-    index_current_request: usize,
+    request_index: usize,
     current_request: Arc<Request>,
     last_response: Arc<Response>,
 }
@@ -16,17 +16,15 @@ impl DataStore {
         let mut requests_to_use = requests.clone();
 
         if requests.len() == 0 {
-            println!("DISPEROIU");
             requests_to_use = vec![Request::default()];
         }
 
         let current_request = Arc::new(requests_to_use[0].clone());
         let last_response = Arc::new(Response::default());
-        println!("DISPEROIU 2");
 
         Self {
             request_history: requests_to_use,
-            index_current_request: 0,
+            request_index: 0,
             current_request,
             last_response
         }
@@ -40,7 +38,10 @@ impl DataStore {
     }
 
     pub fn request_ind(&self) -> usize {
-        self.index_current_request
+        self.request_index
+    }
+    pub fn get_total_requests(&self) -> usize {
+        self.request_history.len()
     }
 
     pub fn update_request(&mut self, request:Request) -> () {
@@ -49,27 +50,37 @@ impl DataStore {
     }
 
     pub fn save_request(&mut self, request:Request) -> () {
-        self.request_history[ self.index_current_request ] = (*self.current_request).clone();
+        self.request_history[ self.request_index ] = (*self.current_request).clone();
     }
 
     pub fn goto_request(&mut self, index:usize) -> () {
-        self.index_current_request = index;
+        self.request_index = index;
         let req = self.request_history[ index ].clone();
         self.current_request = Arc::new(req);
     }
 
     pub fn goto_next_request(&mut self) -> () {
-        self.index_current_request += 1;
-        self.goto_request( self.index_current_request )
+        let where_to_go = if self.request_index == self.get_total_requests() - 1  {
+            0
+        } else {
+            self.request_index + 1
+        };
+
+        self.goto_request( where_to_go )
     }
     pub fn goto_prev_request(&mut self) -> () {
-        self.index_current_request -= 1;
-        self.goto_request( self.index_current_request )
+        let where_to_go = if self.request_index == 0 {
+            self.get_total_requests() - 1
+        } else {
+            self.request_index - 1
+        };
+
+        self.goto_request(where_to_go)
     }
 
     pub fn add_request(&mut self, req: Request) -> usize {
         self.request_history.push(req);
-        let ind = self.request_history.len() - 1;
+        let ind = self.get_total_requests() - 1;
         self.goto_request(ind);
         ind
     }
@@ -171,5 +182,46 @@ mod tests {
 
         data_store.goto_request(0);
         assert_eq!(data_store.get_request().name, "New name 1".to_string());
+    }
+
+    #[test]
+    fn should_next_and_prev_request_return() {
+        let mut first = Request::default();
+        first.set_name("First");
+
+        let mut middle = Request::default();
+        middle.set_name("In Middle");
+
+        let mut last = Request::default();
+        last.set_name("Last");
+
+        let mut data_store = DataStore::init(vec![
+            first,
+            middle,
+            last
+        ]);
+
+        assert_eq!(data_store.get_request().name, "First".to_string());
+
+        data_store.goto_next_request();
+        assert_eq!(data_store.get_request().name, "In Middle".to_string());
+
+        data_store.goto_next_request();
+        assert_eq!(data_store.get_request().name, "Last".to_string());
+
+        data_store.goto_next_request();
+        assert_eq!(data_store.get_request().name, "First".to_string());
+
+        // Prev
+        assert_eq!(data_store.get_request().name, "First".to_string());
+
+        data_store.goto_prev_request();
+        assert_eq!(data_store.get_request().name, "Last".to_string());
+
+        data_store.goto_prev_request();
+        assert_eq!(data_store.get_request().name, "In Middle".to_string());
+
+        data_store.goto_prev_request();
+        assert_eq!(data_store.get_request().name, "First".to_string());
     }
 }

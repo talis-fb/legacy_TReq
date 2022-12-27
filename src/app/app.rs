@@ -89,14 +89,21 @@ impl<'a> App<'a> {
     pub fn set_command_handler(&mut self, command_handler: CommandHandler) -> () {
         self.command_handler = Some(command_handler)
     }
+    pub fn set_input_mode_with_callback(&mut self, callback: fn(&mut App, String)) {
+        self.input_buffer.set_callback(callback);
+        self.mode = InputMode::Insert;
+    }
+    pub fn set_web_client(&mut self, client: WebClient<ReqwestClientRepository>) -> () {
+        self.client_web = Some(Arc::new(client))
+    }
 
     // Manage States
+    pub fn get_state(&self) -> Option<&Box<dyn State>> {
+        Some(self.state_manager.as_ref()?.get_state())
+    }
     pub fn set_new_state(&mut self, new_state: impl State + 'static) -> Option<()> {
         self.state_manager.as_mut()?.set_state(new_state);
         Some(())
-    }
-    pub fn get_state(&self, new_state: impl State + 'static) -> Option<&Box<dyn State>> {
-        Some(self.state_manager.as_ref()?.get_state())
     }
 
     // Commands
@@ -109,10 +116,6 @@ impl<'a> App<'a> {
 
 
     // Web client
-    pub fn set_web_client(&mut self, client: WebClient<ReqwestClientRepository>) -> () {
-        self.client_web = Some(Arc::new(client))
-    }
-
     pub fn submit(&self) -> () {
         let request = self.data_store.as_ref().unwrap().get_request().clone();
         let client = self.client_web.as_ref().unwrap().clone();
@@ -138,10 +141,6 @@ impl<'a> App<'a> {
     // Input Mode ------
     pub fn get_mode(&self) -> InputMode {
         self.mode.clone()
-    }
-    pub fn set_input_mode_with_callback(&mut self, callback: fn(&mut App, String)) {
-        self.input_buffer.set_callback(callback);
-        self.mode = InputMode::Insert;
     }
     pub fn get_text_input_mode(&self) -> String {
         self.input_buffer.buffer.clone()
