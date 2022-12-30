@@ -63,7 +63,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut view = UI::init();
 
     loop {
-        view.render(&app);
+        view.render(app.data_store.as_ref().unwrap().clone());
 
         if let Event::Key(key) = event::read()? {
             if let InputMode::Insert = app.get_mode() {

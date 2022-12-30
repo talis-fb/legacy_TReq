@@ -1,8 +1,8 @@
-use std::collections::HashMap;
+use std::{collections::HashMap};
 
 use crate::{
     app::app::{App, InputMode},
-    states::{active_tablist::TabActiveState, StatesNames},
+    states::{active_tablist::TabActiveState, StatesNames}, base::store::DataStore,
 };
 
 use crossterm::{
@@ -20,8 +20,14 @@ use tui::{
     Frame, Terminal,
 };
 
+use std::sync::mpsc::{
+    self,
+    Sender, Receiver
+};
+
 pub struct UI {
     terminal: Terminal<CrosstermBackend<std::io::Stdout>>,
+    // pub renderer: Sender<DataStore>
 }
 
 impl UI {
@@ -32,7 +38,16 @@ impl UI {
         let stdout = io::stdout();
         let backend = CrosstermBackend::new(stdout);
         let terminal = Terminal::new(backend).unwrap();
-        UI { terminal }
+
+        // let (tx, rx): (Sender<DataStore>, Receiver<DataStore>) = mpsc::channel(32);
+        // tokio::task::spawn(async move {
+        //     while let Ok(message) = rx.recv() {
+        //         println!("GOT = {:?}", message.get_request());
+        //     }
+        // });
+
+
+        UI { terminal, /* renderer: tx.clone()  */}
     }
 
     pub fn close(&mut self) -> () {
@@ -46,18 +61,13 @@ impl UI {
         self.terminal.show_cursor().unwrap();
     }
 
-    pub fn render(&mut self, app: &App) {
+    pub fn render(&mut self, data_store: &DataStore) {
+        // let data_store = app.get_data_store();
         self.terminal
             .draw(|f| {
-                let current_state = app
-                    .state_manager
-                    .as_ref()
-                    .unwrap()
-                    .get_state()
-                    .get_state_name();
+                let current_state = data_store.current_state.clone();
                 let style_if_state_is = |state: StatesNames| {
                     if state == current_state {
-                        // println!("{:?}", state);
                         Style::default().fg(Color::LightYellow)
                     } else {
                         Style::default()
@@ -83,8 +93,7 @@ impl UI {
                     .split(f.size());
 
                 // Tablist
-                let tabs_spans = app
-                    .get_data_store()
+                let tabs_spans = data_store
                     .get_requests()
                     .into_iter()
                     .map(|req| Spans::from(vec![Span::from(req.name.clone())]))
@@ -98,7 +107,7 @@ impl UI {
                             .title("Tabs"),
                     )
                     .style(style_if_state_is(StatesNames::TabList))
-                    .select(app.get_data_store().request_ind())
+                    .select(data_store.request_ind())
                     .highlight_style(
                         Style::default()
                             .add_modifier(Modifier::BOLD)
@@ -148,7 +157,7 @@ impl UI {
                     .title_alignment(Alignment::Left)
                     .style(style_if_state_is(StatesNames::Url))
                     .border_type(BorderType::Rounded);
-                let url_text = Paragraph::new(app.get_data_store().get_request().url.clone())
+                let url_text = Paragraph::new(data_store.get_request().url.clone())
                     .alignment(Alignment::Left)
                     .block(url_block.clone());
                 // f.render_widget(url, header_layout[1]);
@@ -192,7 +201,7 @@ impl UI {
                     .border_type(BorderType::Rounded);
                 // f.render_widget(body_response, response_layout[1]);
 
-                let response = app.data_store.as_ref().unwrap().get_response().clone();
+                let response = data_store.get_response().clone();
                 let response_data = response.lock().unwrap().clone();
                 let response_text = Paragraph::new(response_data.body)
                     .alignment(Alignment::Left)
@@ -205,12 +214,12 @@ impl UI {
                     // .style(Style::default().fg(Color::LightYellow))
                     .style(style_if_state_is(StatesNames::Log))
                     .title("Logs");
-                let log_text = Paragraph::new(app.log.clone())
+                let log_text = Paragraph::new(data_store.logs.clone())
                     .alignment(Alignment::Left)
                     .block(log_block.clone());
 
                 // Command queue
-                let log_command_queue = Paragraph::new(app.get_keys_queue().clone())
+                let log_command_queue = Paragraph::new(data_store.get_keys_queue().clone())
                     .alignment(Alignment::Right)
                     .block(log_block.clone());
 
@@ -218,11 +227,11 @@ impl UI {
                 f.render_widget(log_command_queue, chunks[2]);
 
                 // INPUT MODE
-                if let InputMode::Insert = app.get_mode() {
+                if let InputMode::Insert = data_store.get_mode() {
                     let popup_block = Block::default()
                         .title("[ESC] - QUIT     [ENTER] - FINISH")
                         .borders(Borders::ALL);
-                    let popup_text = Paragraph::new(app.get_text_input_mode())
+                    let popup_text = Paragraph::new(data_store.get_text_input_mode())
                         .alignment(Alignment::Left)
                         .block(popup_block.clone());
                     let area = centered_rect(60, 10, size);

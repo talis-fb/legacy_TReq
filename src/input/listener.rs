@@ -6,6 +6,13 @@ use std::rc::Rc;
 
 use crate::input::keymaps::default_keymap_factory;
 
+
+//
+// TODO:
+// Currently, the code depends on 'KeyCode' interface of 'crossterm' library. 
+// But, it should depends on a abstration. Like the repository used in WebClient.
+//
+
 #[derive(Clone)]
 pub struct KeyboardListerner<'a> {
     pub default: &'a KeyMap,
