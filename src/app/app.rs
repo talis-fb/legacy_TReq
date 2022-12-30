@@ -3,6 +3,7 @@ use crate::base::commands::{handler::CommandHandler, Command, Commands};
 use crate::base::web::client::WebClient;
 use crate::base::web::repository::reqwest::ReqwestClientRepository;
 use crate::base::web::repository::HttpClientRepository;
+use crate::base::web::response::Response;
 use crate::states::{default::DefaultState, State};
 use crossterm::event::KeyCode;
 use std::collections::hash_map::HashMap;
@@ -73,8 +74,8 @@ impl Default for App<'_> {
 }
 
 impl<'a> App<'a> {
-    // Builders --------
-    pub fn set_data_store(&mut self, data_store:DataStore) -> () {
+    // Builders -------- ---------------------
+    pub fn set_data_store(&mut self, data_store: DataStore) -> () {
         self.data_store = Some(data_store)
     }
     pub fn set_keymap(&mut self, keymap: KeyboardListerner<'a>) -> () {
@@ -97,7 +98,20 @@ impl<'a> App<'a> {
         self.client_web = Some(Arc::new(client))
     }
 
-    // Manage States
+    // KeyboardListerner ------------------------
+    pub fn get_event_of_key(&mut self, key: KeyCode) -> Option<&Actions> {
+        let event = self.keymap.as_mut()?.get_command(key);
+
+        // Manage the 'keys_queue' based in event received
+        if let Some(Actions::SubCommand) = event {
+            self.keys_queue.push('g');
+        } else {
+            self.keys_queue.clear();
+        }
+        event
+    }
+
+    // Manage States ---------------------------
     pub fn get_state(&self) -> Option<&Box<dyn State>> {
         Some(self.state_manager.as_ref()?.get_state())
     }
@@ -106,7 +120,7 @@ impl<'a> App<'a> {
         Some(())
     }
 
-    // Commands
+    // Commands ---------------------
     pub fn get_command_of_action(&self, action: Actions) -> Option<Command> {
         let state_manager = self.state_manager.as_ref()?;
         self.action_manager
@@ -114,21 +128,20 @@ impl<'a> App<'a> {
             .get_command_of_action(action, &state_manager)
     }
 
-
-    // Web client
-    pub fn submit(&self) -> () {
-        let request = self.data_store.as_ref().unwrap().get_request().clone();
+    // Web client ---------------------
+    pub fn dispatch_submit(&self) -> () {
         let client = self.client_web.as_ref().unwrap().clone();
-
-        // let cb = self.data_store.as_ref().unwrap().set_response;
+        let request = self.data_store.as_ref().unwrap().get_request().clone();
+        let response_data_store = self.data_store.as_ref().unwrap().get_response().clone();
 
         tokio::task::spawn(async move {
-            let response = client.submit( (*request).clone() ).await;
-            // self
+            let new_response = client.submit((*request).clone()).await;
+            let mut data = response_data_store.lock().unwrap();
+            *data = new_response.unwrap();
         });
     }
 
-    // Data store
+    // Data store ---------------------
     pub fn get_data_store(&self) -> &DataStore {
         self.data_store.as_ref().unwrap()
     }
@@ -136,7 +149,6 @@ impl<'a> App<'a> {
     pub fn get_data_store_mut(&mut self) -> &mut DataStore {
         self.data_store.as_mut().unwrap()
     }
-
 
     // Input Mode ------
     pub fn get_mode(&self) -> InputMode {
@@ -172,31 +184,11 @@ impl<'a> App<'a> {
     }
     // ----------
 
-    pub fn get_event_of_key(&mut self, key: KeyCode) -> Option<&Actions> {
-        let event = self.keymap.as_mut()?.get_command(key);
-
-        // Manage the 'keys_queue' based in event received
-        if let Some(Actions::SubCommand) = event {
-            self.keys_queue.push('g');
-        } else {
-            self.keys_queue.clear();
-        }
-        event
-    }
-
     pub fn set_log(&mut self, log: String) -> () {
         self.log = log;
     }
 
     pub fn get_keys_queue(&self) -> &String {
         &self.keys_queue
-    }
-
-    pub fn append_keys_queue(&mut self, ch: char) -> () {
-        self.keys_queue.push(ch)
-    }
-
-    pub fn clear_keys_queue(&mut self) -> () {
-        self.keys_queue = "".to_string()
     }
 }

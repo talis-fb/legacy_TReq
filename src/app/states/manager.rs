@@ -19,9 +19,7 @@ impl StateManager {
     }
 
     pub fn get_state(&self) -> &Box<dyn State> {
-        self.current_state
-            .as_ref()
-            .unwrap_or(&self.default_state)
+        self.current_state.as_ref().unwrap_or(&self.default_state)
     }
 
     pub fn set_state(&mut self, new_state: impl State + 'static) {

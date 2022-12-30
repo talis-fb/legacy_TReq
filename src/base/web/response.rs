@@ -1,4 +1,4 @@
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct Response {
     pub status: i32,
     pub response_time: i32,

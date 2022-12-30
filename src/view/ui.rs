@@ -190,7 +190,14 @@ impl UI {
                     .title_alignment(Alignment::Left)
                     .style(style_if_state_is(StatesNames::ResponseBody))
                     .border_type(BorderType::Rounded);
-                f.render_widget(body_response, response_layout[1]);
+                // f.render_widget(body_response, response_layout[1]);
+
+                let response = app.data_store.as_ref().unwrap().get_response().clone();
+                let response_data = response.lock().unwrap().clone();
+                let response_text = Paragraph::new(response_data.body)
+                    .alignment(Alignment::Left)
+                    .block(body_response.clone());
+                f.render_widget(response_text, response_layout[1]);
 
                 // LOG SECTION
                 let log_block = Block::default()

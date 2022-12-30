@@ -5,7 +5,7 @@ use crate::App;
 impl Commands {
     pub fn submit() -> Command {
         |app: &mut App| {
-            app.set_new_state(States::TabActiveState::init());
+            app.dispatch_submit();
             Ok(())
         }
     }

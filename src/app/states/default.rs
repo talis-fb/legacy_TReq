@@ -35,6 +35,7 @@ impl State for DefaultState {
                 (Actions::GoToLogs, Commands::go_to_log_section()),
                 (Actions::RenameTab, Commands::rename_tab()),
                 (Actions::DeleteTab, Commands::delete_tab()),
+                (Actions::Submit, Commands::submit()),
             ]),
         }
     }

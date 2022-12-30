@@ -2,13 +2,16 @@ use std::sync::Arc;
 
 use super::web::{request::Request, response::Response};
 
+use std::sync::Mutex;
 
 pub struct DataStore {
     request_history: Vec<Request>,
 
     request_index: usize,
     current_request: Arc<Request>,
-    last_response: Arc<Response>,
+
+    // Responses
+    last_response: Arc<Mutex<Response>>,
 }
 
 impl DataStore {
@@ -20,13 +23,13 @@ impl DataStore {
         }
 
         let current_request = Arc::new(requests_to_use[0].clone());
-        let last_response = Arc::new(Response::default());
+        let last_response = Arc::new(Mutex::new(Response::default()));
 
         Self {
             request_history: requests_to_use,
             request_index: 0,
             current_request,
-            last_response
+            last_response,
         }
     }
     pub fn get_request(&self) -> Arc<Request> {
@@ -44,29 +47,29 @@ impl DataStore {
         self.request_history.len()
     }
 
-    pub fn update_request(&mut self, request:Request) -> () {
+    pub fn update_request(&mut self, request: Request) -> () {
         self.current_request = Arc::new(request.clone());
         self.save_request(request);
     }
 
-    pub fn save_request(&mut self, request:Request) -> () {
-        self.request_history[ self.request_index ] = (*self.current_request).clone();
+    pub fn save_request(&mut self, request: Request) -> () {
+        self.request_history[self.request_index] = (*self.current_request).clone();
     }
 
-    pub fn goto_request(&mut self, index:usize) -> () {
+    pub fn goto_request(&mut self, index: usize) -> () {
         self.request_index = index;
-        let req = self.request_history[ index ].clone();
+        let req = self.request_history[index].clone();
         self.current_request = Arc::new(req);
     }
 
     pub fn goto_next_request(&mut self) -> () {
-        let where_to_go = if self.request_index == self.get_total_requests() - 1  {
+        let where_to_go = if self.request_index == self.get_total_requests() - 1 {
             0
         } else {
             self.request_index + 1
         };
 
-        self.goto_request( where_to_go )
+        self.goto_request(where_to_go)
     }
     pub fn goto_prev_request(&mut self) -> () {
         let where_to_go = if self.request_index == 0 {
@@ -85,17 +88,15 @@ impl DataStore {
         ind
     }
 
-
     // Response
-    pub fn get_response(&self) -> Arc<Response> {
+    pub fn get_response(&self) -> Arc<Mutex<Response>> {
         self.last_response.clone()
     }
-    pub fn update_response(&mut self, response: Response) -> () {
-        self.last_response = Arc::new(response);
-    }
-
+    // pub fn update_response(&mut self, response: Response) -> () {
+    //     let mut data = self.last_response.lock().unwrap();
+    //     *data = response;
+    // }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -131,9 +132,7 @@ mod tests {
         let mut req2 = Request::default();
         req2.set_name("Req2");
 
-        let mut data_store = DataStore::init(vec![
-            req0, req1, req2
-        ]);
+        let mut data_store = DataStore::init(vec![req0, req1, req2]);
 
         // Init in first
         assert_eq!(data_store.request_ind(), 0);
@@ -159,9 +158,7 @@ mod tests {
     #[test]
     fn should_update_and_get_current_request() {
         let mut req = Request::default();
-        let mut data_store = DataStore::init(vec![
-            req.clone()
-        ]);
+        let mut data_store = DataStore::init(vec![req.clone()]);
 
         req.set_name("New name 1");
         assert_eq!(data_store.get_request().name, Request::default().name);
@@ -178,7 +175,10 @@ mod tests {
 
         assert_eq!(data_store.get_request().name, "New name 2".to_string());
         data_store.update_request(req2);
-        assert_eq!(data_store.get_request().name, "New name 2 after alter".to_string());
+        assert_eq!(
+            data_store.get_request().name,
+            "New name 2 after alter".to_string()
+        );
 
         data_store.goto_request(0);
         assert_eq!(data_store.get_request().name, "New name 1".to_string());
@@ -195,11 +195,7 @@ mod tests {
         let mut last = Request::default();
         last.set_name("Last");
 
-        let mut data_store = DataStore::init(vec![
-            first,
-            middle,
-            last
-        ]);
+        let mut data_store = DataStore::init(vec![first, middle, last]);
 
         assert_eq!(data_store.get_request().name, "First".to_string());
 
