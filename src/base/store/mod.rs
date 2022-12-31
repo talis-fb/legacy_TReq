@@ -1,26 +1,24 @@
 use std::sync::Arc;
 
-use crate::app::{states::StatesNames, app::InputMode};
+use crate::app::{app::InputMode, states::StatesNames};
 
 use super::web::{request::Request, response::Response};
 
 use std::sync::Mutex;
 
+#[derive(Clone, Debug)]
 pub struct DataStore {
-
     // Web
     request_history: Vec<Request>,
     request_index: usize,
     current_request: Arc<Request>,
     last_response: Arc<Mutex<Response>>,
 
-
     // States
     pub current_state: StatesNames,
 
     // Logs
     pub logs: String,
-
 }
 
 impl DataStore {
@@ -40,7 +38,7 @@ impl DataStore {
             current_request,
             last_response,
             current_state: StatesNames::Default,
-            logs: "".to_string()
+            logs: "".to_string(),
         }
     }
     pub fn get_request(&self) -> Arc<Request> {

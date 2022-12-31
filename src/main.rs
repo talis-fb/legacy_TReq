@@ -12,6 +12,7 @@ use base::web::repository::reqwest::ReqwestClientRepository;
 use commands::Commands;
 use crossterm::event::{self, Event, KeyCode};
 use states::{default::DefaultState, State};
+use std::sync::atomic::Ordering;
 use std::{error::Error, io};
 
 mod app;
@@ -57,13 +58,16 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.set_web_client(web_client);
     app.set_data_store(data_store);
 
-    // app.create_request(Request::default());
-
     // Init UI
-    let mut view = UI::init();
+    let view = UI::init();
 
     loop {
-        view.render(app.data_store.as_ref().unwrap().clone());
+        let output_view = view.renderer.send(app.get_data_store().clone());
+        if let Err(e) = output_view {
+            println!("Erro render");
+            println!("{}", e);
+            break;
+        }
 
         if let Event::Key(key) = event::read()? {
             if let InputMode::Insert = app.get_mode() {
@@ -93,7 +97,19 @@ async fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    view.close();
+    view.is_finished.store(true, Ordering::SeqCst);
+    let exit_output = view.thread.await;
+
+    if let Err(e) = exit_output {
+        println!("ERROR: Closing UI");
+        println!("{}", e);
+    }
+
+    // if let Ok(mut thread) = self.thread.lock() {
+    //     let future = fuse(thread);
+    //     future.await;
+    // }
+    // view.close().await;
 
     Ok(())
 }

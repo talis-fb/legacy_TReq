@@ -1,8 +1,16 @@
-use std::{collections::HashMap};
+use std::{
+    collections::HashMap,
+    iter::Fuse,
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Mutex,
+    },
+};
 
 use crate::{
     app::app::{App, InputMode},
-    states::{active_tablist::TabActiveState, StatesNames}, base::store::DataStore,
+    base::store::DataStore,
+    states::{active_tablist::TabActiveState, StatesNames},
 };
 
 use crossterm::{
@@ -11,6 +19,7 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use std::{error::Error, io};
+use tokio::task::JoinHandle;
 use tui::{
     backend::{Backend, CrosstermBackend},
     layout::{Alignment, Constraint, Direction, Layout, Rect},
@@ -20,14 +29,15 @@ use tui::{
     Frame, Terminal,
 };
 
-use std::sync::mpsc::{
-    self,
-    Sender, Receiver
-};
+use std::sync::mpsc::{self, Receiver, Sender};
+
+use std::sync::Arc;
 
 pub struct UI {
-    terminal: Terminal<CrosstermBackend<std::io::Stdout>>,
-    // pub renderer: Sender<DataStore>
+    // terminal: Terminal<CrosstermBackend<std::io::Stdout>>,
+    pub renderer: Sender<DataStore>,
+    pub is_finished: Arc<AtomicBool>,
+    pub thread: tokio::task::JoinHandle<()>,
 }
 
 impl UI {
@@ -37,33 +47,50 @@ impl UI {
         execute!(stdout, EnterAlternateScreen, EnableMouseCapture).unwrap_or(());
         let stdout = io::stdout();
         let backend = CrosstermBackend::new(stdout);
-        let terminal = Terminal::new(backend).unwrap();
 
-        // let (tx, rx): (Sender<DataStore>, Receiver<DataStore>) = mpsc::channel(32);
-        // tokio::task::spawn(async move {
-        //     while let Ok(message) = rx.recv() {
-        //         println!("GOT = {:?}", message.get_request());
-        //     }
-        // });
+        let (tx, rx): (Sender<DataStore>, Receiver<DataStore>) = mpsc::channel();
 
+        let is_finished = Arc::new(AtomicBool::new(false));
+        let is_finished_thread = is_finished.clone();
 
-        UI { terminal, /* renderer: tx.clone()  */}
+        let thread = tokio::task::spawn(async move {
+            let mut terminal = Terminal::new(backend).unwrap();
+            loop {
+                if is_finished_thread.load(Ordering::SeqCst) {
+                    println!("ENCERROU");
+                    break;
+                }
+
+                match rx.try_recv() {
+                    Ok(message) => {
+                        UI::render(&mut terminal, &message);
+                    }
+                    Err(_) => {}
+                }
+            }
+
+            // Close Terminal
+            disable_raw_mode().unwrap();
+            execute!(
+                terminal.backend_mut(),
+                LeaveAlternateScreen,
+                DisableMouseCapture
+            )
+                .unwrap();
+            terminal.show_cursor().unwrap();
+        });
+
+        UI {
+            renderer: tx.clone(),
+            is_finished: is_finished.clone(),
+            thread,
+        }
     }
 
-    pub fn close(&mut self) -> () {
-        disable_raw_mode().unwrap();
-        execute!(
-            self.terminal.backend_mut(),
-            LeaveAlternateScreen,
-            DisableMouseCapture
-        )
-        .unwrap();
-        self.terminal.show_cursor().unwrap();
-    }
-
-    pub fn render(&mut self, data_store: &DataStore) {
+    // fn render(&mut self, data_store: &DataStore) {
+    fn render(terminal: &mut Terminal<CrosstermBackend<std::io::Stdout>>, data_store: &DataStore) {
         // let data_store = app.get_data_store();
-        self.terminal
+        terminal
             .draw(|f| {
                 let current_state = data_store.current_state.clone();
                 let style_if_state_is = |state: StatesNames| {

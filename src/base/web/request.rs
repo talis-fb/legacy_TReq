@@ -1,4 +1,4 @@
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum METHODS {
     DELETE,
     GET,
@@ -9,7 +9,7 @@ pub enum METHODS {
     PUT,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Request {
     pub name: String,
     pub url: String,
