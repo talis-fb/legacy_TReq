@@ -1,3 +1,5 @@
+use crate::app::states::StatesNames;
+
 use super::{CommandsMap, State};
 
 pub struct StateManager {
@@ -31,7 +33,12 @@ impl StateManager {
     }
 
     pub fn get_command_map(&self) -> CommandsMap {
-        let main_state = self.get_state();
-        main_state.get_map().clone()
+        let main_map = self.get_state().get_map().clone();
+        let mut global_map = self.global_state.get_map().clone();
+
+        // With this, when find conflits of keys in both, main_map has priorite
+        global_map.extend(main_map);
+
+        global_map
     }
 }

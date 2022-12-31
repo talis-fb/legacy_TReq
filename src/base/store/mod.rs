@@ -19,6 +19,10 @@ pub struct DataStore {
 
     // Logs
     pub logs: String,
+
+    // Modes / InputMode
+    pub mode: InputMode,
+    pub input_buffer: String
 }
 
 impl DataStore {
@@ -39,6 +43,8 @@ impl DataStore {
             last_response,
             current_state: StatesNames::Default,
             logs: "".to_string(),
+            mode: InputMode::Normal,
+            input_buffer: String::from("")
         }
     }
     pub fn get_request(&self) -> Arc<Request> {
@@ -111,10 +117,10 @@ impl DataStore {
     }
 
     pub fn get_mode(&self) -> InputMode {
-        InputMode::Normal
+        self.mode.clone()
     }
     pub fn get_text_input_mode(&self) -> String {
-        "".to_string()
+        self.input_buffer.clone()
     }
 }
 

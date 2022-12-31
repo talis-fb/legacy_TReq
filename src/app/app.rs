@@ -24,7 +24,7 @@ use super::states::States;
 
 use crate::base::store::DataStore;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum InputMode {
     Normal,
     Insert,
@@ -93,6 +93,7 @@ impl<'a> App<'a> {
     pub fn set_input_mode_with_callback(&mut self, callback: fn(&mut App, String)) {
         self.input_buffer.set_callback(callback);
         self.mode = InputMode::Insert;
+        self.get_data_store_mut().mode = InputMode::Insert;
     }
     pub fn set_web_client(&mut self, client: WebClient<ReqwestClientRepository>) -> () {
         self.client_web = Some(Arc::new(client))
@@ -167,18 +168,23 @@ impl<'a> App<'a> {
 
                 // Reset Buffer
                 self.input_buffer.buffer = String::new();
+                self.get_data_store_mut().input_buffer = String::new();
 
                 // Come back to normal mode
                 self.mode = InputMode::Normal;
+                self.get_data_store_mut().mode = InputMode::Normal;
             }
             KeyCode::Backspace => {
                 self.input_buffer.pop_char();
+                self.get_data_store_mut().input_buffer.pop();
             }
             KeyCode::Char(i) => {
                 self.input_buffer.append_char(i);
+                self.get_data_store_mut().input_buffer.push(i);
             }
             KeyCode::Esc => {
                 self.mode = InputMode::Normal;
+                self.get_data_store_mut().mode = InputMode::Normal;
             }
             _ => {}
         }

@@ -40,7 +40,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         default: &commands,
         current: &commands,
     };
-    let state_manager = StateManager::init(DefaultState::init(), EmptyState::init());
+    let state_manager = StateManager::init(DefaultState::init(), DefaultState::init());
     let action_manager = ActionsManager {};
     let command_handler = CommandHandler {};
 
