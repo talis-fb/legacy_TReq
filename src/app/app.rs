@@ -116,6 +116,7 @@ impl<'a> App<'a> {
         Some(self.state_manager.as_ref()?.get_state())
     }
     pub fn set_new_state(&mut self, new_state: impl State + 'static) -> Option<()> {
+        self.get_data_store_mut().current_state = new_state.get_state_name().clone();
         self.state_manager.as_mut()?.set_state(new_state);
         Some(())
     }

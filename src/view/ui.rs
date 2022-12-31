@@ -57,7 +57,6 @@ impl UI {
             let mut terminal = Terminal::new(backend).unwrap();
             loop {
                 if is_finished_thread.load(Ordering::SeqCst) {
-                    println!("ENCERROU");
                     break;
                 }
 
