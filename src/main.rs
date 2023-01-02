@@ -105,11 +105,5 @@ async fn main() -> Result<(), Box<dyn Error>> {
         println!("{}", e);
     }
 
-    // if let Ok(mut thread) = self.thread.lock() {
-    //     let future = fuse(thread);
-    //     future.await;
-    // }
-    // view.close().await;
-
     Ok(())
 }

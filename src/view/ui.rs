@@ -4,7 +4,7 @@ use std::{
     sync::{
         atomic::{AtomicBool, Ordering},
         Mutex,
-    },
+    }, time::Duration,
 };
 
 use crate::{
@@ -55,12 +55,18 @@ impl UI {
 
         let thread = tokio::task::spawn(async move {
             let mut terminal = Terminal::new(backend).unwrap();
+
+            let delay_between_renders = Duration::from_millis(20);
+            let mut interval_render = tokio::time::interval(delay_between_renders);
+
             loop {
                 if is_finished_thread.load(Ordering::SeqCst) {
                     break;
                 }
 
-                match rx.try_recv() {
+                interval_render.tick().await;
+
+                match rx.recv_timeout(delay_between_renders) {
                     Ok(message) => {
                         UI::render(&mut terminal, &message);
                     }
@@ -68,7 +74,7 @@ impl UI {
                 }
             }
 
-            // Close Terminal
+            // Close Terminal when loop of render is ended
             disable_raw_mode().unwrap();
             execute!(
                 terminal.backend_mut(),
