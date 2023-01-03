@@ -27,16 +27,21 @@ where
             url, headers, body, ..
         } = request_to_do;
 
-        let response = match request_to_do.method {
-            METHODS::GET => self.http_client.call_get(url, headers).await,
-            METHODS::POST => self.http_client.call_post(url, headers, body).await,
-            METHODS::PUT => self.http_client.call_put(url, headers, body).await,
-            METHODS::PATCH => self.http_client.call_patch(url, headers, body).await,
-            METHODS::HEAD => self.http_client.call_patch(url, headers, body).await,
-            METHODS::DELETE => self.http_client.call_patch(url, headers, body).await,
-            METHODS::OPTIONS => self.http_client.call_options(url, headers, body).await,
-        };
+        let response = self.http_client.call_get(url, headers).await;
+        // let response = match request_to_do.method {
+        //     METHODS::GET => self.http_client.call_get(url, headers).await,
+        //     METHODS::POST => self.http_client.call_post(url, headers, body).await,
+        //     METHODS::PUT => self.http_client.call_put(url, headers, body).await,
+        //     METHODS::PATCH => self.http_client.call_patch(url, headers, body).await,
+        //     METHODS::HEAD => self.http_client.call_patch(url, headers, body).await,
+        //     METHODS::DELETE => self.http_client.call_patch(url, headers, body).await,
+        //     METHODS::OPTIONS => self.http_client.call_options(url, headers, body).await,
+        // };
 
-        Ok(response)
+        if let Ok(a) = &response {
+            Ok(response.unwrap())
+        } else {
+            Err(String::from(""))
+        }
     }
 }
