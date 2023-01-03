@@ -22,7 +22,7 @@ pub struct DataStore {
 
     // Modes / InputMode
     pub mode: InputMode,
-    pub input_buffer: String
+    pub input_buffer: String,
 }
 
 impl DataStore {
@@ -44,7 +44,7 @@ impl DataStore {
             current_state: StatesNames::Default,
             logs: "".to_string(),
             mode: InputMode::Normal,
-            input_buffer: String::from("")
+            input_buffer: String::from(""),
         }
     }
     pub fn get_request(&self) -> Arc<Request> {

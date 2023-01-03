@@ -38,10 +38,6 @@ where
         //     METHODS::OPTIONS => self.http_client.call_options(url, headers, body).await,
         // };
 
-        if let Ok(a) = &response {
-            Ok(response.unwrap())
-        } else {
-            Err(String::from(""))
-        }
+        response
     }
 }

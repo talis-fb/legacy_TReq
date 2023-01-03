@@ -4,7 +4,8 @@ use std::{
     sync::{
         atomic::{AtomicBool, Ordering},
         Mutex,
-    }, time::Duration,
+    },
+    time::Duration,
 };
 
 use crate::{
@@ -81,7 +82,7 @@ impl UI {
                 LeaveAlternateScreen,
                 DisableMouseCapture
             )
-                .unwrap();
+            .unwrap();
             terminal.show_cursor().unwrap();
         });
 
