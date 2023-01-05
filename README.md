@@ -1,3 +1,3 @@
-# Request TUI 
+# TReq 🦖
 
 ![](screenshot.png)
