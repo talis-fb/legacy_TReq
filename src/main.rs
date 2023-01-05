@@ -21,6 +21,7 @@ use std::time::Duration;
 
 mod app;
 mod utils;
+use utils::AsyncBool;
 use app::app::{App, InputMode};
 use app::states;
 
@@ -35,6 +36,7 @@ use base::{actions, commands};
 
 mod view;
 use view::ui::UI;
+
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -68,7 +70,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let delay_between_renders = Duration::from_millis(20);
     let mut interval_render = tokio::time::interval(delay_between_renders);
 
-    let mut has_clicked = true;
+    let has_clicked = Arc::new(AsyncBool::init(true));
 
     loop {
         let output_view = view.renderer.send(app.get_data_store().clone());
@@ -89,15 +91,16 @@ async fn main() -> Result<(), Box<dyn Error>> {
             break;
         }
 
-        if has_clicked {
-            let aa = tx.clone();
+        if has_clicked.get() {
+            let renderer = tx.clone();
             let is_finished_thread = is_finished.clone();
+            let has_clicked_in_thread = has_clicked.clone();
             let reading = tokio::task::spawn(async move {
                 let commands = default_keymap_factory();
                 let mut keymap = KeyboardListerner::init(commands);
 
                 if let Event::Key(key) = event::read().unwrap() {
-                    // IT MUST BE A ACTION
+                    // TODO: THIS MUST BE A ACTION
                     if let KeyCode::Char('q') = key.code {
                         is_finished_thread.store(true, Ordering::SeqCst);
                         return;
@@ -106,11 +109,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     let action = keymap.get_command(key.code);
 
                     if let Some(act) = action {
-                        aa.send(act);
+                        renderer.send(act);
                     }
+                    has_clicked_in_thread.set(true);
                 }
             });
-            has_clicked = false;
+            has_clicked.set(false);
         }
 
         interval_render.tick().await;
@@ -128,7 +132,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     app.set_log("Erro na execução de um comando".to_string());
                 }
 
-                has_clicked = true;
             }
             Err(_) => {}
         }
