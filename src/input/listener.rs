@@ -13,35 +13,40 @@ use crate::input::keymaps::default_keymap_factory;
 //
 
 #[derive(Clone)]
-pub struct KeyboardListerner<'a> {
-    pub default: &'a KeyMap,
-    pub current: &'a KeyMap,
+pub struct KeyboardListerner {
+    pub default: Rc<KeyMap>,
+    pub current: Rc<KeyMap>,
 }
 
-impl<'a> KeyboardListerner<'a> {
-    pub fn init(default_map: &'a KeyMap) -> Self {
+impl KeyboardListerner {
+    pub fn init(default_map: KeyMap) -> Self {
+        let default_map = Rc::new(default_map);
         KeyboardListerner {
-            default: &default_map,
-            current: &default_map,
+            default: default_map.clone(),
+            current: default_map.clone(),
         }
     }
 
-    pub fn get_command(&mut self, key: KeyCode) -> Option<&Actions> {
-        if let Some(i) = self.current.get(&key) {
+    pub fn get_command(&mut self, key: KeyCode) -> Option<Actions> {
+        let binding = self.current.get(&key);
+
+        if let Some(i) = binding.as_ref() {
             // If there is a subcommands it ignores the command and change
             // the state of current Keymap to the inside 'subcommands'
-            if let Some(subcommands) = &i.sub_action {
-                self.current = subcommands;
-                return Some(&Actions::SubCommand);
+
+            if let Some(subcommands) = i.sub_action.clone() {
+                self.current = Rc::new(subcommands);
+                return Some(Actions::SubCommand);
             }
 
             // Otherwise... Return the command normaly
-            self.current = &self.default;
-            return Some(&i.action);
+            let dd = i.action.clone();
+            self.current = self.default.clone();
+            return Some(dd);
         }
 
         // Anyway, reset to default keymap and return None
-        self.current = &self.default;
+        self.current = self.default.clone();
         None
     }
 }
@@ -67,7 +72,7 @@ mod tests {
     #[test]
     fn should_get_command_of_single_keymaps() {
         let default_keymap = default_keymap_factory();
-        let mut keymap = KeyboardListerner::init(&default_keymap);
+        let mut keymap = KeyboardListerner::init(default_keymap);
 
         let up = keymap.get_command(KeyCode::Char('k'));
         assert_eq!(up, Some(&Actions::Up));
@@ -76,7 +81,7 @@ mod tests {
     #[test]
     fn should_get_command_of_compound_keymaps() {
         let default_keymap = default_keymap_factory();
-        let mut keymap = KeyboardListerner::init(&default_keymap);
+        let mut keymap = KeyboardListerner::init(default_keymap);
 
         let g = keymap.get_command(KeyCode::Char('g'));
         assert_eq!(g, Some(&Actions::SubCommand));
@@ -92,7 +97,7 @@ mod tests {
     #[test]
     fn should_reset_keymap_when_a_undefined_key_is_pressed() {
         let default_keymap = default_keymap_factory();
-        let mut keymap = KeyboardListerner::init(&default_keymap);
+        let mut keymap = KeyboardListerner::init(default_keymap);
 
         let g = keymap.get_command(KeyCode::Char('g'));
         assert_eq!(g, Some(&Actions::SubCommand));

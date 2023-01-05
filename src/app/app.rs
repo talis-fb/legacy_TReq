@@ -8,6 +8,7 @@ use crate::states::{default::DefaultState, State};
 use crossterm::event::KeyCode;
 use std::collections::hash_map::HashMap;
 use std::sync::Arc;
+use std::sync::mpsc::Sender;
 use std::thread;
 
 use tui::layout::Rect;
@@ -30,17 +31,18 @@ pub enum InputMode {
     Insert,
 }
 
-pub struct App<'a> {
+pub struct App {
     pub log: String,
     keys_queue: String,
     mode: InputMode,
     input_buffer: InputKeyboardBuffer,
+    renderer: Option<Sender<DataStore>>,
 
     // Datas
     pub data_store: Option<DataStore>,
 
     // KeyboardListerner
-    pub keymap: Option<KeyboardListerner<'a>>,
+    // pub keymap: Option<KeyboardListerner<'a>>,
 
     // States
     pub state_manager: Option<StateManager>,
@@ -55,7 +57,7 @@ pub struct App<'a> {
     pub client_web: Option<Arc<WebClient<ReqwestClientRepository>>>,
 }
 
-impl Default for App<'_> {
+impl Default for App {
     fn default() -> Self {
         Self {
             log: String::from(""),
@@ -63,8 +65,9 @@ impl Default for App<'_> {
             mode: InputMode::Normal,
             input_buffer: InputKeyboardBuffer::init(),
 
+            renderer: None,
             data_store: None,
-            keymap: None,
+            // keymap: None,
             state_manager: None,
             action_manager: None,
             command_handler: None,
@@ -73,14 +76,22 @@ impl Default for App<'_> {
     }
 }
 
-impl<'a> App<'a> {
+impl App {
+    // pub fn render(&self) -> dyn Fn() -> () {
+    //     let renderer = self.renderer.as_ref().unwrap().clone();
+    //     let data_store = *self.get_data_store();
+    //     || {
+    //         renderer.send(data_store);
+    //     }
+    // }
+
     // Builders -------- ---------------------
     pub fn set_data_store(&mut self, data_store: DataStore) -> () {
         self.data_store = Some(data_store)
     }
-    pub fn set_keymap(&mut self, keymap: KeyboardListerner<'a>) -> () {
-        self.keymap = Some(keymap)
-    }
+    // pub fn set_keymap(&mut self, keymap: KeyboardListerner<'a>) -> () {
+    //     self.keymap = Some(keymap)
+    // }
     pub fn set_state_manager(&mut self, state_manager: StateManager) -> () {
         self.state_manager = Some(state_manager)
     }
@@ -98,19 +109,22 @@ impl<'a> App<'a> {
     pub fn set_web_client(&mut self, client: WebClient<ReqwestClientRepository>) -> () {
         self.client_web = Some(Arc::new(client))
     }
+    pub fn set_renderer(&mut self, renderer: Sender<DataStore>) -> () {
+        self.renderer = Some(renderer)
+    }
 
     // KeyboardListerner ------------------------
-    pub fn get_event_of_key(&mut self, key: KeyCode) -> Option<&Actions> {
-        let event = self.keymap.as_mut()?.get_command(key);
-
-        // Manage the 'keys_queue' based in event received
-        if let Some(Actions::SubCommand) = event {
-            self.keys_queue.push('g');
-        } else {
-            self.keys_queue.clear();
-        }
-        event
-    }
+    // pub fn get_event_of_key(&mut self, key: KeyCode) -> Option<&Actions> {
+    //     let event = self.keymap.as_mut()?.get_command(key);
+    //
+    //     // Manage the 'keys_queue' based in event received
+    //     if let Some(Actions::SubCommand) = event {
+    //         self.keys_queue.push('g');
+    //     } else {
+    //         self.keys_queue.clear();
+    //     }
+    //     event
+    // }
 
     // Manage States ---------------------------
     pub fn get_state(&self) -> Option<&Box<dyn State>> {
@@ -136,7 +150,10 @@ impl<'a> App<'a> {
         let request = self.data_store.as_ref().unwrap().get_request().clone();
         let response_data_store = self.data_store.as_ref().unwrap().get_response().clone();
 
+        let data_store = self.get_data_store().clone();
+
         tokio::task::spawn(async move {
+            println!("INICIO");
             let new_response = client.submit((*request).clone()).await;
             let mut data = response_data_store.lock().unwrap();
             *data = new_response.unwrap();
