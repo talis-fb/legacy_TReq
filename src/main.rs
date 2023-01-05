@@ -38,13 +38,6 @@ use view::ui::UI;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    // App Dependecies
-    // let keymap = KeyboardListerner {
-    //     default: &commands,
-    //     current: &commands,
-    // };
-    // let keymap = Arc::new(KeyboardListerner::init(commands));
-
     let state_manager = StateManager::init(DefaultState::init(), DefaultState::init());
     let action_manager = ActionsManager {};
     let command_handler = CommandHandler {};
@@ -59,7 +52,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Init app -> start with a empty request
     let mut app = App::default();
-    // app.set_keymap(*(keymap.clone()));
     app.set_state_manager(state_manager);
     app.set_action_manager(action_manager);
     app.set_command_handler(command_handler);
@@ -97,7 +89,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
             break;
         }
 
-        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<
         if has_clicked {
             let aa = tx.clone();
             let is_finished_thread = is_finished.clone();
@@ -121,7 +112,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
             });
             has_clicked = false;
         }
-        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         interval_render.tick().await;
 
@@ -142,9 +132,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
             }
             Err(_) => {}
         }
-        // >>>>>>>>>>>>>>>>>>>.
-
-        // }
     }
 
     view.is_finished.store(true, Ordering::SeqCst);
