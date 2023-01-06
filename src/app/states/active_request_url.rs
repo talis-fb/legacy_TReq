@@ -20,7 +20,7 @@ impl State for RequestUrlActiveState {
                 (Actions::Right, Commands::go_to_response_body_section()),
                 (Actions::Edit, Commands::edit_request_url()),
                 (Actions::New, Commands::add_new_tab()),
-                (Actions::Switch, Commands::go_to_next_tab()),
+                (Actions::Switch, Commands::switch_request_method()),
             ]),
         }
     }

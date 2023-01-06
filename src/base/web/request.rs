@@ -1,4 +1,4 @@
-#[derive(Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum METHODS {
     DELETE,
     GET,
@@ -7,6 +7,19 @@ pub enum METHODS {
     PATCH,
     POST,
     PUT,
+}
+impl ToString for METHODS {
+    fn to_string(&self) -> String {
+        match self {
+            Self::GET => "GET".to_string(),
+            Self::POST => "POST".to_string(),
+            Self::HEAD => "HEAD".to_string(),
+            Self::OPTIONS => "OPTIONS".to_string(),
+            Self::PATCH => "PATCH".to_string(),
+            Self::PUT => "PUT".to_string(),
+            Self::DELETE => "DELETE".to_string(),
+        }
+    }
 }
 
 #[derive(Clone, Debug)]

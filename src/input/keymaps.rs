@@ -38,7 +38,7 @@ pub fn default_keymap_factory() -> KeyMap {
             },
         ),
         (
-            KeyCode::Tab,
+            KeyCode::Char('s'),
             Actionable {
                 action: Actions::Switch,
                 sub_action: None,

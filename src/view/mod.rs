@@ -17,6 +17,8 @@ mod Drawers {
         widgets::Clear,
     };
 
+    use crate::base::web::request::METHODS;
+
     use super::*;
     pub fn draw_tablist_requests<T>(frame: &mut Frame<T>, area: Rect, store: &DataStore) -> ()
     where
@@ -115,13 +117,21 @@ mod Drawers {
             .constraints([Constraint::Length(7), Constraint::Min(1)].as_ref())
             .split(area);
 
-        let method = Paragraph::new("GET")
+        let method = Paragraph::new(store.get_request().method.to_string())
             .style(if store.current_state == StatesNames::Url {
                 Style::default().fg(Color::LightYellow)
             } else {
                 Style::default()
             })
-            .style(Style::default().bg(Color::Blue).fg(Color::Black))
+            .style(match store.get_request().method {
+                    METHODS::GET => Style::default().bg(Color::Blue).fg(Color::Black),
+                    METHODS::POST => Style::default().bg(Color::Green).fg(Color::Black),
+                    METHODS::PUT => Style::default().bg(Color::White).fg(Color::Black),
+                    METHODS::PATCH => Style::default().bg(Color::Magenta).fg(Color::Black),
+                    METHODS::DELETE => Style::default().bg(Color::Red).fg(Color::Black),
+                    METHODS::HEAD => Style::default().bg(Color::Yellow).fg(Color::Black),
+                    METHODS::OPTIONS => Style::default().bg(Color::Gray).fg(Color::Black),
+            })
             .alignment(Alignment::Center);
         frame.render_widget(method, layout[0]);
 

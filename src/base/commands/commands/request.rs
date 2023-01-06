@@ -1,3 +1,4 @@
+use crate::base::web::request::METHODS;
 use crate::commands::{Command, Commands};
 use crate::states::{self, State, States};
 use crate::App;
@@ -29,7 +30,22 @@ impl Commands {
     }
     pub fn switch_request_method() -> Command {
         |app: &mut App| {
-            // app.current_state = Box::new(states::active_request_body::/**/));
+            let method_stack = [
+                METHODS::GET,
+                METHODS::DELETE,
+                METHODS::HEAD,
+                METHODS::OPTIONS,
+                METHODS::PATCH,
+                METHODS::POST,
+                METHODS::PUT,
+            ];
+            let mut new_req = (*app.get_data_store().get_request()).clone();
+
+            let current = method_stack.into_iter().position(|i| i == new_req.method).unwrap_or(0);
+            let next = (current + 1) % method_stack.len();
+
+            new_req.method = method_stack[next];
+            app.get_data_store_mut().update_request(new_req);
             Ok(())
         }
     }
