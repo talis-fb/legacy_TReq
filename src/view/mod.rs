@@ -169,9 +169,30 @@ mod Drawers {
             .constraints([Constraint::Length(1), Constraint::Min(1)].as_ref())
             .split(area);
 
-        let status_code = Paragraph::new(" 200 ")
-            .style(Style::default().bg(Color::Green).fg(Color::Black))
-            .alignment(Alignment::Center);
+        let response = store.get_response().clone();
+        let response_data = response.lock().unwrap().clone();
+
+        let status = response_data.status;
+        let body = response_data.body;
+
+        let status_code = Paragraph::new(if status > 0 {
+            status.to_string()
+        } else {
+            String::from("Hit ENTER to submit")
+        })
+        // .style(Style::default().bg(Color::Green).fg(Color::Black))
+        .style(
+            match status {
+                0..=199 => Style::default().bg(Color::Gray).fg(Color::Black),
+                200..=299 => Style::default().bg(Color::Green).fg(Color::Black),
+                300..=399 => Style::default().bg(Color::Yellow).fg(Color::Black),
+                400..=499 => Style::default().bg(Color::Magenta).fg(Color::Black),
+                500..=599 => Style::default().bg(Color::Red).fg(Color::Black),
+                _ => Style::default().bg(Color::Cyan).fg(Color::Black),
+            }
+        )
+        .alignment(Alignment::Center);
+        // .style(if status )
 
         let body_response = Block::default()
             .borders(Borders::ALL)
@@ -184,9 +205,7 @@ mod Drawers {
             })
             .border_type(BorderType::Rounded);
 
-        let response = store.get_response().clone();
-        let response_data = response.lock().unwrap().clone();
-        let response_text = Paragraph::new(response_data.body)
+        let response_text = Paragraph::new(body)
             .alignment(Alignment::Left)
             .block(body_response.clone());
 

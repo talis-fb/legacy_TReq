@@ -85,8 +85,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 view.close();
 
                 let (new_buffer, is_finished) = input_handler.sync_open_vim(app.get_input_buffer());
-                println!("---------------------------------------------------------------");
-                println!("{}", new_buffer);
                 app.set_input_buffer(new_buffer);
 
                 if is_finished {
