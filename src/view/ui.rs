@@ -34,6 +34,8 @@ use std::sync::mpsc::{self, Receiver, Sender};
 
 use std::sync::Arc;
 
+use crate::view::Drawers;
+
 pub struct UI {
     terminal: Terminal<CrosstermBackend<std::io::Stdout>>,
 }
@@ -77,7 +79,7 @@ impl UI {
 
                 let size = f.size();
 
-                let chunks = Layout::default()
+                let full_screen_layout = Layout::default()
                     .direction(Direction::Vertical)
                     .margin(0)
                     .constraints(
@@ -91,38 +93,14 @@ impl UI {
                     )
                     .split(f.size());
 
-                // Tablist
-                let tabs_spans = data_store
-                    .get_requests()
-                    .into_iter()
-                    .map(|req| Spans::from(vec![Span::from(req.name.clone())]))
-                    .collect();
-
-                let tabs = Tabs::new(tabs_spans)
-                    .block(
-                        Block::default()
-                            .borders(Borders::ALL)
-                            .border_type(BorderType::Rounded)
-                            .title("Tabs"),
-                    )
-                    .style(style_if_state_is(StatesNames::TabList))
-                    .select(data_store.request_ind())
-                    .highlight_style(
-                        Style::default()
-                            .add_modifier(Modifier::BOLD)
-                            .bg(Color::Black)
-                            .fg(Color::LightYellow),
-                    );
-                f.render_widget(tabs, chunks[0]);
-
-                // Layout geral
+                // Layout request + response
                 let content_layout = Layout::default()
                     .direction(Direction::Horizontal)
                     .margin(0)
                     .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
-                    .split(chunks[1]);
+                    .split(full_screen_layout[1]);
 
-                // REQUEST
+                // REQUEST BLOCK
                 let request_block = Block::default()
                     .borders(Borders::ALL)
                     .title("Request")
@@ -138,132 +116,24 @@ impl UI {
                     .constraints([Constraint::Length(3), Constraint::Min(1)].as_ref())
                     .split(content_layout[0]);
 
-                let header_layout = Layout::default()
-                    .direction(Direction::Horizontal)
-                    .margin(0)
-                    .constraints([Constraint::Length(7), Constraint::Min(1)].as_ref())
-                    .split(request_layout[0]);
+                // Tablit
+                Drawers::draw_tablist_requests(f, full_screen_layout[0], data_store);
 
-                let method = Paragraph::new("GET")
-                    .style(style_if_state_is(StatesNames::Url))
-                    .style(Style::default().bg(Color::Blue).fg(Color::Black))
-                    .alignment(Alignment::Center);
-                f.render_widget(method, header_layout[0]);
+                // Request
+                Drawers::draw_method_and_url(f, request_layout[0], data_store);
+                Drawers::draw_body_request_section(f, request_layout[1], data_store);
 
-                let url_block = Block::default()
-                    .borders(Borders::ALL)
-                    .title("URL")
-                    .title_alignment(Alignment::Left)
-                    .style(style_if_state_is(StatesNames::Url))
-                    .border_type(BorderType::Rounded);
-                let url_text = Paragraph::new(data_store.get_request().url.clone())
-                    .alignment(Alignment::Left)
-                    .block(url_block.clone());
-                // f.render_widget(url, header_layout[1]);
-                // println!("{}", app.get_current_request().url.clone());
-                f.render_widget(url_text, header_layout[1]);
+                // Response
+                Drawers::draw_body_response_section(f, content_layout[1], data_store);
 
-                let body = Block::default()
-                    .borders(Borders::ALL)
-                    .title("BODY / Headers / Options")
-                    .title_alignment(Alignment::Left)
-                    .style(style_if_state_is(StatesNames::RequestBody))
-                    .border_type(BorderType::Rounded);
-                f.render_widget(body, request_layout[1]);
-
-                // RESPONSE SECTION
-                let response_block = Block::default()
-                    .borders(Borders::ALL)
-                    .title("Response")
-                    .title_alignment(Alignment::Center)
-                    .style(style_if_state_is(StatesNames::ResponseBody))
-                    .style(style_if_state_is(StatesNames::ResponseHeader))
-                    .border_type(BorderType::Rounded);
-                f.render_widget(response_block, content_layout[1]);
-
-                let response_layout = Layout::default()
-                    .direction(Direction::Vertical)
-                    .margin(1)
-                    .constraints([Constraint::Length(1), Constraint::Min(1)].as_ref())
-                    .split(content_layout[1]);
-
-                let status_code = Paragraph::new(" 200 ")
-                    .style(Style::default().bg(Color::Green).fg(Color::Black))
-                    .alignment(Alignment::Center);
-                f.render_widget(status_code, response_layout[0]);
-
-                let body_response = Block::default()
-                    .borders(Borders::ALL)
-                    .title("BODY / Headers / Options")
-                    .title_alignment(Alignment::Left)
-                    .style(style_if_state_is(StatesNames::ResponseBody))
-                    .border_type(BorderType::Rounded);
-                // f.render_widget(body_response, response_layout[1]);
-
-                let response = data_store.get_response().clone();
-                let response_data = response.lock().unwrap().clone();
-                let response_text = Paragraph::new(response_data.body)
-                    .alignment(Alignment::Left)
-                    .block(body_response.clone());
-                f.render_widget(response_text, response_layout[1]);
-
-                // LOG SECTION
-                let log_block = Block::default()
-                    .borders(Borders::TOP)
-                    // .style(Style::default().fg(Color::LightYellow))
-                    .style(style_if_state_is(StatesNames::Log))
-                    .title("Logs");
-                let log_text = Paragraph::new(data_store.logs.clone())
-                    .alignment(Alignment::Left)
-                    .block(log_block.clone());
-
-                // Command queue
-                let log_command_queue = Paragraph::new(data_store.get_keys_queue().clone())
-                    .alignment(Alignment::Right)
-                    .block(log_block.clone());
-
-                f.render_widget(log_text, chunks[2]);
-                f.render_widget(log_command_queue, chunks[2]);
+                // Logs
+                Drawers::draw_logs_section(f, full_screen_layout[2], data_store);
 
                 // INPUT MODE
                 if let InputMode::Insert = data_store.get_mode() {
-                    let popup_block = Block::default()
-                        .title("[ESC] - QUIT     [ENTER] - FINISH")
-                        .borders(Borders::ALL);
-                    let popup_text = Paragraph::new(data_store.input_buffer.buffer.clone())
-                        .alignment(Alignment::Left)
-                        .block(popup_block.clone());
-                    let area = centered_rect(60, 10, size);
-                    f.render_widget(Clear, area); //this clears out the background
-                    f.render_widget(popup_text, area);
+                    Drawers::draw_input_popup(f, f.size(), data_store);
                 }
             })
             .unwrap();
     }
-}
-
-fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
-    let popup_layout = Layout::default()
-        .direction(Direction::Vertical)
-        .constraints(
-            [
-                Constraint::Percentage((100 - percent_y) / 2),
-                Constraint::Percentage(percent_y),
-                Constraint::Percentage((100 - percent_y) / 2),
-            ]
-            .as_ref(),
-        )
-        .split(r);
-
-    Layout::default()
-        .direction(Direction::Horizontal)
-        .constraints(
-            [
-                Constraint::Percentage((100 - percent_x) / 2),
-                Constraint::Percentage(percent_x),
-                Constraint::Percentage((100 - percent_x) / 2),
-            ]
-            .as_ref(),
-        )
-        .split(popup_layout[1])[1]
 }
