@@ -1,12 +1,15 @@
 use std::sync::Arc;
 
-use crate::app::{app::InputMode, states::StatesNames};
+use crate::{
+    app::{app::InputMode, states::StatesNames},
+    input::buffer::{InputBuffer, InputKeyboardBuffer},
+};
 
 use super::web::{request::Request, response::Response};
 
 use std::sync::Mutex;
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct DataStore {
     // Web
     request_history: Vec<Request>,
@@ -22,7 +25,7 @@ pub struct DataStore {
 
     // Modes / InputMode
     pub mode: InputMode,
-    pub input_buffer: String,
+    pub input_buffer: InputKeyboardBuffer,
 }
 
 impl DataStore {
@@ -44,7 +47,7 @@ impl DataStore {
             current_state: StatesNames::Default,
             logs: "".to_string(),
             mode: InputMode::Normal,
-            input_buffer: String::from(""),
+            input_buffer: InputKeyboardBuffer::init(),
         }
     }
     pub fn get_request(&self) -> Arc<Request> {
@@ -107,10 +110,6 @@ impl DataStore {
     pub fn get_response(&self) -> Arc<Mutex<Response>> {
         self.last_response.clone()
     }
-    // pub fn update_response(&mut self, response: Response) -> () {
-    //     let mut data = self.last_response.lock().unwrap();
-    //     *data = response;
-    // }
 
     pub fn get_keys_queue(&self) -> String {
         "ai".to_string()
@@ -118,9 +117,6 @@ impl DataStore {
 
     pub fn get_mode(&self) -> InputMode {
         self.mode.clone()
-    }
-    pub fn get_text_input_mode(&self) -> String {
-        self.input_buffer.clone()
     }
 }
 

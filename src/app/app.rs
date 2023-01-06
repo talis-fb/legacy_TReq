@@ -7,8 +7,8 @@ use crate::base::web::response::Response;
 use crate::states::{default::DefaultState, State};
 use crossterm::event::KeyCode;
 use std::collections::hash_map::HashMap;
-use std::sync::Arc;
 use std::sync::mpsc::Sender;
+use std::sync::Arc;
 use std::thread;
 
 use tui::layout::Rect;
@@ -17,7 +17,7 @@ use tui::widgets::Widget;
 use crate::base::web::request::{Request, METHODS};
 use crate::input::listener::KeyboardListerner;
 
-use crate::input::input::InputKeyboardBuffer;
+use crate::input::buffer::{InputBuffer, InputKeyboardBuffer};
 
 use super::states::empty::EmptyState;
 use super::states::manager::StateManager;
@@ -25,7 +25,7 @@ use super::states::States;
 
 use crate::base::store::DataStore;
 
-#[derive(Clone, Debug)]
+#[derive(Copy, Clone, Debug)]
 pub enum InputMode {
     Normal,
     Insert,
@@ -34,16 +34,10 @@ pub enum InputMode {
 pub struct App {
     pub log: String,
     pub is_finished: bool,
-    keys_queue: String,
-    mode: InputMode,
-    input_buffer: InputKeyboardBuffer,
     renderer: Option<Sender<DataStore>>,
 
     // Datas
     pub data_store: Option<DataStore>,
-
-    // KeyboardListerner
-    // pub keymap: Option<KeyboardListerner<'a>>,
 
     // States
     pub state_manager: Option<StateManager>,
@@ -63,13 +57,9 @@ impl Default for App {
         Self {
             is_finished: false,
             log: String::from(""),
-            keys_queue: String::from(""),
-            mode: InputMode::Normal,
-            input_buffer: InputKeyboardBuffer::init(),
 
             renderer: None,
             data_store: None,
-            // keymap: None,
             state_manager: None,
             action_manager: None,
             command_handler: None,
@@ -79,21 +69,10 @@ impl Default for App {
 }
 
 impl App {
-    // pub fn render(&self) -> dyn Fn() -> () {
-    //     let renderer = self.renderer.as_ref().unwrap().clone();
-    //     let data_store = *self.get_data_store();
-    //     || {
-    //         renderer.send(data_store);
-    //     }
-    // }
-
     // Builders -------- ---------------------
     pub fn set_data_store(&mut self, data_store: DataStore) -> () {
         self.data_store = Some(data_store)
     }
-    // pub fn set_keymap(&mut self, keymap: KeyboardListerner<'a>) -> () {
-    //     self.keymap = Some(keymap)
-    // }
     pub fn set_state_manager(&mut self, state_manager: StateManager) -> () {
         self.state_manager = Some(state_manager)
     }
@@ -103,11 +82,6 @@ impl App {
     pub fn set_command_handler(&mut self, command_handler: CommandHandler) -> () {
         self.command_handler = Some(command_handler)
     }
-    pub fn set_input_mode_with_callback(&mut self, callback: fn(&mut App, String)) {
-        self.input_buffer.set_callback(callback);
-        self.mode = InputMode::Insert;
-        self.get_data_store_mut().mode = InputMode::Insert;
-    }
     pub fn set_web_client(&mut self, client: WebClient<ReqwestClientRepository>) -> () {
         self.client_web = Some(Arc::new(client))
     }
@@ -115,18 +89,28 @@ impl App {
         self.renderer = Some(renderer)
     }
 
-    // KeyboardListerner ------------------------
-    // pub fn get_event_of_key(&mut self, key: KeyCode) -> Option<&Actions> {
-    //     let event = self.keymap.as_mut()?.get_command(key);
-    //
-    //     // Manage the 'keys_queue' based in event received
-    //     if let Some(Actions::SubCommand) = event {
-    //         self.keys_queue.push('g');
-    //     } else {
-    //         self.keys_queue.clear();
-    //     }
-    //     event
-    // }
+    // Modes & Input ---------------------------
+    pub fn get_mode(&self) -> InputMode {
+        self.get_data_store().mode
+    }
+    pub fn set_mode(&mut self, mode: InputMode) {
+        self.get_data_store_mut().mode = mode;
+    }
+    pub fn set_input_mode_with_command(&mut self, callback: Command) {
+        // self.input_buffer.command = callback;
+        self.set_mode(InputMode::Insert);
+        self.get_data_store_mut().input_buffer.command = callback;
+    }
+    pub fn get_input_buffer(&mut self) -> String {
+        self.get_data_store_mut().input_buffer.buffer.clone()
+    }
+    pub fn set_input_buffer(&mut self, buffer: String) {
+        self.get_data_store_mut().input_buffer.buffer = buffer;
+    }
+    pub fn exec_input_buffer_command(&mut self) {
+        let command_fn = self.get_data_store_mut().input_buffer.command;
+        command_fn(self);
+    }
 
     // Manage States ---------------------------
     pub fn get_state(&self) -> Option<&Box<dyn State>> {
@@ -168,52 +152,5 @@ impl App {
 
     pub fn get_data_store_mut(&mut self) -> &mut DataStore {
         self.data_store.as_mut().unwrap()
-    }
-
-    // Input Mode ------
-    pub fn get_mode(&self) -> InputMode {
-        self.mode.clone()
-    }
-    pub fn get_text_input_mode(&self) -> String {
-        self.input_buffer.buffer.clone()
-    }
-    pub fn edit_input_mode(&mut self, key: KeyCode) {
-        match key {
-            KeyCode::Enter => {
-                let callback = self.input_buffer.on_close;
-                let content = self.input_buffer.buffer.clone();
-                callback(self, content);
-
-                // Reset Buffer
-                self.input_buffer.buffer = String::new();
-                self.get_data_store_mut().input_buffer = String::new();
-
-                // Come back to normal mode
-                self.mode = InputMode::Normal;
-                self.get_data_store_mut().mode = InputMode::Normal;
-            }
-            KeyCode::Backspace => {
-                self.input_buffer.pop_char();
-                self.get_data_store_mut().input_buffer.pop();
-            }
-            KeyCode::Char(i) => {
-                self.input_buffer.append_char(i);
-                self.get_data_store_mut().input_buffer.push(i);
-            }
-            KeyCode::Esc => {
-                self.mode = InputMode::Normal;
-                self.get_data_store_mut().mode = InputMode::Normal;
-            }
-            _ => {}
-        }
-    }
-    // ----------
-
-    pub fn set_log(&mut self, log: String) -> () {
-        self.log = log;
-    }
-
-    pub fn get_keys_queue(&self) -> &String {
-        &self.keys_queue
     }
 }

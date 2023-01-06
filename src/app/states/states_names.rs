@@ -1,4 +1,4 @@
-#[derive(PartialEq, Eq, Clone, Debug)]
+#[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
 pub enum StatesNames {
     Default,
     TabList,

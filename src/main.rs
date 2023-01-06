@@ -11,6 +11,7 @@ use base::web::client::WebClient;
 use base::web::repository::reqwest::ReqwestClientRepository;
 use commands::Commands;
 use crossterm::event::{self, Event, KeyCode};
+use input::buffer::InputBuffer;
 use states::{default::DefaultState, State};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
@@ -37,7 +38,7 @@ use base::{actions, commands};
 mod view;
 use view::ui::UI;
 
-use input::input::InputHandler;
+use input::input_handler::InputHandler;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -69,25 +70,34 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // User Input
     let (action_queue_sender, action_queue_receiver): (Sender<Actions>, Receiver<Actions>) =
         mpsc::channel();
+    let (typing_queue_sender, typing_queue_receiver): (Sender<Actions>, Receiver<Actions>) =
+        mpsc::channel();
     let has_clicked_before = Arc::new(AsyncBool::init(true));
     let commands = default_keymap_factory();
     let keymap = KeyboardListerner::init(commands);
-    let input_handler = InputHandler::init(keymap, action_queue_sender);
+    let input_handler = InputHandler::init(keymap);
 
     while !app.is_finished {
         view.render(app.get_data_store());
 
         match app.get_mode() {
             InputMode::Insert => {
-                if let Event::Key(key) = event::read()? {
-                    app.edit_input_mode(key.code);
+                let (new_buffer, is_finished) =
+                    input_handler.sync_handler_typing(app.get_input_buffer());
+
+                app.set_input_buffer(new_buffer);
+
+                if is_finished {
+                    app.exec_input_buffer_command();
+                    app.set_mode(InputMode::Normal);
                 }
             }
 
             InputMode::Normal => {
                 // Init listener of user input if previous one had done --------
                 if has_clicked_before.get() {
-                    input_handler.handler(has_clicked_before.clone());
+                    input_handler
+                        .async_handler(action_queue_sender.clone(), has_clicked_before.clone());
                     has_clicked_before.set(false);
                 }
 
@@ -103,7 +113,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                         let command_result = CommandHandler::execute(&mut app, command);
 
                         if let Err(e) = command_result {
-                            app.set_log("Erro na execução de um comando".to_string());
+                            app.log = String::from("Erro na execução de um comando")
                         }
                     }
                     Err(_) => {}

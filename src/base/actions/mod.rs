@@ -4,7 +4,7 @@ pub type EventListenerFn = fn();
 
 pub mod manager;
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum Actions {
     Null,
     SubCommand, // When user press a key that has subcommands from it

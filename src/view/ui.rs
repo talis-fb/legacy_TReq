@@ -36,9 +36,6 @@ use std::sync::Arc;
 
 pub struct UI {
     terminal: Terminal<CrosstermBackend<std::io::Stdout>>,
-    // pub renderer: Sender<DataStore>,
-    // pub is_finished: Arc<AtomicBool>,
-    // pub thread: tokio::task::JoinHandle<()>,
 }
 
 impl UI {
@@ -50,40 +47,7 @@ impl UI {
         let backend = CrosstermBackend::new(stdout);
         let terminal = Terminal::new(backend).unwrap();
 
-        /* let (tx, rx): (Sender<DataStore>, Receiver<DataStore>) = mpsc::channel();
-        let is_finished = Arc::new(AtomicBool::new(false));
-        let is_finished_thread = is_finished.clone();
-        let thread = tokio::task::spawn(async move {
-            let delay_between_renders = Duration::from_millis(20);
-            let mut interval_render = tokio::time::interval(delay_between_renders);
-            loop {
-                if is_finished_thread.load(Ordering::SeqCst) {
-                    break;
-                }
-                interval_render.tick().await;
-                match rx.recv_timeout(delay_between_renders) {
-                    Ok(message) => {
-                        UI::render(&mut terminal, &message);
-                    }
-                    Err(_) => {}
-                }
-            }
-            // Close Terminal when loop of render is ended
-            disable_raw_mode().unwrap();
-            execute!(
-                terminal.backend_mut(),
-                LeaveAlternateScreen,
-                DisableMouseCapture
-            )
-            .unwrap();
-            terminal.show_cursor().unwrap();
-        }); */
-
-        UI {
-            terminal, // renderer: tx.clone(),
-                      // is_finished: is_finished.clone(),
-                      // thread,
-        }
+        UI { terminal }
     }
 
     pub fn close(&mut self) -> () {
@@ -97,9 +61,7 @@ impl UI {
         self.terminal.show_cursor().unwrap();
     }
 
-    // fn render(&mut self, data_store: &DataStore) {
     pub fn render(&mut self, data_store: &DataStore) {
-        // let data_store = app.get_data_store();
         self.terminal
             .draw(|f| {
                 let current_state = data_store.current_state.clone();
@@ -268,7 +230,7 @@ impl UI {
                     let popup_block = Block::default()
                         .title("[ESC] - QUIT     [ENTER] - FINISH")
                         .borders(Borders::ALL);
-                    let popup_text = Paragraph::new(data_store.get_text_input_mode())
+                    let popup_text = Paragraph::new(data_store.input_buffer.buffer.clone())
                         .alignment(Alignment::Left)
                         .block(popup_block.clone());
                     let area = centered_rect(60, 10, size);
