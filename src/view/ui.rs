@@ -105,8 +105,6 @@ impl UI {
                     .borders(Borders::ALL)
                     .title("Request")
                     .title_alignment(Alignment::Center)
-                    .style(style_if_state_is(StatesNames::RequestBody))
-                    .style(style_if_state_is(StatesNames::RequestHeaders))
                     .border_type(BorderType::Rounded);
                 f.render_widget(request_block, content_layout[0]);
 

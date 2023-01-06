@@ -118,18 +118,13 @@ mod Drawers {
             .split(area);
 
         let method = Paragraph::new(store.get_request().method.to_string())
-            .style(if store.current_state == StatesNames::Url {
-                Style::default().fg(Color::LightYellow)
-            } else {
-                Style::default()
-            })
             .style(match store.get_request().method {
-                    METHODS::GET => Style::default().bg(Color::Blue).fg(Color::Black),
-                    METHODS::POST => Style::default().bg(Color::Green).fg(Color::Black),
-                    METHODS::PUT => Style::default().bg(Color::White).fg(Color::Black),
-                    METHODS::PATCH => Style::default().bg(Color::Magenta).fg(Color::Black),
-                    METHODS::DELETE => Style::default().bg(Color::Red).fg(Color::Black),
-                    METHODS::HEAD => Style::default().bg(Color::Yellow).fg(Color::Black),
+                METHODS::GET => Style::default().bg(Color::Blue).fg(Color::Black),
+                METHODS::POST => Style::default().bg(Color::Green).fg(Color::Black),
+                METHODS::PUT => Style::default().bg(Color::White).fg(Color::Black),
+                METHODS::PATCH => Style::default().bg(Color::Magenta).fg(Color::Black),
+                METHODS::DELETE => Style::default().bg(Color::Red).fg(Color::Black),
+                METHODS::HEAD => Style::default().bg(Color::Yellow).fg(Color::Black),
             })
             .alignment(Alignment::Center);
         frame.render_widget(method, layout[0]);

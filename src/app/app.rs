@@ -29,6 +29,7 @@ use crate::base::store::DataStore;
 pub enum InputMode {
     Normal,
     Insert,
+    Vim
 }
 
 pub struct App {
@@ -97,8 +98,13 @@ impl App {
         self.get_data_store_mut().mode = mode;
     }
     pub fn set_input_mode_with_command(&mut self, callback: Command, initial_buffer: String) {
-        // self.input_buffer.command = callback;
         self.set_mode(InputMode::Insert);
+        let data_store = self.get_data_store_mut();
+        data_store.input_buffer.command = callback;
+        self.set_input_buffer(initial_buffer)
+    }
+    pub fn set_vim_mode_with_command(&mut self, callback: Command, initial_buffer: String) {
+        self.set_mode(InputMode::Vim);
         let data_store = self.get_data_store_mut();
         data_store.input_buffer.command = callback;
         self.set_input_buffer(initial_buffer)

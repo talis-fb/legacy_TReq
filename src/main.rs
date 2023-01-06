@@ -81,6 +81,21 @@ async fn main() -> Result<(), Box<dyn Error>> {
         view.render(app.get_data_store());
 
         match app.get_mode() {
+            InputMode::Vim => {
+                view.close();
+
+                let (new_buffer, is_finished) = input_handler.sync_open_vim(app.get_input_buffer());
+                println!("---------------------------------------------------------------");
+                println!("{}", new_buffer);
+                app.set_input_buffer(new_buffer);
+
+                if is_finished {
+                    view = UI::init();
+                    app.exec_input_buffer_command();
+                    app.set_mode(InputMode::Normal);
+                }
+            }
+
             InputMode::Insert => {
                 let (new_buffer, is_finished) =
                     input_handler.sync_handler_typing(app.get_input_buffer());

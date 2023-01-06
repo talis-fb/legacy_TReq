@@ -7,7 +7,7 @@ pub struct RequestUrlActiveState {
 }
 impl State for RequestUrlActiveState {
     fn get_state_name(&self) -> StatesNames {
-        StatesNames::RequestHeaders
+        StatesNames::Url
     }
     fn get_map(&self) -> &CommandsMap {
         &self.maps

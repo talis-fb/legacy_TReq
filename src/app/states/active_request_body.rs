@@ -15,7 +15,7 @@ impl State for RequestActiveState {
     fn init() -> Self {
         Self {
             maps: HashMap::from([
-                (Actions::Edit, Commands::edit_request_body()),
+                (Actions::Edit, Commands::edit_request_body_vim()),
                 (Actions::Switch, Commands::switch_request_options()),
                 (Actions::Up, Commands::go_to_url_section()),
                 (Actions::Down, Commands::go_to_log_section()),

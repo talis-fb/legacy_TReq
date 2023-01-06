@@ -1,5 +1,7 @@
 use crossterm::event::{self, Event, KeyCode};
-use std::sync::{mpsc::Sender, Arc, Mutex};
+use std::{sync::{mpsc::Sender, Arc, Mutex}, io::Read};
+
+use tempfile::Builder;
 
 use crate::{
     app::app::App,
@@ -8,6 +10,8 @@ use crate::{
 };
 
 use super::listener::KeyboardListerner;
+use std::process::{Stdio, Command as OSCommand};
+use std::io::Write;
 
 pub struct InputHandler {
     listener: Arc<Mutex<KeyboardListerner>>,
@@ -59,5 +63,32 @@ impl InputHandler {
         }
 
         (new_buffer, is_finished)
+    }
+
+    pub fn sync_open_vim(&self, buffer: String) -> (String, bool) {
+
+        let temp_file = Builder::new()
+            .suffix(".json")
+            .tempfile()
+            .unwrap();
+        
+        let mut file = temp_file.as_file();
+        file.write_all(buffer.as_bytes()).unwrap();
+
+        let file_path = temp_file.path();
+
+        let mut child = OSCommand::new("nvim")
+            .arg(file_path)
+            .stdin(Stdio::inherit())
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .spawn()
+            .expect("failed to execute child");
+
+        let status = child.wait().expect("failed to wait on child");
+
+        let content = std::fs::read_to_string(file_path).unwrap();
+
+        (content, true)
     }
 }

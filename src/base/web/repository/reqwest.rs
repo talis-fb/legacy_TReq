@@ -30,34 +30,83 @@ impl HttpClientRepository for ReqwestClientRepository {
         ReqwestClientRepository::convert_to_app_response(response).await
     }
 
-    async fn call_post(&self, url: String, headers: String, body: String) -> Result<Response, String> {
+    async fn call_post(
+        &self,
+        url: String,
+        headers: String,
+        body: String,
+    ) -> Result<Response, String> {
         let client = Client::new();
-        let response = client.post(url).body(body).send().await.map_err(|e| e.to_string())?;
+        let response = client
+            .post(url)
+            .body(body)
+            .send()
+            .await
+            .map_err(|e| e.to_string())?;
         ReqwestClientRepository::convert_to_app_response(response).await
     }
 
-    async fn call_delete(&self, url: String, headers: String, body: String) -> Result<Response, String> {
+    async fn call_delete(
+        &self,
+        url: String,
+        headers: String,
+        body: String,
+    ) -> Result<Response, String> {
         let client = Client::new();
-        let response = client.delete(url).body(body).send().await.map_err(|e| e.to_string())?;
+        let response = client
+            .delete(url)
+            .body(body)
+            .send()
+            .await
+            .map_err(|e| e.to_string())?;
         ReqwestClientRepository::convert_to_app_response(response).await
     }
 
-    async fn call_patch(&self, url: String, headers: String, body: String) -> Result<Response, String> {
+    async fn call_patch(
+        &self,
+        url: String,
+        headers: String,
+        body: String,
+    ) -> Result<Response, String> {
         let client = Client::new();
-        let response = client.patch(url).body(body).send().await.map_err(|e| e.to_string())?;
+        let response = client
+            .patch(url)
+            .body(body)
+            .send()
+            .await
+            .map_err(|e| e.to_string())?;
         ReqwestClientRepository::convert_to_app_response(response).await
     }
 
-    async fn call_put(&self, url: String, headers: String, body: String) -> Result<Response, String> {
+    async fn call_put(
+        &self,
+        url: String,
+        headers: String,
+        body: String,
+    ) -> Result<Response, String> {
         let client = Client::new();
-        let response = client.put(url).body(body).send().await.map_err(|e| e.to_string())?;
+        let response = client
+            .put(url)
+            .body(body)
+            .send()
+            .await
+            .map_err(|e| e.to_string())?;
         ReqwestClientRepository::convert_to_app_response(response).await
     }
 
-    async fn call_head(&self, url: String, headers: String, body: String) -> Result<Response, String> {
+    async fn call_head(
+        &self,
+        url: String,
+        headers: String,
+        body: String,
+    ) -> Result<Response, String> {
         let client = Client::new();
-        let response = client.head(url).body(body).send().await.map_err(|e| e.to_string())?;
+        let response = client
+            .head(url)
+            .body(body)
+            .send()
+            .await
+            .map_err(|e| e.to_string())?;
         ReqwestClientRepository::convert_to_app_response(response).await
     }
-
 }
