@@ -42,8 +42,8 @@ impl Default for Request {
 }
 
 impl Request {
-    pub fn set_name(&mut self, name: &str) {
-        self.name = name.to_string();
+    pub fn set_name(&mut self, name: String) {
+        self.name = name;
     }
 
     pub fn set_url(&mut self, url: String) {

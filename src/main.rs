@@ -48,7 +48,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let mut req = Request::default();
     req.set_url(String::from("https://test-tuirs.free.beeceptor.com"));
-    req.set_name("Testezim");
+    req.set_name("Testezim".to_string());
     let data_store = DataStore::init(vec![req]);
 
     let web_client: WebClient<ReqwestClientRepository> =

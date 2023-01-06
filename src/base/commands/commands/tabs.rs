@@ -28,9 +28,18 @@ impl Commands {
 
     pub fn rename_tab() -> Command {
         |app: &mut App| {
-            let req = Request::default();
-            // app.create_request(req);
+            app.set_input_mode_with_command(|app: &mut App| {
+                let buffer = app.get_input_buffer();
+                let data_store = app.get_data_store_mut();
+
+                let mut req = (*data_store.get_request()).clone();
+                req.set_name(buffer);
+
+                data_store.update_request(req.clone());
+                Ok(())
+            }, app.get_data_store().get_request().name.clone() );
             Ok(())
+
         }
     }
 
