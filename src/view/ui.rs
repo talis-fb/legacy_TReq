@@ -45,7 +45,7 @@ impl UI {
     pub fn init() -> Self {
         enable_raw_mode().unwrap();
         let mut stdout = io::stdout();
-        execute!(stdout, EnterAlternateScreen, EnableMouseCapture).unwrap_or(());
+        execute!(stdout, EnterAlternateScreen).unwrap_or(());
         let stdout = io::stdout();
         let backend = CrosstermBackend::new(stdout);
 

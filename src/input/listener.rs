@@ -3,6 +3,7 @@ use crate::input::keymaps::{Actionable, KeyMap};
 use crossterm::event::KeyCode;
 use std::boxed::Box;
 use std::rc::Rc;
+use std::sync::Arc;
 
 use crate::input::keymaps::default_keymap_factory;
 
@@ -14,13 +15,13 @@ use crate::input::keymaps::default_keymap_factory;
 
 #[derive(Clone)]
 pub struct KeyboardListerner {
-    pub default: Rc<KeyMap>,
-    pub current: Rc<KeyMap>,
+    pub default: Arc<KeyMap>,
+    pub current: Arc<KeyMap>,
 }
 
 impl KeyboardListerner {
     pub fn init(default_map: KeyMap) -> Self {
-        let default_map = Rc::new(default_map);
+        let default_map = Arc::new(default_map);
         KeyboardListerner {
             default: default_map.clone(),
             current: default_map.clone(),
@@ -35,7 +36,7 @@ impl KeyboardListerner {
             // the state of current Keymap to the inside 'subcommands'
 
             if let Some(subcommands) = i.sub_action.clone() {
-                self.current = Rc::new(subcommands);
+                self.current = Arc::new(subcommands);
                 return Some(Actions::SubCommand);
             }
 

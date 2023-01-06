@@ -37,6 +37,8 @@ use base::{actions, commands};
 mod view;
 use view::ui::UI;
 
+use input::input::InputHandler;
+
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -63,7 +65,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Init UI
     let view = UI::init();
 
-    let is_finished = Arc::new(AtomicBool::new(false));
 
     let (tx, rx): (Sender<Actions>, Receiver<Actions>) = mpsc::channel();
 
@@ -72,7 +73,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let has_clicked = Arc::new(AsyncBool::init(true));
 
-    loop {
+
+    // ------------------------
+    let commands = default_keymap_factory();
+    let keymap = KeyboardListerner::init(commands);
+    let input_handler = InputHandler::init(keymap, tx);
+
+    while !app.is_finished {
+        // Render -----------------
         let output_view = view.renderer.send(app.get_data_store().clone());
         if let Err(e) = output_view {
             println!("Erro render");
@@ -80,6 +88,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             break;
         }
 
+        // InputMode -----------------
         if let InputMode::Insert = app.get_mode() {
             if let Event::Key(key) = event::read()? {
                 app.edit_input_mode(key.code);
@@ -87,38 +96,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
             continue;
         }
 
-        if is_finished.load(Ordering::SeqCst) {
-            break;
-        }
-
         if has_clicked.get() {
-            let renderer = tx.clone();
-            let is_finished_thread = is_finished.clone();
-            let has_clicked_in_thread = has_clicked.clone();
-            let reading = tokio::task::spawn(async move {
-                let commands = default_keymap_factory();
-                let mut keymap = KeyboardListerner::init(commands);
-
-                if let Event::Key(key) = event::read().unwrap() {
-                    // TODO: THIS MUST BE A ACTION
-                    if let KeyCode::Char('q') = key.code {
-                        is_finished_thread.store(true, Ordering::SeqCst);
-                        return;
-                    }
-
-                    let action = keymap.get_command(key.code);
-
-                    if let Some(act) = action {
-                        renderer.send(act);
-                    }
-                    has_clicked_in_thread.set(true);
-                }
-            });
+            input_handler.handler(has_clicked.clone());
             has_clicked.set(false);
         }
 
+        // Listen event user Action ------------------------
         interval_render.tick().await;
-
         match rx.recv_timeout(delay_between_renders) {
             Ok(action_to_exec) => {
                 let command = app
@@ -131,7 +115,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 if let Err(e) = command_result {
                     app.set_log("Erro na execução de um comando".to_string());
                 }
-
             }
             Err(_) => {}
         }

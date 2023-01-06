@@ -36,6 +36,7 @@ impl State for DefaultState {
                 (Actions::RenameTab, Commands::rename_tab()),
                 (Actions::DeleteTab, Commands::delete_tab()),
                 (Actions::Submit, Commands::submit()),
+                (Actions::Quit, Commands::quit()),
             ]),
         }
     }

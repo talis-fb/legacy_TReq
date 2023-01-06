@@ -8,6 +8,7 @@ pub mod manager;
 pub enum Actions {
     Null,
     SubCommand, // When user press a key that has subcommands from it
+    Quit,
 
     // Main actions
     Edit,

@@ -9,4 +9,11 @@ impl Commands {
     pub fn err() -> Command {
         |app: &mut App| Err("Ai".to_string())
     }
+
+    pub fn quit() -> Command {
+        |app: &mut App| {
+            app.is_finished = true;
+            Ok(())
+        }
+    }
 }

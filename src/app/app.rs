@@ -33,6 +33,7 @@ pub enum InputMode {
 
 pub struct App {
     pub log: String,
+    pub is_finished: bool,
     keys_queue: String,
     mode: InputMode,
     input_buffer: InputKeyboardBuffer,
@@ -60,6 +61,7 @@ pub struct App {
 impl Default for App {
     fn default() -> Self {
         Self {
+            is_finished: false,
             log: String::from(""),
             keys_queue: String::from(""),
             mode: InputMode::Normal,
@@ -153,7 +155,6 @@ impl App {
         let data_store = self.get_data_store().clone();
 
         tokio::task::spawn(async move {
-            println!("INICIO");
             let new_response = client.submit((*request).clone()).await;
             let mut data = response_data_store.lock().unwrap();
             *data = new_response.unwrap();

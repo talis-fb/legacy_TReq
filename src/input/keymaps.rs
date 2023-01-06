@@ -24,6 +24,13 @@ pub fn default_keymap_factory() -> KeyMap {
             },
         ),
         (
+            KeyCode::Char('q'),
+            Actionable {
+                action: Actions::Quit,
+                sub_action: None,
+            },
+        ),
+        (
             KeyCode::Char('e'),
             Actionable {
                 action: Actions::Edit,
