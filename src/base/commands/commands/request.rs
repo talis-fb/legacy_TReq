@@ -14,11 +14,11 @@ impl Commands {
                 let data_store = app.get_data_store_mut();
 
                 let mut req = (*data_store.get_request()).clone();
-                req.set_url(buffer);
+                req.set_body(buffer);
 
                 data_store.update_request(req.clone());
                 Ok(())
-            });
+            }, app.get_data_store().get_request().body.clone() );
             Ok(())
         }
     }
@@ -59,7 +59,7 @@ impl Commands {
 
                 data_store.update_request(req.clone());
                 Ok(())
-            });
+            }, app.get_data_store().get_request().url.clone() );
             Ok(())
         }
     }

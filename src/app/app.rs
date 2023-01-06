@@ -96,10 +96,12 @@ impl App {
     pub fn set_mode(&mut self, mode: InputMode) {
         self.get_data_store_mut().mode = mode;
     }
-    pub fn set_input_mode_with_command(&mut self, callback: Command) {
+    pub fn set_input_mode_with_command(&mut self, callback: Command, initial_buffer: String) {
         // self.input_buffer.command = callback;
         self.set_mode(InputMode::Insert);
-        self.get_data_store_mut().input_buffer.command = callback;
+        let data_store = self.get_data_store_mut();
+        data_store.input_buffer.command = callback;
+        self.set_input_buffer(initial_buffer)
     }
     pub fn get_input_buffer(&mut self) -> String {
         self.get_data_store_mut().input_buffer.buffer.clone()
