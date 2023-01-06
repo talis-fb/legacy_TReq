@@ -1,7 +1,11 @@
-use std::sync::{mpsc::Sender, Arc, Mutex};
 use crossterm::event::{self, Event, KeyCode};
+use std::sync::{mpsc::Sender, Arc, Mutex};
 
-use crate::{app::app::App, base::{store::DataStore, actions::Actions}, utils::AsyncBool};
+use crate::{
+    app::app::App,
+    base::{actions::Actions, store::DataStore},
+    utils::AsyncBool,
+};
 
 use super::listener::KeyboardListerner;
 

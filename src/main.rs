@@ -21,9 +21,9 @@ use std::time::Duration;
 
 mod app;
 mod utils;
-use utils::AsyncBool;
 use app::app::{App, InputMode};
 use app::states;
+use utils::AsyncBool;
 
 mod input;
 use input::keymaps::default_keymap_factory;
@@ -38,7 +38,6 @@ mod view;
 use view::ui::UI;
 
 use input::input::InputHandler;
-
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -63,70 +62,57 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.set_data_store(data_store);
 
     // Init UI
-    let view = UI::init();
-
-
-    let (tx, rx): (Sender<Actions>, Receiver<Actions>) = mpsc::channel();
-
-    let delay_between_renders = Duration::from_millis(20);
+    let mut view = UI::init();
+    let delay_between_renders = Duration::from_millis(50);
     let mut interval_render = tokio::time::interval(delay_between_renders);
 
-    let has_clicked = Arc::new(AsyncBool::init(true));
-
-
-    // ------------------------
+    // User Input
+    let (action_queue_sender, action_queue_receiver): (Sender<Actions>, Receiver<Actions>) =
+        mpsc::channel();
+    let has_clicked_before = Arc::new(AsyncBool::init(true));
     let commands = default_keymap_factory();
     let keymap = KeyboardListerner::init(commands);
-    let input_handler = InputHandler::init(keymap, tx);
+    let input_handler = InputHandler::init(keymap, action_queue_sender);
 
     while !app.is_finished {
-        // Render -----------------
-        let output_view = view.renderer.send(app.get_data_store().clone());
-        if let Err(e) = output_view {
-            println!("Erro render");
-            println!("{}", e);
-            break;
-        }
+        view.render(app.get_data_store());
 
-        // InputMode -----------------
-        if let InputMode::Insert = app.get_mode() {
-            if let Event::Key(key) = event::read()? {
-                app.edit_input_mode(key.code);
-            }
-            continue;
-        }
-
-        if has_clicked.get() {
-            input_handler.handler(has_clicked.clone());
-            has_clicked.set(false);
-        }
-
-        // Listen event user Action ------------------------
-        interval_render.tick().await;
-        match rx.recv_timeout(delay_between_renders) {
-            Ok(action_to_exec) => {
-                let command = app
-                    .get_command_of_action(action_to_exec)
-                    .unwrap_or(Commands::do_nothing())
-                    .clone();
-
-                let command_result = CommandHandler::execute(&mut app, command);
-
-                if let Err(e) = command_result {
-                    app.set_log("Erro na execução de um comando".to_string());
+        match app.get_mode() {
+            InputMode::Insert => {
+                if let Event::Key(key) = event::read()? {
+                    app.edit_input_mode(key.code);
                 }
             }
-            Err(_) => {}
+
+            InputMode::Normal => {
+                // Init listener of user input if previous one had done --------
+                if has_clicked_before.get() {
+                    input_handler.handler(has_clicked_before.clone());
+                    has_clicked_before.set(false);
+                }
+
+                // Listen queue of user's events to execute --------------------
+                interval_render.tick().await;
+                match action_queue_receiver.recv_timeout(delay_between_renders) {
+                    Ok(action_to_exec) => {
+                        let command = app
+                            .get_command_of_action(action_to_exec)
+                            .unwrap_or(Commands::do_nothing())
+                            .clone();
+
+                        let command_result = CommandHandler::execute(&mut app, command);
+
+                        if let Err(e) = command_result {
+                            app.set_log("Erro na execução de um comando".to_string());
+                        }
+                    }
+                    Err(_) => {}
+                }
+            }
         }
     }
 
-    view.is_finished.store(true, Ordering::SeqCst);
-    let exit_output = view.thread.await;
-
-    if let Err(e) = exit_output {
-        println!("ERROR: Closing UI");
-        println!("{}", e);
-    }
+    view.close();
 
     Ok(())
 }
