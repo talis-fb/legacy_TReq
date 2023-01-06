@@ -34,7 +34,6 @@ impl Commands {
                 METHODS::GET,
                 METHODS::DELETE,
                 METHODS::HEAD,
-                METHODS::OPTIONS,
                 METHODS::PATCH,
                 METHODS::POST,
                 METHODS::PUT,

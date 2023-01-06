@@ -130,7 +130,6 @@ mod Drawers {
                     METHODS::PATCH => Style::default().bg(Color::Magenta).fg(Color::Black),
                     METHODS::DELETE => Style::default().bg(Color::Red).fg(Color::Black),
                     METHODS::HEAD => Style::default().bg(Color::Yellow).fg(Color::Black),
-                    METHODS::OPTIONS => Style::default().bg(Color::Gray).fg(Color::Black),
             })
             .alignment(Alignment::Center);
         frame.render_widget(method, layout[0]);
