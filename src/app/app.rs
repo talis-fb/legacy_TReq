@@ -29,7 +29,7 @@ use crate::base::store::DataStore;
 pub enum InputMode {
     Normal,
     Insert,
-    Vim
+    Vim,
 }
 
 pub struct App {
@@ -147,9 +147,19 @@ impl App {
         let data_store = self.get_data_store().clone();
 
         tokio::task::spawn(async move {
-            let new_response = client.submit((*request).clone()).await;
+            let new_response = client
+                .submit((*request).clone())
+                .await
+                .map_err(|e| e.to_string());
+
             let mut data = response_data_store.lock().unwrap();
-            *data = new_response.unwrap();
+
+            *data = new_response.unwrap_or_else(|err| Response {
+                status: 77,
+                response_time: 0,
+                headers: String::new(),
+                body: err,
+            })
         });
     }
 

@@ -55,11 +55,11 @@ impl Commands {
         |app: &mut App| {
             let method_stack = [
                 METHODS::GET,
-                METHODS::DELETE,
-                METHODS::HEAD,
-                METHODS::PATCH,
                 METHODS::POST,
                 METHODS::PUT,
+                METHODS::PATCH,
+                METHODS::DELETE,
+                METHODS::HEAD,
             ];
             let mut new_req = (*app.get_data_store().get_request()).clone();
 

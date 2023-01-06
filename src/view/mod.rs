@@ -175,19 +175,22 @@ mod Drawers {
         let status = response_data.status;
         let body = response_data.body;
 
-        let status_code = Paragraph::new(if status > 0 {
-            status.to_string()
-        } else {
-            String::from("Hit ENTER to submit")
-        })
+        let status_code = Paragraph::new(
+            match status {
+                0 => String::from("Hit ENTER to submit"),
+                77 => String::from("Error"),
+                _ => status.to_string(),
+            })
         // .style(Style::default().bg(Color::Green).fg(Color::Black))
         .style(
             match status {
-                0..=199 => Style::default().bg(Color::Gray).fg(Color::Black),
+                0 => Style::default().bg(Color::Gray).fg(Color::Black),
+                77 => Style::default().bg(Color::Red).fg(Color::Black),
+                100..=199 => Style::default().bg(Color::Gray).fg(Color::Black),
                 200..=299 => Style::default().bg(Color::Green).fg(Color::Black),
                 300..=399 => Style::default().bg(Color::Yellow).fg(Color::Black),
                 400..=499 => Style::default().bg(Color::Magenta).fg(Color::Black),
-                500..=599 => Style::default().bg(Color::Red).fg(Color::Black),
+                500..=599 => Style::default().bg(Color::LightRed).fg(Color::Black),
                 _ => Style::default().bg(Color::Cyan).fg(Color::Black),
             }
         )
