@@ -1,5 +1,8 @@
 use crossterm::event::{self, Event, KeyCode};
-use std::{sync::{mpsc::Sender, Arc, Mutex}, io::Read};
+use std::{
+    io::Read,
+    sync::{mpsc::Sender, Arc, Mutex},
+};
 
 use tempfile::Builder;
 
@@ -10,8 +13,8 @@ use crate::{
 };
 
 use super::listener::KeyboardListerner;
-use std::process::{Stdio, Command as OSCommand};
 use std::io::Write;
+use std::process::{Command as OSCommand, Stdio};
 
 pub struct InputHandler {
     listener: Arc<Mutex<KeyboardListerner>>,
@@ -66,12 +69,8 @@ impl InputHandler {
     }
 
     pub fn sync_open_vim(&self, buffer: String) -> (String, bool) {
+        let temp_file = Builder::new().suffix(".json").tempfile().unwrap();
 
-        let temp_file = Builder::new()
-            .suffix(".json")
-            .tempfile()
-            .unwrap();
-        
         let mut file = temp_file.as_file();
         file.write_all(buffer.as_bytes()).unwrap();
 

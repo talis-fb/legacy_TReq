@@ -2,7 +2,9 @@ use crate::base::web::request::METHODS;
 use crate::commands::{Command, Commands};
 use crate::states::{self, State, States};
 use crate::App;
-use std::process::{Stdio, Command as OSCommand};
+use std::collections::HashMap;
+use std::process::{Command as OSCommand, Stdio};
+use std::time::Duration;
 
 impl Commands {
     pub fn switch_request_options() -> Command {
@@ -24,7 +26,6 @@ impl Commands {
                 app.get_data_store().get_request().body.clone(),
             );
             Ok(())
-
         }
     }
     pub fn edit_request_body() -> Command {
@@ -45,9 +46,31 @@ impl Commands {
             Ok(())
         }
     }
-    pub fn edit_request_headers() -> Command {
+    pub fn edit_request_headers_vim() -> Command {
         |app: &mut App| {
-            app.set_new_state(States::TabActiveState::init());
+            let initial_headers = app.get_data_store().get_request().headers.clone();
+            let initial_headers_as_str = serde_json::to_string(&initial_headers).unwrap_or(String::new());
+
+            app.set_vim_mode_with_command(
+                |app: &mut App| {
+                    let buffer = app.get_input_buffer();
+                    let header_map: HashMap<String, String> =
+                        serde_json::from_str(&buffer).unwrap_or_else(|e| {
+                            // TODO
+                            app.log = e.to_string();
+                            // ---
+                            HashMap::new()
+                        });
+
+                    let data_store = app.get_data_store_mut();
+                    let mut req = (*data_store.get_request()).clone();
+                    req.set_headers(header_map);
+
+                    data_store.update_request(req);
+                    Ok(())
+                },
+                initial_headers_as_str,
+            );
             Ok(())
         }
     }

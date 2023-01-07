@@ -89,17 +89,30 @@ mod Drawers {
     {
         let body_block = Block::default()
             .borders(Borders::ALL)
-            .title("BODY / Headers / Options")
+            // .title("BODY / Headers / Options")
+            .title(
+                match store.current_state {
+                    StatesNames::RequestHeaders => "Body / HEADERS / Options",
+                    _ => "BODY / Headers / Options",
+                }
+            )
             .title_alignment(Alignment::Left)
-            .style(if store.current_state == StatesNames::RequestBody {
-                Style::default().fg(Color::LightYellow)
-            } else {
-                Style::default()
-            })
+            .style(
+                match store.current_state {
+                    StatesNames::RequestHeaders | StatesNames::RequestBody => Style::default().fg(Color::LightYellow),
+                    _ =>Style::default(),
+                }
+            )
             .border_type(BorderType::Rounded);
 
-        let body = store.get_request().body.clone();
-        let body_text = Paragraph::new(body)
+        let content = 
+            match store.current_state {
+                    StatesNames::RequestBody => store.get_request().body.clone(),
+                    StatesNames::RequestHeaders => serde_json::to_string(&store.get_request().headers).unwrap_or(String::new()),
+                    _ => store.get_request().body.clone(),
+            };
+
+        let body_text = Paragraph::new(content)
             .alignment(Alignment::Left)
             .block(body_block.clone());
 
@@ -175,25 +188,22 @@ mod Drawers {
         let status = response_data.status;
         let body = response_data.body;
 
-        let status_code = Paragraph::new(
-            match status {
-                0 => String::from("Hit ENTER to submit"),
-                77 => String::from("Error"),
-                _ => status.to_string(),
-            })
+        let status_code = Paragraph::new(match status {
+            0 => String::from("Hit ENTER to submit"),
+            77 => String::from("Error"), // A STATUS CODE INTERNAL TO INTERNAL ERROR
+            _ => status.to_string(),
+        })
         // .style(Style::default().bg(Color::Green).fg(Color::Black))
-        .style(
-            match status {
-                0 => Style::default().bg(Color::Gray).fg(Color::Black),
-                77 => Style::default().bg(Color::Red).fg(Color::Black),
-                100..=199 => Style::default().bg(Color::Gray).fg(Color::Black),
-                200..=299 => Style::default().bg(Color::Green).fg(Color::Black),
-                300..=399 => Style::default().bg(Color::Yellow).fg(Color::Black),
-                400..=499 => Style::default().bg(Color::Magenta).fg(Color::Black),
-                500..=599 => Style::default().bg(Color::LightRed).fg(Color::Black),
-                _ => Style::default().bg(Color::Cyan).fg(Color::Black),
-            }
-        )
+        .style(match status {
+            0 => Style::default().bg(Color::Gray).fg(Color::Black),
+            77 => Style::default().bg(Color::Red).fg(Color::Black), // A STATUS CODE INTERNAL TO INTERNAL ERROR
+            100..=199 => Style::default().bg(Color::Gray).fg(Color::Black),
+            200..=299 => Style::default().bg(Color::Green).fg(Color::Black),
+            300..=399 => Style::default().bg(Color::Yellow).fg(Color::Black),
+            400..=499 => Style::default().bg(Color::Magenta).fg(Color::Black),
+            500..=599 => Style::default().bg(Color::LightRed).fg(Color::Black),
+            _ => Style::default().bg(Color::Cyan).fg(Color::Black),
+        })
         .alignment(Alignment::Center);
         // .style(if status )
 

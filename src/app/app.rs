@@ -154,12 +154,7 @@ impl App {
 
             let mut data = response_data_store.lock().unwrap();
 
-            *data = new_response.unwrap_or_else(|err| Response {
-                status: 77,
-                response_time: 0,
-                headers: String::new(),
-                body: err,
-            })
+            *data = new_response.unwrap_or_else(|err| Response::default_internal_error(err))
         });
     }
 

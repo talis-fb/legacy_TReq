@@ -15,8 +15,8 @@ impl State for RequestHeaderActiveState {
     fn init() -> Self {
         Self {
             maps: HashMap::from([
-                (Actions::Edit, Commands::edit_request_body()),
-                (Actions::Switch, Commands::switch_request_options()),
+                (Actions::Edit, Commands::edit_request_headers_vim()),
+                (Actions::Switch, Commands::go_to_request_body_section()),
                 (Actions::Up, Commands::go_to_url_section()),
                 (Actions::Down, Commands::go_to_log_section()),
             ]),

@@ -21,6 +21,12 @@ impl Commands {
             Ok(())
         }
     }
+    pub fn go_to_request_header_section() -> Command {
+        |app: &mut App| {
+            app.set_new_state(States::RequestHeaderActiveState::init());
+            Ok(())
+        }
+    }
     pub fn go_to_response_body_section() -> Command {
         |app: &mut App| {
             app.set_new_state(States::ResponseBodyActiveState::init());

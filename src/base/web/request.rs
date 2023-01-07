@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum METHODS {
     DELETE,
@@ -25,7 +27,7 @@ pub struct Request {
     pub name: String,
     pub url: String,
     pub method: METHODS,
-    pub headers: String,
+    pub headers: HashMap<String, String>,
     pub body: String,
 }
 
@@ -35,7 +37,7 @@ impl Default for Request {
             method: METHODS::GET,
             name: String::from("New Request"),
             url: String::new(),
-            headers: String::new(),
+            headers: HashMap::new(),
             body: String::new(),
         }
     }
@@ -54,7 +56,7 @@ impl Request {
         self.method = method;
     }
 
-    pub fn set_headers(&mut self, headers: String) {
+    pub fn set_headers(&mut self, headers: HashMap<String, String>) {
         self.headers = headers;
     }
 
