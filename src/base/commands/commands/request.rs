@@ -1,3 +1,4 @@
+use crate::base::logs::{Log, LogType};
 use crate::base::web::request::METHODS;
 use crate::commands::{Command, Commands};
 use crate::states::{self, State, States};
@@ -49,16 +50,16 @@ impl Commands {
     pub fn edit_request_headers_vim() -> Command {
         |app: &mut App| {
             let initial_headers = app.get_data_store().get_request().headers.clone();
-            let initial_headers_as_str = serde_json::to_string(&initial_headers).unwrap_or(String::new());
+            let initial_headers_as_str =
+                serde_json::to_string(&initial_headers).unwrap_or(String::new());
 
             app.set_vim_mode_with_command(
                 |app: &mut App| {
                     let buffer = app.get_input_buffer();
-                    let header_map: HashMap<String, String> =
-                        serde_json::from_str(&buffer).unwrap_or_else(|e| {
-                            // TODO
-                            app.log = e.to_string();
-                            // ---
+                    let header_map: HashMap<String, String> = serde_json::from_str(&buffer)
+                        .unwrap_or_else(|e| {
+                            app.get_data_store_mut()
+                                .set_log_error(String::from("ERROR HEADERS"), e.to_string());
                             HashMap::new()
                         });
 

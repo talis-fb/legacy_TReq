@@ -1,6 +1,6 @@
 use async_trait::async_trait;
+use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use std::{collections::HashMap, error::Error, str::FromStr};
-use reqwest::header::{HeaderMap, HeaderValue, HeaderName};
 
 use crate::{app::states, base::web::response::Response};
 
@@ -10,12 +10,14 @@ use reqwest::Client;
 #[derive(Default)]
 pub struct ReqwestClientRepository;
 impl ReqwestClientRepository {
-
     fn create_header_map(map: HashMap<String, String>) -> HeaderMap {
         let mut headers = HeaderMap::new();
 
         for (key, value) in map.iter() {
-            headers.insert(HeaderName::from_str(key).unwrap(), HeaderValue::from_str(value).unwrap());
+            headers.insert(
+                HeaderName::from_str(key).unwrap(),
+                HeaderValue::from_str(value).unwrap(),
+            );
         }
 
         headers
@@ -32,7 +34,7 @@ impl ReqwestClientRepository {
                     value.to_str().unwrap().to_string(),
                 )
             })
-        .collect();
+            .collect();
 
         let body = response.text().await.map_err(|e| e.to_string())?;
 

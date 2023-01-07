@@ -17,7 +17,7 @@ mod Drawers {
         widgets::Clear,
     };
 
-    use crate::base::web::request::METHODS;
+    use crate::base::{logs::LogType, web::request::METHODS};
 
     use super::*;
     pub fn draw_tablist_requests<T>(frame: &mut Frame<T>, area: Rect, store: &DataStore) -> ()
@@ -70,16 +70,34 @@ mod Drawers {
             })
             .title("Logs");
 
-        let log_text = Paragraph::new(store.logs.clone())
+        let type_log = store.log.log_type;
+        let title_log = &store.log.title;
+        let details_log = store.log.detail.as_deref().unwrap_or("");
+
+        let style_by_type = |t: LogType| match t {
+            LogType::Error => Style::default().fg(Color::Red),
+            LogType::Help => Style::default().fg(Color::Blue),
+            LogType::Empty => Style::default().fg(Color::Black),
+            LogType::Warning => Style::default().fg(Color::Yellow),
+            LogType::InputMode => Style::default().fg(Color::Cyan),
+        };
+
+        let logs = vec![Spans::from(vec![
+            Span::styled( title_log, style_by_type(type_log)),
+            Span::from(" "),
+            Span::from(details_log),
+        ])];
+
+        let log_text = Paragraph::new(logs)
             .alignment(Alignment::Left)
             .block(log_block.clone());
 
-        // Command queue
         let log_command_queue = Paragraph::new(store.get_keys_queue().clone())
             .alignment(Alignment::Right)
             .block(log_block.clone());
 
         frame.render_widget(log_block, area);
+        frame.render_widget(log_text, area);
         frame.render_widget(log_command_queue, area);
     }
 
@@ -89,29 +107,27 @@ mod Drawers {
     {
         let body_block = Block::default()
             .borders(Borders::ALL)
-            // .title("BODY / Headers / Options")
-            .title(
-                match store.current_state {
-                    StatesNames::RequestHeaders => "Body / HEADERS / Options",
-                    _ => "BODY / Headers / Options",
-                }
-            )
+            .title(match store.current_state {
+                StatesNames::RequestHeaders => "Body / HEADERS",
+                _ => "BODY / Headers",
+            })
             .title_alignment(Alignment::Left)
             //
-            .style(
-                match store.current_state {
-                    StatesNames::RequestHeaders | StatesNames::RequestBody => Style::default().fg(Color::LightYellow),
-                    _ =>Style::default(),
+            .style(match store.current_state {
+                StatesNames::RequestHeaders | StatesNames::RequestBody => {
+                    Style::default().fg(Color::LightYellow)
                 }
-            )
+                _ => Style::default(),
+            })
             .border_type(BorderType::Rounded);
 
-        let content = 
-            match store.current_state {
-                    StatesNames::RequestBody => store.get_request().body.clone(),
-                    StatesNames::RequestHeaders => serde_json::to_string(&store.get_request().headers).unwrap_or(String::new()),
-                    _ => store.get_request().body.clone(),
-            };
+        let content = match store.current_state {
+            StatesNames::RequestBody => store.get_request().body.clone(),
+            StatesNames::RequestHeaders => {
+                serde_json::to_string(&store.get_request().headers).unwrap_or(String::new())
+            }
+            _ => store.get_request().body.clone(),
+        };
 
         let body_text = Paragraph::new(content)
             .alignment(Alignment::Left)
@@ -187,19 +203,18 @@ mod Drawers {
         let response_data = response.lock().unwrap().clone();
 
         let status = response_data.status;
-        let content = 
-            match store.current_state {
-                    StatesNames::ResponseHeader => serde_json::to_string_pretty(&response_data.headers).unwrap_or(String::new()),
-                    _ => response_data.body,
-            };
-            
+        let content = match store.current_state {
+            StatesNames::ResponseHeader => {
+                serde_json::to_string_pretty(&response_data.headers).unwrap_or(String::new())
+            }
+            _ => response_data.body,
+        };
 
         let status_code = Paragraph::new(match status {
             0 => String::from("Hit ENTER to submit"),
             77 => String::from("Error"), // A STATUS CODE INTERNAL TO INTERNAL ERROR
             _ => status.to_string(),
         })
-        // .style(Style::default().bg(Color::Green).fg(Color::Black))
         .style(match status {
             0 => Style::default().bg(Color::Gray).fg(Color::Black),
             77 => Style::default().bg(Color::Red).fg(Color::Black), // A STATUS CODE INTERNAL TO INTERNAL ERROR
@@ -214,19 +229,17 @@ mod Drawers {
 
         let body_response = Block::default()
             .borders(Borders::ALL)
-            .title(
-                match store.current_state {
-                    StatesNames::ResponseHeader => "Body / HEADERS / Options",
-                    _ => "BODY / Headers / Options",
-                }
-            )
+            .title(match store.current_state {
+                StatesNames::ResponseHeader => "Body / HEADERS",
+                _ => "BODY / Headers",
+            })
             .title_alignment(Alignment::Left)
-            .style(
-                match store.current_state {
-                    StatesNames::RequestHeaders | StatesNames::ResponseBody => Style::default().fg(Color::LightYellow),
-                    _ =>Style::default(),
+            .style(match store.current_state {
+                StatesNames::ResponseHeader | StatesNames::ResponseBody => {
+                    Style::default().fg(Color::LightYellow)
                 }
-            )
+                _ => Style::default(),
+            })
             .border_type(BorderType::Rounded);
 
         let response_text = Paragraph::new(content)

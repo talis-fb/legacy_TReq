@@ -89,6 +89,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
                 if is_finished {
                     view = UI::init();
+                    app.clear_log();
                     app.exec_input_buffer_command();
                     app.set_mode(InputMode::Normal);
                 }
@@ -101,6 +102,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 app.set_input_buffer(new_buffer);
 
                 if is_finished {
+                    app.clear_log();
                     app.exec_input_buffer_command();
                     app.set_mode(InputMode::Normal);
                 }
@@ -126,7 +128,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
                         let command_result = CommandHandler::execute(&mut app, command);
 
                         if let Err(e) = command_result {
-                            app.log = String::from("Erro na execução de um comando")
+                            app.get_data_store_mut().set_log_error(
+                                String::from("COMMAND ERROR"),
+                                e.to_string(),
+                            )
                         }
                     }
                     Err(_) => {}

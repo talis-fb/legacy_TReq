@@ -1,13 +1,18 @@
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 
 use crate::{
     app::{app::InputMode, states::StatesNames},
     input::buffer::{InputBuffer, InputKeyboardBuffer},
 };
 
-use super::web::{request::Request, response::Response};
+use super::{
+    logs::LogType,
+    web::{request::Request, response::Response},
+};
 
 use std::sync::Mutex;
+
+use super::logs::Log;
 
 #[derive(Clone)]
 pub struct DataStore {
@@ -20,12 +25,12 @@ pub struct DataStore {
     // States
     pub current_state: StatesNames,
 
-    // Logs
-    pub logs: String,
-
     // Modes / InputMode
     pub mode: InputMode,
     pub input_buffer: InputKeyboardBuffer,
+
+    // Logs
+    pub log: Log,
 }
 
 impl DataStore {
@@ -45,11 +50,35 @@ impl DataStore {
             current_request,
             last_response,
             current_state: StatesNames::Default,
-            logs: "".to_string(),
             mode: InputMode::Normal,
             input_buffer: InputKeyboardBuffer::init(),
+            log: Log::default(),
         }
     }
+
+    // Logs
+    pub fn set_log(&mut self, log_type: LogType, title: String, detail: String) -> () {
+        self.log = Log::default()
+            .with_type(log_type)
+            .with_title(title)
+            .with_detail(detail);
+    }
+    pub fn set_log_error(&mut self, title: String, detail: String) -> () {
+        self.set_log(LogType::Error, title, detail)
+    }
+    pub fn set_log_warning(&mut self, title: String, detail: String) -> () {
+        self.set_log(LogType::Warning, title, detail)
+    }
+    pub fn set_log_helping(&mut self, title: String, detail: String) -> () {
+        self.set_log(LogType::Help, title, detail)
+    }
+    pub fn set_log_input_mode(&mut self) -> () {
+        self.set_log(LogType::InputMode, "INSERT".to_string(), "".to_string())
+    }
+    pub fn clear_log(&mut self) -> () {
+        self.set_log(LogType::Empty, "".to_string(), "".to_string())
+    }
+
     pub fn get_request(&self) -> Arc<Request> {
         self.current_request.clone()
     }

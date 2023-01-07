@@ -1,5 +1,6 @@
 use crate::base::actions::{manager::ActionsManager, Actions};
 use crate::base::commands::{handler::CommandHandler, Command, Commands};
+use crate::base::logs::{Log, LogType};
 use crate::base::web::client::WebClient;
 use crate::base::web::repository::reqwest::ReqwestClientRepository;
 use crate::base::web::repository::HttpClientRepository;
@@ -33,7 +34,6 @@ pub enum InputMode {
 }
 
 pub struct App {
-    pub log: String,
     pub is_finished: bool,
     renderer: Option<Sender<DataStore>>,
 
@@ -57,7 +57,6 @@ impl Default for App {
     fn default() -> Self {
         Self {
             is_finished: false,
-            log: String::from(""),
 
             renderer: None,
             data_store: None,
@@ -100,7 +99,9 @@ impl App {
     pub fn set_input_mode_with_command(&mut self, callback: Command, initial_buffer: String) {
         self.set_mode(InputMode::Insert);
         let data_store = self.get_data_store_mut();
+
         data_store.input_buffer.command = callback;
+        data_store.set_log_input_mode();
         self.set_input_buffer(initial_buffer)
     }
     pub fn set_vim_mode_with_command(&mut self, callback: Command, initial_buffer: String) {
@@ -165,5 +166,10 @@ impl App {
 
     pub fn get_data_store_mut(&mut self) -> &mut DataStore {
         self.data_store.as_mut().unwrap()
+    }
+
+
+    pub fn clear_log(&mut self) -> () {
+        self.get_data_store_mut().clear_log()
     }
 }
