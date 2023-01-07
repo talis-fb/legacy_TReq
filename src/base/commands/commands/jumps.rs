@@ -33,6 +33,12 @@ impl Commands {
             Ok(())
         }
     }
+    pub fn go_to_response_headers_section() -> Command {
+        |app: &mut App| {
+            app.set_new_state(States::ResponseHeadersState::init());
+            Ok(())
+        }
+    }
     pub fn go_to_log_section() -> Command {
         |app: &mut App| {
             app.set_new_state(States::LogsState::init());

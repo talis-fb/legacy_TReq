@@ -75,8 +75,6 @@ impl UI {
                     }
                 };
 
-                // ---------------
-
                 let size = f.size();
 
                 let full_screen_layout = Layout::default()

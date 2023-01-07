@@ -97,6 +97,7 @@ mod Drawers {
                 }
             )
             .title_alignment(Alignment::Left)
+            //
             .style(
                 match store.current_state {
                     StatesNames::RequestHeaders | StatesNames::RequestBody => Style::default().fg(Color::LightYellow),
@@ -186,7 +187,12 @@ mod Drawers {
         let response_data = response.lock().unwrap().clone();
 
         let status = response_data.status;
-        let body = response_data.body;
+        let content = 
+            match store.current_state {
+                    StatesNames::ResponseHeader => serde_json::to_string_pretty(&response_data.headers).unwrap_or(String::new()),
+                    _ => response_data.body,
+            };
+            
 
         let status_code = Paragraph::new(match status {
             0 => String::from("Hit ENTER to submit"),
@@ -205,20 +211,25 @@ mod Drawers {
             _ => Style::default().bg(Color::Cyan).fg(Color::Black),
         })
         .alignment(Alignment::Center);
-        // .style(if status )
 
         let body_response = Block::default()
             .borders(Borders::ALL)
-            .title("BODY / Headers / Options")
+            .title(
+                match store.current_state {
+                    StatesNames::ResponseHeader => "Body / HEADERS / Options",
+                    _ => "BODY / Headers / Options",
+                }
+            )
             .title_alignment(Alignment::Left)
-            .style(if store.current_state == StatesNames::ResponseBody {
-                Style::default().fg(Color::LightYellow)
-            } else {
-                Style::default()
-            })
+            .style(
+                match store.current_state {
+                    StatesNames::RequestHeaders | StatesNames::ResponseBody => Style::default().fg(Color::LightYellow),
+                    _ =>Style::default(),
+                }
+            )
             .border_type(BorderType::Rounded);
 
-        let response_text = Paragraph::new(body)
+        let response_text = Paragraph::new(content)
             .alignment(Alignment::Left)
             .block(body_response.clone());
 
