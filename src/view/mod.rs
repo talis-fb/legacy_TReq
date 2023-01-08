@@ -83,7 +83,7 @@ mod Drawers {
         };
 
         let logs = vec![Spans::from(vec![
-            Span::styled( title_log, style_by_type(type_log)),
+            Span::styled(title_log, style_by_type(type_log)),
             Span::from(" "),
             Span::from(details_log),
         ])];

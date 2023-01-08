@@ -24,7 +24,7 @@ impl InputKeyboardBuffer {
         InputKeyboardBuffer {
             value: String::new(),
             command: Commands::do_nothing(),
-            value_backup: None
+            value_backup: None,
         }
     }
     pub fn set_backup(&mut self, s: String) -> () {

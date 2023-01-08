@@ -12,7 +12,7 @@ use crate::{
     utils::AsyncBool,
 };
 
-use super::{listener::KeyboardListerner, buffer::InputKeyboardBuffer};
+use super::{buffer::InputKeyboardBuffer, listener::KeyboardListerner};
 use std::io::Write;
 use std::process::{Command as OSCommand, Stdio};
 

@@ -84,7 +84,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
             InputMode::Vim => {
                 view.close();
 
-                let (new_buffer, is_finished) = input_handler.sync_open_vim(app.get_input_buffer_value());
+                let (new_buffer, is_finished) =
+                    input_handler.sync_open_vim(app.get_input_buffer_value());
                 app.set_input_buffer_value(new_buffer);
 
                 if is_finished {
@@ -128,10 +129,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
                         let command_result = CommandHandler::execute(&mut app, command);
 
                         if let Err(e) = command_result {
-                            app.get_data_store_mut().set_log_error(
-                                String::from("COMMAND ERROR"),
-                                e.to_string(),
-                            )
+                            app.get_data_store_mut()
+                                .set_log_error(String::from("COMMAND ERROR"), e.to_string())
                         }
                     }
                     Err(_) => {}

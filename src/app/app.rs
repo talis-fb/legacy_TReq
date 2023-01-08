@@ -102,7 +102,8 @@ impl App {
 
         data_store.input_buffer.command = callback;
         data_store.set_log_input_mode();
-        self.get_input_buffer_mut().set_backup(initial_buffer.clone());
+        self.get_input_buffer_mut()
+            .set_backup(initial_buffer.clone());
         self.set_input_buffer_value(initial_buffer.clone());
     }
     pub fn set_vim_mode_with_command(&mut self, callback: Command, initial_buffer: String) {
@@ -110,7 +111,8 @@ impl App {
         let data_store = self.get_data_store_mut();
         data_store.input_buffer.command = callback;
 
-        self.get_input_buffer_mut().set_backup(initial_buffer.clone());
+        self.get_input_buffer_mut()
+            .set_backup(initial_buffer.clone());
         self.set_input_buffer_value(initial_buffer.clone());
     }
     pub fn get_input_buffer(&mut self) -> &InputKeyboardBuffer {
@@ -176,7 +178,6 @@ impl App {
     pub fn get_data_store_mut(&mut self) -> &mut DataStore {
         self.data_store.as_mut().unwrap()
     }
-
 
     pub fn clear_log(&mut self) -> () {
         self.get_data_store_mut().clear_log()
