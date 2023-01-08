@@ -1,4 +1,3 @@
-pub mod components;
 pub mod ui;
 
 use crate::{app::states::StatesNames, base::store::DataStore};
@@ -299,13 +298,17 @@ mod Drawers {
     {
         let content = vec![
         Spans::from(vec![
+            Span::styled("Welcome to TReq! =D", Style::default().fg(Color::LightRed)),
+        ]),
+        Spans::from(""),
+        Spans::from(vec![
             Span::styled(" > About", Style::default().fg(Color::LightYellow)),
         ]),
-        Spans::from("Welcome to TReq! It follows the Vim's philosophy. There are MODES. Normally you are in NORMAL Mode, where each key you press trigger a Command"),
+        Spans::from("It follows the Vim's philosophy. There are MODES. Normally you are in NORMAL Mode, where each key you press trigger a Command"),
         Spans::from(""),
-        Spans::from("A essential concept in TReq is the fact each KEY trigger a ACTION and each Action execute different based on your current state."),
+        Spans::from("A essential concept in TReq is the fact each KEY trigger a ACTION and each Action execute differently based on your current state."),
         Spans::from(""),
-        Spans::from("For example, if you press TAB, it triggers the 'SUBMIT' action. In Body section it change to Header view, but in Url section it change the method used."),
+        Spans::from("For example, if you press TAB, it triggers the 'SWITCH' action. In Body section it change to Header view, but in Url section it change the method used."),
         Spans::from(""),
         Spans::from(vec![
             Span::styled(" > Navigation", Style::default().fg(Color::LightYellow)),
@@ -376,7 +379,7 @@ mod Drawers {
 
 
 
-
+        let (&_, content) = content.split_at(store.position_reading);
 
 
 
@@ -386,7 +389,7 @@ mod Drawers {
             .border_style(Style::default().fg(Color::LightYellow))
             .title_alignment(Alignment::Center);
 
-        let popup_text = Paragraph::new(content)
+        let popup_text = Paragraph::new(content.to_vec())
             .alignment(Alignment::Left)
             .block(popup_block.clone())
             .wrap(Wrap { trim: true });

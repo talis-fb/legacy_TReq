@@ -29,6 +29,9 @@ pub struct DataStore {
     pub mode: InputMode,
     pub input_buffer: InputKeyboardBuffer,
 
+    // When seeing help screen
+    pub position_reading: usize,
+
     // Logs
     pub log: Log,
 }
@@ -53,6 +56,7 @@ impl DataStore {
             mode: InputMode::Normal,
             input_buffer: InputKeyboardBuffer::init(),
             log: Log::default(),
+            position_reading: 0,
         }
     }
 

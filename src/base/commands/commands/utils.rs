@@ -13,6 +13,7 @@ impl Commands {
 
     pub fn show_help() -> Command {
         |app: &mut App| {
+            app.clear_log();
             app.set_mode(InputMode::Help);
             Ok(())
         }

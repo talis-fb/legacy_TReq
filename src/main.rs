@@ -49,7 +49,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut req = Request::default();
     req.set_url(String::from("https://test-tuirs.free.beeceptor.com"));
     req.set_name("Testezim".to_string());
-    let data_store = DataStore::init(vec![req]);
+
+    let mut data_store = DataStore::init(vec![req]);
+    data_store.set_log_warning(String::from("NEEDING HELP,"), String::from("press [?]"));
 
     let web_client: WebClient<ReqwestClientRepository> =
         WebClient::init(ReqwestClientRepository::default());
@@ -77,13 +79,22 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let keymap = KeyboardListerner::init(commands);
     let input_handler = InputHandler::init(keymap);
 
+    // Scrolling in readings modes
+    // let mut scroll_help_screen = 0;
+
     while !app.is_finished {
         view.render(app.get_data_store());
 
         match app.get_mode() {
             InputMode::Help => {
-                input_handler.sync_wait_any_event();
-                app.set_mode(InputMode::Normal);
+                let store = app.get_data_store_mut();
+                let (i, is_finished) = input_handler.sync_wait_any_event(store.position_reading);
+
+                store.position_reading = i;
+
+                if is_finished {
+                    app.set_mode(InputMode::Normal);
+                }
             }
 
             InputMode::Vim => {
