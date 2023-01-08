@@ -124,7 +124,7 @@ mod Drawers {
         let content = match store.current_state {
             StatesNames::RequestBody => store.get_request().body.clone(),
             StatesNames::RequestHeaders => {
-                serde_json::to_string(&store.get_request().headers).unwrap_or(String::new())
+                serde_json::to_string_pretty(&store.get_request().headers).unwrap_or(String::new())
             }
             _ => store.get_request().body.clone(),
         };

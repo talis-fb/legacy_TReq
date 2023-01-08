@@ -22,6 +22,15 @@ impl ToString for METHODS {
     }
 }
 
+pub struct HeadersRequest;
+impl HeadersRequest {
+    pub fn default() -> HashMap<String, String> {
+        HashMap::from(
+            [("Content-Type", "application/json")].map(|(k, v)| (String::from(k), String::from(v))),
+        )
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Request {
     pub name: String,
@@ -37,8 +46,8 @@ impl Default for Request {
             method: METHODS::GET,
             name: String::from("New Request"),
             url: String::new(),
-            headers: HashMap::new(),
-            body: String::new(),
+            headers: HeadersRequest::default(),
+            body: String::from("{}"),
         }
     }
 }

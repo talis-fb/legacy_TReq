@@ -17,7 +17,7 @@ impl State for ResponseHeadersState {
             maps: HashMap::from([
                 (Actions::Edit, Commands::do_nothing()),
                 (Actions::Switch, Commands::go_to_response_body_section()),
-                (Actions::Left, Commands::go_to_url_section()),
+                (Actions::Left, Commands::go_to_request_body_section()),
                 (Actions::Up, Commands::go_to_tab_section()),
                 (Actions::Down, Commands::go_to_log_section()),
             ]),
