@@ -14,7 +14,7 @@ use tui::{
 mod Drawers {
     use tui::{
         layout::{Constraint, Direction, Layout},
-        widgets::Clear,
+        widgets::{Clear, Wrap},
     };
 
     use crate::base::{logs::LogType, web::request::METHODS};
@@ -266,6 +266,7 @@ mod Drawers {
         frame.render_widget(Clear, popup_area);
         frame.render_widget(popup_text, popup_area);
     }
+
     fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
         let popup_layout = Layout::default()
             .direction(Direction::Vertical)
@@ -291,4 +292,108 @@ mod Drawers {
             )
             .split(popup_layout[1])[1]
     }
+
+    pub fn draw_help_popup<T>(frame: &mut Frame<T>, area: Rect, store: &DataStore) -> ()
+    where
+        T: Backend,
+    {
+        let content = vec![
+        Spans::from(vec![
+            Span::styled(" > About", Style::default().fg(Color::LightYellow)),
+        ]),
+        Spans::from("Welcome to TReq! It follows the Vim's philosophy. There are MODES. Normally you are in NORMAL Mode, where each key you press trigger a Command"),
+        Spans::from(""),
+        Spans::from("A essential concept in TReq is the fact each KEY trigger a ACTION and each Action execute different based on your current state."),
+        Spans::from(""),
+        Spans::from("For example, if you press TAB, it triggers the 'SUBMIT' action. In Body section it change to Header view, but in Url section it change the method used."),
+        Spans::from(""),
+        Spans::from(vec![
+            Span::styled(" > Navigation", Style::default().fg(Color::LightYellow)),
+        ]),
+        Spans::from(vec![ 
+            Span::styled("UP", Style::default().fg(Color::LightBlue)),
+            Span::from(" -> "),
+            Span::from("k, [UP]")
+        ]),
+        Spans::from(vec![ 
+            Span::styled("DOWN", Style::default().fg(Color::LightBlue)),
+            Span::from(" -> "),
+            Span::from("j, [DOWN]")
+        ]),
+        Spans::from(vec![ 
+            Span::styled("RIGHT", Style::default().fg(Color::LightBlue)),
+            Span::from(" -> "),
+            Span::from("l, [RIGHT]")
+        ]),
+        Spans::from(vec![ 
+            Span::styled("LEFT", Style::default().fg(Color::LightBlue)),
+            Span::from(" -> "),
+            Span::from("h, [LEFT]")
+        ]),
+
+        // Actions
+        Spans::from(""),
+        Spans::from(vec![
+            Span::styled(" > Actions", Style::default().fg(Color::LightYellow)),
+        ]),
+        Spans::from(vec![ 
+            Span::styled("EDIT", Style::default().fg(Color::LightBlue)),
+            Span::from(" -> "),
+            Span::from("e")
+        ]),
+        Spans::from(vec![
+            Span::styled("--- Url Section: ", Style::default().fg(Color::Cyan)),
+            Span::from("change URL")
+        ]),
+        Spans::from(vec![
+            Span::styled("--- Body Section: ", Style::default().fg(Color::Cyan)),
+            Span::from("change body send to request")
+        ]),
+        Spans::from(vec![
+            Span::styled("--- Tab Section: ", Style::default().fg(Color::Cyan)),
+            Span::from("change name of current request's Tab")
+        ]),
+
+        Spans::from(""),
+        Spans::from(vec![ 
+            Span::styled("SWITCH", Style::default().fg(Color::LightBlue)),
+            Span::from(" -> "),
+            Span::from("[TAB]")
+        ]),
+        Spans::from(vec![
+            Span::styled("--- Url Section: ", Style::default().fg(Color::Cyan)),
+            Span::from("change METHOD to use")
+        ]),
+        Spans::from(vec![
+            Span::styled("--- Body Section: ", Style::default().fg(Color::Cyan)),
+            Span::from("change visualization between header or body")
+        ]),
+        Spans::from(vec![
+            Span::styled("--- Tab Section: ", Style::default().fg(Color::Cyan)),
+            Span::from("change to next tab in list")
+        ]),
+    ];
+
+
+
+
+
+
+
+        let popup_block = Block::default()
+            .title("Press any key to close this window")
+            .borders(Borders::ALL)
+            .border_style(Style::default().fg(Color::LightYellow))
+            .title_alignment(Alignment::Center);
+
+        let popup_text = Paragraph::new(content)
+            .alignment(Alignment::Left)
+            .block(popup_block.clone())
+            .wrap(Wrap { trim: true });
+        let popup_area = centered_rect(60, 75, area);
+
+        frame.render_widget(Clear, popup_area);
+        frame.render_widget(popup_text, popup_area);
+    }
+
 }

@@ -41,6 +41,11 @@ impl InputHandler {
             }
         });
     }
+    pub fn sync_wait_any_event(&self) -> ()  {
+        if let Event::Key(key) = event::read().unwrap() {
+            return ()
+        }
+    }
 
     pub fn sync_handler_typing(&self, buffer: &mut InputKeyboardBuffer) -> (String, bool) {
         let mut is_finished = false;

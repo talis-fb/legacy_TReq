@@ -31,6 +31,7 @@ pub enum InputMode {
     Normal,
     Insert,
     Vim,
+    Help
 }
 
 pub struct App {

@@ -17,6 +17,13 @@ pub type KeyMap = HashMap<KeyCode, Actionable>;
 pub fn default_keymap_factory() -> KeyMap {
     HashMap::from([
         (
+            KeyCode::Char('?'),
+            Actionable {
+                action: Actions::AskForHelp,
+                sub_action: None,
+            },
+        ),
+        (
             KeyCode::Enter,
             Actionable {
                 action: Actions::Submit,

@@ -125,9 +125,11 @@ impl UI {
                 // Logs
                 Drawers::draw_logs_section(f, full_screen_layout[2], data_store);
 
-                // INPUT MODE
-                if let InputMode::Insert = data_store.get_mode() {
-                    Drawers::draw_input_popup(f, f.size(), data_store);
+                // Variants of InputModes
+                match data_store.get_mode() {
+                    InputMode::Insert => Drawers::draw_input_popup(f, f.size(), data_store),
+                    InputMode::Help => Drawers::draw_help_popup(f, f.size(), data_store),
+                    _ => {}
                 }
             })
             .unwrap();

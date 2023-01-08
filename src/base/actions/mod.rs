@@ -9,6 +9,7 @@ pub enum Actions {
     Null,
     SubCommand, // When user press a key that has subcommands from it
     Quit,
+    AskForHelp,
 
     // Main actions
     Edit,

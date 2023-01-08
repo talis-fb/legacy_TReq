@@ -81,6 +81,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
         view.render(app.get_data_store());
 
         match app.get_mode() {
+            InputMode::Help => {
+                input_handler.sync_wait_any_event();
+                app.set_mode(InputMode::Normal);
+            }
+
             InputMode::Vim => {
                 view.close();
 
