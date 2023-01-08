@@ -30,7 +30,7 @@ impl Commands {
         |app: &mut App| {
             app.set_input_mode_with_command(
                 |app: &mut App| {
-                    let buffer = app.get_input_buffer();
+                    let buffer = app.get_input_buffer_value();
                     let data_store = app.get_data_store_mut();
 
                     let mut req = (*data_store.get_request()).clone();

@@ -258,7 +258,7 @@ mod Drawers {
         let popup_block = Block::default()
             .title("[ESC] - QUIT     [ENTER] - FINISH")
             .borders(Borders::ALL);
-        let popup_text = Paragraph::new(store.input_buffer.buffer.clone())
+        let popup_text = Paragraph::new(store.input_buffer.value.clone())
             .alignment(Alignment::Left)
             .block(popup_block.clone());
         let popup_area = centered_rect(60, 10, area);

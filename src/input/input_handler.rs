@@ -12,7 +12,7 @@ use crate::{
     utils::AsyncBool,
 };
 
-use super::listener::KeyboardListerner;
+use super::{listener::KeyboardListerner, buffer::InputKeyboardBuffer};
 use std::io::Write;
 use std::process::{Command as OSCommand, Stdio};
 
@@ -42,7 +42,7 @@ impl InputHandler {
         });
     }
 
-    pub fn sync_handler_typing(&self, buffer: String) -> (String, bool) {
+    pub fn sync_handler_typing(&self, buffer: &mut InputKeyboardBuffer) -> (String, bool) {
         let mut is_finished = false;
         let mut new_buffer = buffer.clone();
 
@@ -52,20 +52,20 @@ impl InputHandler {
                     is_finished = true;
                 }
                 KeyCode::Backspace => {
-                    new_buffer.pop();
+                    new_buffer.value.pop();
                 }
                 KeyCode::Char(i) => {
-                    new_buffer.push(i);
+                    new_buffer.value.push(i);
                 }
                 KeyCode::Esc => {
-                    new_buffer.clear();
+                    new_buffer.reset_to_backup();
                     is_finished = true;
                 }
                 _ => {}
             }
         }
 
-        (new_buffer, is_finished)
+        (new_buffer.value, is_finished)
     }
 
     pub fn sync_open_vim(&self, buffer: String) -> (String, bool) {

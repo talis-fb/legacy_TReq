@@ -84,8 +84,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
             InputMode::Vim => {
                 view.close();
 
-                let (new_buffer, is_finished) = input_handler.sync_open_vim(app.get_input_buffer());
-                app.set_input_buffer(new_buffer);
+                let (new_buffer, is_finished) = input_handler.sync_open_vim(app.get_input_buffer_value());
+                app.set_input_buffer_value(new_buffer);
 
                 if is_finished {
                     view = UI::init();
@@ -96,10 +96,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
             }
 
             InputMode::Insert => {
-                let (new_buffer, is_finished) =
-                    input_handler.sync_handler_typing(app.get_input_buffer());
+                let (new_buffer_value, is_finished) =
+                    input_handler.sync_handler_typing(app.get_input_buffer_mut());
 
-                app.set_input_buffer(new_buffer);
+                app.set_input_buffer_value(new_buffer_value);
 
                 if is_finished {
                     app.clear_log();

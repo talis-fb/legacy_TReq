@@ -15,14 +15,22 @@ pub trait InputBuffer {
 
 #[derive(Clone)]
 pub struct InputKeyboardBuffer {
-    pub buffer: String,
+    pub value_backup: Option<String>,
+    pub value: String,
     pub command: Command,
 }
 impl InputKeyboardBuffer {
     pub fn init() -> Self {
         InputKeyboardBuffer {
-            buffer: String::new(),
+            value: String::new(),
             command: Commands::do_nothing(),
+            value_backup: None
         }
+    }
+    pub fn set_backup(&mut self, s: String) -> () {
+        self.value_backup = Some(s)
+    }
+    pub fn reset_to_backup(&mut self) -> () {
+        self.value = self.value_backup.clone().unwrap_or(String::new())
     }
 }
