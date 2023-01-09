@@ -5,7 +5,8 @@ use std::{
     io::Write,
     os::unix::prelude::OsStrExt,
     path::{Path, PathBuf},
-    rc::Rc, sync::RwLock,
+    rc::Rc,
+    sync::RwLock,
 };
 
 pub static APP_DATA_PATH: &str = "/home/talis/.local/share/treq/";
@@ -53,7 +54,9 @@ impl AppFile {
 
     pub fn save_content(&mut self, content: String) -> Result<(), String> {
         let mut file = self.open_or_create_file()?;
-        file.write_all(content.as_bytes()).unwrap();
+        file.set_len(0).map_err(|e| e.to_string())?;
+        file.write_all(content.as_bytes())
+            .map_err(|e| e.to_string())?;
         Ok(())
     }
 

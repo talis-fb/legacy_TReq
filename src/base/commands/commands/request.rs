@@ -13,7 +13,7 @@ impl Commands {
             let result = app.get_data_store_mut().save_request();
 
             match result {
-                Err(e) => app.get_data_store_mut().set_log_error("SAVE REQUEST".to_string(), e.to_string()),
+                Err(e) => app.get_data_store_mut().set_log_error("ERROR SAVE REQUEST".to_string(), e.to_string()),
                 Ok(_) => app.get_data_store_mut().set_log_helping("SAVED".to_string(), "".to_string()),
             }
             

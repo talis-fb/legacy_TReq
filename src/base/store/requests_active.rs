@@ -60,9 +60,8 @@ impl RequestStore {
     pub fn goto_prev_request(&mut self) -> () {
         let prev_ind = self.current_ind - 1;
         if let None = self.goto_request(prev_ind) {
-            self.goto_request( self.get_total_requests() - 1 );
+            self.goto_request(self.get_total_requests() - 1);
         }
-
     }
 
     pub fn get_request(&self) -> Request {
@@ -71,7 +70,10 @@ impl RequestStore {
     }
 
     pub fn get_requests(&self) -> Vec<&Request> {
-        self.request_in_memory.values().collect()
+        self.requests
+            .iter()
+            .map(|k| self.request_in_memory.get(&k).unwrap())
+            .collect()
     }
 
     pub fn request_ind(&self) -> usize {

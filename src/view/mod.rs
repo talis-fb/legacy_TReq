@@ -23,12 +23,12 @@ mod Drawers {
     where
         T: Backend,
     {
-        let list: Vec<String> = store
+        let req_names: Vec<String> = store
             .get_requests()
             .into_iter()
             .map(|req| req.name.clone())
             .collect();
-        let tabs_spans = list
+        let tabs_spans = req_names
             .into_iter()
             .map(|s| Spans::from(vec![Span::from(s)]))
             .collect();

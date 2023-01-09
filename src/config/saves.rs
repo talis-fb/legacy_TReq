@@ -31,18 +31,15 @@ impl SaveFiles {
         })
     }
 
-    pub fn create_saved_file(&mut self, request: &Request) -> Result<UUID, String> {
-        let uuid = UUID::new();
-        let uuid_value = uuid.value.clone();
-        let file_path = uuid_value.as_str();
+    pub fn create_saved_file(&mut self, uuid: &UUID, request: &Request) -> Result<UUID, String> {
+        let file_path = uuid.value.as_str();
 
-        let path_requests = Path::new(APP_DATA_PATH_REQUESTS);
-
-        let mut new_file_path = path_requests.join(uuid_value);
+        let mut new_file_path = Path::new(APP_DATA_PATH_REQUESTS).join(file_path);
         new_file_path.set_extension("json");
 
         let mut new_app_file = AppFile::init(new_file_path);
-        new_app_file.open_or_create_file()?;
+        let file = new_app_file.open_or_create_file()?;
+
         let request_str = serde_json::to_string(&request).unwrap();
 
         new_app_file.save_content(request_str)?;
@@ -65,34 +62,16 @@ impl SaveFiles {
     }
 
     pub fn save_in_file_as_request(&mut self, file_uuid: &UUID, req: &Request) -> Result<(), String> {
-        let file = self
-            .files_map
-            .get_mut(file_uuid)
-            .expect("Failed to get file to save in it");
+        let mut file = self.files_map.get_mut(file_uuid);
+        if let None = file {
+            println!("SEM ARQUIVO");
+            self.create_saved_file(file_uuid, req)?;
+            file = self.files_map.get_mut(file_uuid);
+        }
 
         let content = serde_json::to_string(req).map_err(|e| e.to_string())?;
-        file.save_content(content)?;
+        file.unwrap().save_content(content)?;
 
         Ok(())
     }
 }
-
-// #[derive(Default, Clone)]
-// pub struct AppConfig {
-//     global_configs: HashMap<String, String>,
-//     global_vars: HashMap<String, String>,
-// }
-// impl AppConfig {
-//     fn create_default_config_file() {}
-//     fn create_default_configs() {}
-//     fn create_saved_request() {}
-//     fn get_all_saved_requests() {}
-//
-//     pub fn init() {
-//         Path::file_name
-//     }
-// }
-//
-// fn oi() {
-//     let uuid_file = uuid::Uuid::new_v4();
-// }
