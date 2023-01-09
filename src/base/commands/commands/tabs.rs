@@ -21,7 +21,7 @@ impl Commands {
     pub fn add_new_tab() -> Command {
         |app: &mut App| {
             let req = Request::default();
-            app.get_data_store_mut().add_request(req);
+            app.get_data_store_mut().add_request();
             Ok(())
         }
     }

@@ -7,9 +7,11 @@ use base::actions::manager::ActionsManager;
 use base::actions::Actions;
 use base::commands::handler::CommandHandler;
 use base::store::DataStore;
+use base::store::requests_active::RequestStore;
 use base::web::client::WebClient;
 use base::web::repository::reqwest::ReqwestClientRepository;
 use commands::Commands;
+use config::saves::SaveFiles;
 use crossterm::event::{self, Event, KeyCode};
 use input::buffer::InputBuffer;
 use states::{default::DefaultState, State};
@@ -38,6 +40,8 @@ use base::{actions, commands};
 mod view;
 use view::ui::UI;
 
+mod config;
+
 use input::input_handler::InputHandler;
 
 #[tokio::main]
@@ -46,11 +50,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let action_manager = ActionsManager {};
     let command_handler = CommandHandler {};
 
-    let mut req = Request::default();
-    req.set_url(String::from("https://test-tuirs.free.beeceptor.com"));
-    req.set_name("Testezim".to_string());
 
-    let mut data_store = DataStore::init(vec![req]);
+    // Load saved files
+    let saved_files = SaveFiles::init().unwrap();
+    let request_store = RequestStore::init(saved_files);
+    
+    let mut data_store = DataStore::init(request_store);
     data_store.set_log_warning(String::from("NEEDING HELP,"), String::from("press [?]"));
 
     let web_client: WebClient<ReqwestClientRepository> =
@@ -80,7 +85,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let input_handler = InputHandler::init(keymap);
 
     // Scrolling in readings modes
-    // let mut scroll_help_screen = 0;
 
     while !app.is_finished {
         view.render(app.get_data_store());

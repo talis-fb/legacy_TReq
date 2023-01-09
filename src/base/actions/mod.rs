@@ -47,6 +47,7 @@ pub enum Actions {
     DeleteTab,
 
     // Edit Request
+    Save,
     RequestBodyEdit,
     RequestHeadersEdit,
     UrlEdit,

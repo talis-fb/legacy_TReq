@@ -38,6 +38,7 @@ impl State for DefaultState {
                 (Actions::Submit, Commands::submit()),
                 (Actions::Quit, Commands::quit()),
                 (Actions::AskForHelp, Commands::show_help()),
+                (Actions::Save, Commands::save_request()),
             ]),
         }
     }

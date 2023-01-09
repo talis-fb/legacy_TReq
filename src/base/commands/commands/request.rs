@@ -8,6 +8,18 @@ use std::process::{Command as OSCommand, Stdio};
 use std::time::Duration;
 
 impl Commands {
+    pub fn save_request() -> Command {
+        |app: &mut App| {
+            let result = app.get_data_store_mut().save_request();
+
+            match result {
+                Err(e) => app.get_data_store_mut().set_log_error("SAVE REQUEST".to_string(), e.to_string()),
+                Ok(_) => app.get_data_store_mut().set_log_helping("SAVED".to_string(), "".to_string()),
+            }
+            
+            Ok(())
+        }
+    }
     pub fn switch_request_options() -> Command {
         |app: &mut App| Ok(())
     }

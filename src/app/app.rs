@@ -5,6 +5,7 @@ use crate::base::web::client::WebClient;
 use crate::base::web::repository::reqwest::ReqwestClientRepository;
 use crate::base::web::repository::HttpClientRepository;
 use crate::base::web::response::Response;
+use crate::config::saves::SaveFiles;
 use crate::states::{default::DefaultState, State};
 use crossterm::event::KeyCode;
 use std::collections::hash_map::HashMap;
@@ -40,6 +41,7 @@ pub struct App {
 
     // Datas
     pub data_store: Option<DataStore>,
+    pub save_files: Option<SaveFiles>,
 
     // States
     pub state_manager: Option<StateManager>,
@@ -61,6 +63,7 @@ impl Default for App {
 
             renderer: None,
             data_store: None,
+            save_files: None,
             state_manager: None,
             action_manager: None,
             command_handler: None,
@@ -73,6 +76,9 @@ impl App {
     // Builders -------- ---------------------
     pub fn set_data_store(&mut self, data_store: DataStore) -> () {
         self.data_store = Some(data_store)
+    }
+    pub fn set_save_file(&mut self, save_files: SaveFiles) -> () {
+        self.save_files = Some(save_files)
     }
     pub fn set_state_manager(&mut self, state_manager: StateManager) -> () {
         self.state_manager = Some(state_manager)

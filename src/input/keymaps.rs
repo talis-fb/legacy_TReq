@@ -122,5 +122,12 @@ pub fn default_keymap_factory() -> KeyMap {
                 sub_action: None,
             },
         ),
+        (
+            KeyCode::Char('s'),
+            Actionable {
+                action: Actions::Save,
+                sub_action: None,
+            },
+        ),
     ])
 }
