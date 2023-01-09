@@ -45,7 +45,6 @@ impl AppFile {
             .open(&self.path)
             .map_err(|e| e.to_string())?;
         Ok(file)
-        // self.file_open = Some(Rc::new(RwLock::new(file)));
     }
 
     pub fn get_content(&self) -> Result<String, String> {

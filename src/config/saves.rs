@@ -64,13 +64,15 @@ impl SaveFiles {
         result
     }
 
-    pub fn save_in_file(&mut self, file_uuid: UUID, content: String) -> Result<(), String> {
-        // let mut file = self
-        //     .files_map
-        //     .get(&file_uuid)
-        //     .expect("Failed to get file to save in it");
-        //
-        // file.save_content(content)?;
+    pub fn save_in_file_as_request(&mut self, file_uuid: &UUID, req: &Request) -> Result<(), String> {
+        let file = self
+            .files_map
+            .get_mut(file_uuid)
+            .expect("Failed to get file to save in it");
+
+        let content = serde_json::to_string(req).map_err(|e| e.to_string())?;
+        file.save_content(content)?;
+
         Ok(())
     }
 }

@@ -89,9 +89,8 @@ impl RequestStore {
     }
 
     pub fn save_current_request(&mut self) -> Result<(), String> {
-        Ok(())
-        // let (uuid, req) = &self.request_in_memory[self.current];
-        // let content_to_file = serde_json::to_string(req).map_err(|e| e.to_string())?;
-        // self.save_files.save_in_file(uuid.clone(), content_to_file)
+        let uuid = &self.current_uuid;
+        let req = self.get_request();
+        self.save_files.save_in_file_as_request(&uuid, &req)
     }
 }
