@@ -19,7 +19,7 @@ mod Drawers {
 
     use crate::base::{logs::LogType, web::request::METHODS};
 
-    use super::*;
+    use super::{*, help::DocView};
     pub fn draw_tablist_requests<T>(frame: &mut Frame<T>, area: Rect, store: &DataStore) -> ()
     where
         T: Backend,
@@ -298,86 +298,41 @@ mod Drawers {
     where
         T: Backend,
     {
-        let content = vec![
-            Spans::from(vec![
-                Span::styled("Welcome to TReq! =D", Style::default().fg(Color::LightRed)),
-            ]),
-            Spans::from(""),
-            Spans::from(vec![
-                Span::styled(" > About", Style::default().fg(Color::LightYellow)),
-            ]),
-            Spans::from("It follows the Vim's philosophy. There are MODES. Normally you are in NORMAL Mode, where each key you press trigger a Command"),
-            Spans::from(""),
-            Spans::from("A essential concept in TReq is the fact each KEY trigger a ACTION and each Action execute differently based on your current state."),
-            Spans::from(""),
-            Spans::from("For example, if you press TAB, it triggers the 'SWITCH' action. In Body section it change to Header view, but in Url section it change the method used."),
-            Spans::from(""),
-            Spans::from(vec![
-                Span::styled(" > Navigation", Style::default().fg(Color::LightYellow)),
-            ]),
-            Spans::from(vec![
-                Span::styled("UP", Style::default().fg(Color::LightBlue)),
-                Span::from(" -> "),
-                Span::from("k, [UP]")
-            ]),
-            Spans::from(vec![
-                Span::styled("DOWN", Style::default().fg(Color::LightBlue)),
-                Span::from(" -> "),
-                Span::from("j, [DOWN]")
-            ]),
-            Spans::from(vec![
-                Span::styled("RIGHT", Style::default().fg(Color::LightBlue)),
-                Span::from(" -> "),
-                Span::from("l, [RIGHT]")
-            ]),
-            Spans::from(vec![
-                Span::styled("LEFT", Style::default().fg(Color::LightBlue)),
-                Span::from(" -> "),
-                Span::from("h, [LEFT]")
-            ]),
 
-        // Actions
-        Spans::from(""),
-        Spans::from(vec![
-            Span::styled(" > Actions", Style::default().fg(Color::LightYellow)),
-        ]),
-        Spans::from(vec![
-            Span::styled("EDIT", Style::default().fg(Color::LightBlue)),
-            Span::from(" -> "),
-            Span::from("e")
-        ]),
-        Spans::from(vec![
-            Span::styled("--- Url Section: ", Style::default().fg(Color::Cyan)),
-            Span::from("change URL")
-        ]),
-        Spans::from(vec![
-            Span::styled("--- Body Section: ", Style::default().fg(Color::Cyan)),
-            Span::from("change body send to request")
-        ]),
-        Spans::from(vec![
-            Span::styled("--- Tab Section: ", Style::default().fg(Color::Cyan)),
-            Span::from("change name of current request's Tab")
-        ]),
+        let doc = r#"
+        {
+            "content": [
+                [ ["Welcome to TReq! =D", "ColorRed"] ],
+                [ ["", null] ],
+                [ [" > About", "ColorYellow"] ],
+                [ ["It follows the Vim's philosophy. There are MODES. Normally you are in NORMAL Mode, where each key you press trigger a Command", null] ],
+                [ ["", null] ],
+                [ ["A essential concept in TReq is the fact each KEY trigger a ACTION and each Action execute differently based on your current state.", null] ],
+                [ ["", null] ],
+                [ ["For example, if you press TAB, it triggers the 'SWITCH' action. In Body section it change to Header view, but in Url section it change the method used.", null] ],
+                [ ["", null] ],
+                [ [" > Navigation", "ColorYellow"] ],
+                [ ["UP", "ColorBlue"], [" -> k, [UP]", null] ],
+                [ ["DOWN", "ColorBlue"], [" -> j, [DOWN]", null] ],
+                [ ["RIGHT", "ColorBlue"], [" -> l, [RIGHT]", null] ],
+                [ ["LEFT", "ColorBlue"], [" -> h, [LEFT]", null] ],
+                [ ["", null] ],
+                [ [" > Actions", "ColorYellow"] ],
+                [ ["EDIT", "ColorBlue"], [" -> e", null] ],
+                [ ["--- Url Section: ", "ColorCyan"], ["change URL", null] ],
+                [ ["--- Body Section: ", "ColorCyan"], ["change body send to request", null] ],
+                [ ["--- Tab Section: ", "ColorCyan"], ["change name of current request's Tab", null] ],
+                [ ["", null] ],
+                [ ["SWITCH", "ColorBlue"], [" -> [TAB]", null] ],
+                [ ["--- Url Section: ", "ColorCyan"], ["change METHOD to use", null] ],
+                [ ["--- Body Section: ", "ColorCyan"], ["change visualization between header or body", null] ],
+                [ ["--- Tab Section: ", "ColorCyan"], ["change to next tab in list", null] ]
+            ]
+        }
+        "#;
 
-        Spans::from(""),
-        Spans::from(vec![
-            Span::styled("SWITCH", Style::default().fg(Color::LightBlue)),
-            Span::from(" -> "),
-            Span::from("[TAB]")
-        ]),
-        Spans::from(vec![
-            Span::styled("--- Url Section: ", Style::default().fg(Color::Cyan)),
-            Span::from("change METHOD to use")
-        ]),
-        Spans::from(vec![
-            Span::styled("--- Body Section: ", Style::default().fg(Color::Cyan)),
-            Span::from("change visualization between header or body")
-        ]),
-        Spans::from(vec![
-            Span::styled("--- Tab Section: ", Style::default().fg(Color::Cyan)),
-            Span::from("change to next tab in list")
-        ]),
-    ];
+        let doc = DocView::from_string(String::from(doc));
+        let content = doc.to_vec_spans();
 
         let (&_, content) = content.split_at(store.position_reading);
 

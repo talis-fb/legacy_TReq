@@ -41,22 +41,17 @@ impl InputHandler {
             }
         });
     }
-    pub fn sync_wait_any_event(&self, index_to_start: usize) -> (usize, bool)  {
+    pub fn sync_wait_any_event(&self, index_to_start: usize) -> (usize, bool) {
         let mut new_index = index_to_start;
         if let Event::Key(key) = event::read().unwrap() {
             new_index = match key.code {
                 KeyCode::Char('k') | KeyCode::Up => index_to_start - 1,
                 KeyCode::Char('j') | KeyCode::Down => index_to_start + 1,
-                _ => return (0, true)
+                _ => return (0, true),
             }
         }
 
-        if new_index < 0 {
-            new_index = 0;
-        }
-
-        (new_index, false )
-
+        (new_index, false)
     }
 
     pub fn sync_handler_typing(&self, buffer: &mut InputKeyboardBuffer) -> (String, bool) {

@@ -76,7 +76,7 @@ mod tests {
         let mut keymap = KeyboardListerner::init(default_keymap);
 
         let up = keymap.get_command(KeyCode::Char('k'));
-        assert_eq!(up, Some(&Actions::Up));
+        assert_eq!(up, Some(Actions::Up));
     }
 
     #[test]
@@ -85,12 +85,12 @@ mod tests {
         let mut keymap = KeyboardListerner::init(default_keymap);
 
         let g = keymap.get_command(KeyCode::Char('g'));
-        assert_eq!(g, Some(&Actions::SubCommand));
+        assert_eq!(g, Some(Actions::SubCommand));
         let g = keymap.get_command(KeyCode::Char('g'));
         assert_ne!(g, None);
 
         let g2 = keymap.get_command(KeyCode::Char('g'));
-        assert_eq!(g2, Some(&Actions::SubCommand));
+        assert_eq!(g2, Some(Actions::SubCommand));
         let g2 = keymap.get_command(KeyCode::Char('t'));
         assert_ne!(g2, None);
     }
@@ -101,7 +101,7 @@ mod tests {
         let mut keymap = KeyboardListerner::init(default_keymap);
 
         let g = keymap.get_command(KeyCode::Char('g'));
-        assert_eq!(g, Some(&Actions::SubCommand));
+        assert_eq!(g, Some(Actions::SubCommand));
 
         // This is a undefined command
         let g = keymap.get_command(KeyCode::Char('_'));
@@ -109,6 +109,6 @@ mod tests {
 
         // It should reset to default and execute normal commands
         let up = keymap.get_command(KeyCode::Char('k'));
-        assert_eq!(up, Some(&Actions::Up));
+        assert_eq!(up, Some(Actions::Up));
     }
 }

@@ -61,7 +61,11 @@ impl SaveFiles {
         result
     }
 
-    pub fn save_in_file_as_request(&mut self, file_uuid: &UUID, req: &Request) -> Result<(), String> {
+    pub fn save_in_file_as_request(
+        &mut self,
+        file_uuid: &UUID,
+        req: &Request,
+    ) -> Result<(), String> {
         let mut file = self.files_map.get_mut(file_uuid);
         if let None = file {
             println!("SEM ARQUIVO");

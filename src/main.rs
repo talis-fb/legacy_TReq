@@ -6,8 +6,8 @@ use app::states::manager::StateManager;
 use base::actions::manager::ActionsManager;
 use base::actions::Actions;
 use base::commands::handler::CommandHandler;
-use base::store::DataStore;
 use base::store::requests_active::RequestStore;
+use base::store::DataStore;
 use base::web::client::WebClient;
 use base::web::repository::reqwest::ReqwestClientRepository;
 use commands::Commands;
@@ -50,11 +50,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let action_manager = ActionsManager {};
     let command_handler = CommandHandler {};
 
-
     // Load saved files
     let saved_files = SaveFiles::init().unwrap();
     let request_store = RequestStore::init(saved_files);
-    
+
     let mut data_store = DataStore::init(request_store);
     data_store.set_log_warning(String::from("NEEDING HELP,"), String::from("press [?]"));
 
