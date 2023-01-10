@@ -1,5 +1,5 @@
-pub mod ui;
 pub mod help;
+pub mod ui;
 
 use crate::{app::states::StatesNames, base::store::DataStore};
 use tui::{
@@ -19,19 +19,28 @@ mod Drawers {
 
     use crate::base::{logs::LogType, web::request::METHODS};
 
-    use super::{*, help::DocView};
+    use super::{help::DocView, *};
     pub fn draw_tablist_requests<T>(frame: &mut Frame<T>, area: Rect, store: &DataStore) -> ()
     where
         T: Backend,
     {
-        let req_names: Vec<String> = store
+        let req_names: Vec<(String, bool)> = store
             .get_requests()
             .into_iter()
-            .map(|req| req.name.clone())
+            .map(|req| (req.name.clone(), req.has_changed))
             .collect();
         let tabs_spans = req_names
             .into_iter()
-            .map(|s| Spans::from(vec![Span::from(s)]))
+            .map(|(s, changed)| {
+                Spans::from(vec![
+                    Span::from(s),
+                    if changed {
+                        Span::from("*")
+                    } else {
+                        Span::from("")
+                    },
+                ])
+            })
             .collect();
 
         let tabs = Tabs::new(tabs_spans)
@@ -105,8 +114,14 @@ mod Drawers {
     where
         T: Backend,
     {
-        let title_in_body = vec![Span::styled("BODY", Style::default().fg(Color::LightYellow)), Span::from(" / Headers")];
-        let title_in_header = vec![Span::from("Body / "), Span::styled("HEADERS", Style::default().fg(Color::LightYellow))];
+        let title_in_body = vec![
+            Span::styled("BODY", Style::default().fg(Color::LightYellow)),
+            Span::from(" / Headers"),
+        ];
+        let title_in_header = vec![
+            Span::from("Body / "),
+            Span::styled("HEADERS", Style::default().fg(Color::LightYellow)),
+        ];
 
         let body_block = Block::default()
             .borders(Borders::ALL)
@@ -184,8 +199,14 @@ mod Drawers {
     where
         T: Backend,
     {
-        let title_in_body = vec![Span::styled("BODY", Style::default().fg(Color::LightYellow)), Span::from(" / Headers")];
-        let title_in_header = vec![Span::from("Body / "), Span::styled("HEADERS", Style::default().fg(Color::LightYellow))];
+        let title_in_body = vec![
+            Span::styled("BODY", Style::default().fg(Color::LightYellow)),
+            Span::from(" / Headers"),
+        ];
+        let title_in_header = vec![
+            Span::from("Body / "),
+            Span::styled("HEADERS", Style::default().fg(Color::LightYellow)),
+        ];
 
         // RESPONSE SECTION
         let response_block = Block::default()
@@ -298,8 +319,7 @@ mod Drawers {
     where
         T: Backend,
     {
-
-        // TODO: 
+        // TODO:
         // This verification of Vec<Span> should not be done here!
         //
         let doc_handler = store.doc_reader.as_ref().unwrap();
@@ -311,7 +331,6 @@ mod Drawers {
         } else {
             let (_, content) = content.split_at(position);
         }
-
 
         let popup_block = Block::default()
             .title("Navigate -> [UP] and [DOWN] / Press any other key to close")

@@ -68,7 +68,6 @@ impl SaveFiles {
     ) -> Result<(), String> {
         let mut file = self.files_map.get_mut(file_uuid);
         if let None = file {
-            println!("SEM ARQUIVO");
             self.create_saved_file(file_uuid, req)?;
             file = self.files_map.get_mut(file_uuid);
         }

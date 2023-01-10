@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::{self, Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -39,6 +39,9 @@ pub struct Request {
     pub method: METHODS,
     pub headers: HashMap<String, String>,
     pub body: String,
+
+    #[serde(skip)]
+    pub has_changed: bool,
 }
 
 impl Default for Request {
@@ -49,6 +52,7 @@ impl Default for Request {
             url: String::new(),
             headers: HeadersRequest::default(),
             body: String::from("{}"),
+            has_changed: false,
         }
     }
 }

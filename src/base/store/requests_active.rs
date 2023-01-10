@@ -68,6 +68,10 @@ impl RequestStore {
         let key = self.requests.get(self.current_ind).unwrap();
         self.request_in_memory.get(key).unwrap().clone()
     }
+    fn get_request_mut(&mut self) -> &mut Request {
+        let key = self.requests.get(self.current_ind).unwrap();
+        self.request_in_memory.get_mut(key).unwrap()
+    }
 
     pub fn get_requests(&self) -> Vec<&Request> {
         self.requests
@@ -84,15 +88,22 @@ impl RequestStore {
         self.request_in_memory.len()
     }
 
-    pub fn update_request(&mut self, request: Request) -> () {
+    pub fn update_request(&mut self, mut request: Request) -> () {
         let key = self.requests.get(self.current_ind).unwrap();
         let request_in_memory = self.request_in_memory.get_mut(key).unwrap();
+
+        request.has_changed = true;
         *request_in_memory = request;
     }
 
     pub fn save_current_request(&mut self) -> Result<(), String> {
         let uuid = &self.current_uuid;
         let req = self.get_request();
-        self.save_files.save_in_file_as_request(&uuid, &req)
+        self.save_files.save_in_file_as_request(&uuid, &req)?;
+
+        // Now mark it as saved
+        let req = self.get_request_mut();
+        req.has_changed = false;
+        Ok(())
     }
 }
