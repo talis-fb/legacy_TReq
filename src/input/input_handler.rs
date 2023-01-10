@@ -41,7 +41,7 @@ impl InputHandler {
             }
         });
     }
-    pub fn sync_wait_any_event(&self, index_to_start: usize) -> (usize, bool) {
+    pub fn sync_handler_doc_reading(&self, index_to_start: i32) -> (usize, bool) {
         let mut new_index = index_to_start;
         if let Event::Key(key) = event::read().unwrap() {
             new_index = match key.code {
@@ -51,7 +51,9 @@ impl InputHandler {
             }
         }
 
-        (new_index, false)
+        if new_index < 0 { new_index = 0 }
+
+        ((new_index as usize), false)
     }
 
     pub fn sync_handler_typing(&self, buffer: &mut InputKeyboardBuffer) -> (String, bool) {

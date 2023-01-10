@@ -299,45 +299,22 @@ mod Drawers {
         T: Backend,
     {
 
-        let doc = r#"
-        {
-            "content": [
-                [ ["Welcome to TReq! =D", "ColorRed"] ],
-                [ ["", null] ],
-                [ [" > About", "ColorYellow"] ],
-                [ ["It follows the Vim's philosophy. There are MODES. Normally you are in NORMAL Mode, where each key you press trigger a Command", null] ],
-                [ ["", null] ],
-                [ ["A essential concept in TReq is the fact each KEY trigger a ACTION and each Action execute differently based on your current state.", null] ],
-                [ ["", null] ],
-                [ ["For example, if you press TAB, it triggers the 'SWITCH' action. In Body section it change to Header view, but in Url section it change the method used.", null] ],
-                [ ["", null] ],
-                [ [" > Navigation", "ColorYellow"] ],
-                [ ["UP", "ColorBlue"], [" -> k, [UP]", null] ],
-                [ ["DOWN", "ColorBlue"], [" -> j, [DOWN]", null] ],
-                [ ["RIGHT", "ColorBlue"], [" -> l, [RIGHT]", null] ],
-                [ ["LEFT", "ColorBlue"], [" -> h, [LEFT]", null] ],
-                [ ["", null] ],
-                [ [" > Actions", "ColorYellow"] ],
-                [ ["EDIT", "ColorBlue"], [" -> e", null] ],
-                [ ["--- Url Section: ", "ColorCyan"], ["change URL", null] ],
-                [ ["--- Body Section: ", "ColorCyan"], ["change body send to request", null] ],
-                [ ["--- Tab Section: ", "ColorCyan"], ["change name of current request's Tab", null] ],
-                [ ["", null] ],
-                [ ["SWITCH", "ColorBlue"], [" -> [TAB]", null] ],
-                [ ["--- Url Section: ", "ColorCyan"], ["change METHOD to use", null] ],
-                [ ["--- Body Section: ", "ColorCyan"], ["change visualization between header or body", null] ],
-                [ ["--- Tab Section: ", "ColorCyan"], ["change to next tab in list", null] ]
-            ]
+        // TODO: 
+        // This verification of Vec<Span> should not be done here!
+        //
+        let doc_handler = store.doc_reader.as_ref().unwrap();
+        let mut content = doc_handler.get_doc_spans();
+        let position = doc_handler.position;
+
+        if position >= content.len() {
+            content.clear();
+        } else {
+            let (_, content) = content.split_at(position);
         }
-        "#;
 
-        let doc = DocView::from_string(String::from(doc));
-        let content = doc.to_vec_spans();
-
-        let (&_, content) = content.split_at(store.position_reading);
 
         let popup_block = Block::default()
-            .title("Press any key to close this window")
+            .title("Navigate -> [UP] and [DOWN] / Press any other key to close")
             .borders(Borders::ALL)
             .border_style(Style::default().fg(Color::LightYellow))
             .title_alignment(Alignment::Center);

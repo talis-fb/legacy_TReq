@@ -90,10 +90,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
         match app.get_mode() {
             InputMode::Help => {
-                let store = app.get_data_store_mut();
-                let (i, is_finished) = input_handler.sync_wait_any_event(store.position_reading);
+                let doc_reader = app.get_data_store_mut().doc_reader.as_mut().unwrap();
+                let (i, is_finished) = input_handler.sync_handler_doc_reading(doc_reader.get_position() as i32);
 
-                store.position_reading = i;
+                doc_reader.position = i;
 
                 if is_finished {
                     app.set_mode(InputMode::Normal);

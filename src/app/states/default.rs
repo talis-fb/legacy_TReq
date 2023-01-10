@@ -37,7 +37,7 @@ impl State for DefaultState {
                 (Actions::DeleteTab, Commands::delete_tab()),
                 (Actions::Submit, Commands::submit()),
                 (Actions::Quit, Commands::quit()),
-                (Actions::AskForHelp, Commands::show_help()),
+                (Actions::AskForHelp, Commands::open_help_screen()),
                 (Actions::Save, Commands::save_request()),
             ]),
         }

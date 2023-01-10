@@ -4,7 +4,7 @@ use tui::{
     text::{Span, Spans},
 };
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 enum StyleOptions {
     ColorCyan,
     ColorRed,
@@ -22,7 +22,7 @@ impl StyleOptions {
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct DocView {
     content: Vec<Vec<(String, Option<StyleOptions>)>>,
 }

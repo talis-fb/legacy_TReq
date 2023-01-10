@@ -27,7 +27,7 @@ impl UUID {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct AppFile {
     path: PathBuf,
 }
@@ -49,6 +49,7 @@ impl AppFile {
     }
 
     pub fn get_content(&self) -> Result<String, String> {
+        println!(">>{:?}",self.path.display() );
         std::fs::read_to_string(&self.path).map_err(|e| e.to_string())
     }
 
@@ -59,51 +60,4 @@ impl AppFile {
             .map_err(|e| e.to_string())?;
         Ok(())
     }
-
-    // pub fn create(path: String, extension: Option<String>) -> Result<Self, String> {
-    //     let path = Path::new(APP_DATA_PATH);
-    //     println!("path: {}", path.display());
-    //     let mut path = path.join(path);
-    //
-    //     println!("path: {}", path.display());
-    //     path.set_extension(extension.as_ref().unwrap_or(&String::new()));
-    //
-    //     println!("path: {}", path.display());
-    //
-    //     let file = File::create(&path).map_err(|e| e.to_string())?;
-    //     let content = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
-    //     Ok(Self {
-    //         file,
-    //         content,
-    //         extension: None,
-    //     })
-    // }
 }
-
-// pub struct TomlFile {
-//     pub file: AppFile,
-// }
-// impl TomlFile {
-//     pub fn create(name: String) -> Result<Self, String> {
-//         let file = AppFile::create(name, Some(String::from("toml")))?;
-//         Ok(Self { file })
-//     }
-//
-//     pub fn update_content(&mut self, content: String) -> Result<(), String> {
-//         self.file.update_content(content)
-//     }
-// }
-//
-// pub struct JsonFile {
-//     pub file: AppFile,
-// }
-// impl JsonFile {
-//     pub fn create(name: String) -> Result<Self, String> {
-//         let file = AppFile::create(name, Some(String::from("json")))?;
-//         Ok(Self { file })
-//     }
-//
-//     pub fn update_content(&mut self, content: String) -> Result<(), String> {
-//         self.file.update_content(content)
-//     }
-// }

@@ -1,0 +1,29 @@
+{
+    "content": [
+        [ ["Welcome to TReq! =D", "ColorRed"] ],
+        [ ["", null] ],
+        [ [" > About", "ColorYellow"] ],
+        [ ["It follows the Vim's philosophy. There are MODES. Normally you are in NORMAL Mode, where each key you press trigger a Command", null] ],
+        [ ["", null] ],
+        [ ["A essential concept in TReq is the fact each KEY trigger a ACTION and each Action execute differently based on your current state.", null] ],
+        [ ["", null] ],
+        [ ["For example, if you press TAB, it triggers the 'SWITCH' action. In Body section it change to Header view, but in Url section it change the method used.", null] ],
+        [ ["", null] ],
+        [ [" > Navigation", "ColorYellow"] ],
+        [ ["UP", "ColorBlue"], [" -> k, [UP]", null] ],
+        [ ["DOWN", "ColorBlue"], [" -> j, [DOWN]", null] ],
+        [ ["RIGHT", "ColorBlue"], [" -> l, [RIGHT]", null] ],
+        [ ["LEFT", "ColorBlue"], [" -> h, [LEFT]", null] ],
+        [ ["", null] ],
+        [ [" > Actions", "ColorYellow"] ],
+        [ ["EDIT", "ColorBlue"], [" -> e", null] ],
+        [ ["--- Url Section: ", "ColorCyan"], ["change URL", null] ],
+        [ ["--- Body Section: ", "ColorCyan"], ["change body send to request", null] ],
+        [ ["--- Tab Section: ", "ColorCyan"], ["change name of current request's Tab", null] ],
+        [ ["", null] ],
+        [ ["SWITCH", "ColorBlue"], [" -> [TAB]", null] ],
+        [ ["--- Url Section: ", "ColorCyan"], ["change METHOD to use", null] ],
+        [ ["--- Body Section: ", "ColorCyan"], ["change visualization between header or body", null] ],
+        [ ["--- Tab Section: ", "ColorCyan"], ["change to next tab in list", null] ]
+    ]
+}

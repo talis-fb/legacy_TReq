@@ -11,7 +11,7 @@ use self::requests_active::RequestStore;
 
 use super::{
     logs::LogType,
-    web::{request::Request, response::Response},
+    web::{request::Request, response::Response}, doc::handler::DocReaderHandler,
 };
 
 use std::sync::Mutex;
@@ -31,11 +31,11 @@ pub struct DataStore {
     pub mode: InputMode,
     pub input_buffer: InputKeyboardBuffer,
 
-    // When seeing help screen
-    pub position_reading: usize,
-
     // Logs
     pub log: Log,
+
+    // DocReader
+    pub doc_reader: Option<DocReaderHandler>,
 }
 
 impl DataStore {
@@ -49,7 +49,7 @@ impl DataStore {
             mode: InputMode::Normal,
             input_buffer: InputKeyboardBuffer::init(),
             log: Log::default(),
-            position_reading: 0,
+            doc_reader: None,
         }
     }
 
@@ -125,6 +125,11 @@ impl DataStore {
 
     pub fn get_mode(&self) -> InputMode {
         self.mode.clone()
+    }
+
+    // doc_reader
+    pub fn set_doc_reader(&mut self, doc_reader: DocReaderHandler) -> () {
+        self.doc_reader = Some(doc_reader)
     }
 }
 
