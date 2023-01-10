@@ -1,4 +1,5 @@
 pub mod ui;
+pub mod help;
 
 use crate::{app::states::StatesNames, base::store::DataStore};
 use tui::{
@@ -104,11 +105,14 @@ mod Drawers {
     where
         T: Backend,
     {
+        let title_in_body = vec![Span::styled("BODY", Style::default().fg(Color::LightYellow)), Span::from(" / Headers")];
+        let title_in_header = vec![Span::from("Body / "), Span::styled("HEADERS", Style::default().fg(Color::LightYellow))];
+
         let body_block = Block::default()
             .borders(Borders::ALL)
             .title(match store.current_state {
-                StatesNames::RequestHeaders => "Body / HEADERS",
-                _ => "BODY / Headers",
+                StatesNames::RequestHeaders => title_in_header,
+                _ => title_in_body,
             })
             .title_alignment(Alignment::Left)
             //
@@ -180,16 +184,14 @@ mod Drawers {
     where
         T: Backend,
     {
+        let title_in_body = vec![Span::styled("BODY", Style::default().fg(Color::LightYellow)), Span::from(" / Headers")];
+        let title_in_header = vec![Span::from("Body / "), Span::styled("HEADERS", Style::default().fg(Color::LightYellow))];
+
         // RESPONSE SECTION
         let response_block = Block::default()
             .borders(Borders::ALL)
             .title("Response")
             .title_alignment(Alignment::Center)
-            .style(if store.current_state == StatesNames::ResponseHeader {
-                Style::default().fg(Color::LightYellow)
-            } else {
-                Style::default()
-            })
             .border_type(BorderType::Rounded);
 
         let response_layout = Layout::default()
@@ -229,8 +231,8 @@ mod Drawers {
         let body_response = Block::default()
             .borders(Borders::ALL)
             .title(match store.current_state {
-                StatesNames::ResponseHeader => "Body / HEADERS",
-                _ => "BODY / Headers",
+                StatesNames::ResponseHeader => title_in_header,
+                _ => title_in_body,
             })
             .title_alignment(Alignment::Left)
             .style(match store.current_state {
@@ -297,49 +299,49 @@ mod Drawers {
         T: Backend,
     {
         let content = vec![
-        Spans::from(vec![
-            Span::styled("Welcome to TReq! =D", Style::default().fg(Color::LightRed)),
-        ]),
-        Spans::from(""),
-        Spans::from(vec![
-            Span::styled(" > About", Style::default().fg(Color::LightYellow)),
-        ]),
-        Spans::from("It follows the Vim's philosophy. There are MODES. Normally you are in NORMAL Mode, where each key you press trigger a Command"),
-        Spans::from(""),
-        Spans::from("A essential concept in TReq is the fact each KEY trigger a ACTION and each Action execute differently based on your current state."),
-        Spans::from(""),
-        Spans::from("For example, if you press TAB, it triggers the 'SWITCH' action. In Body section it change to Header view, but in Url section it change the method used."),
-        Spans::from(""),
-        Spans::from(vec![
-            Span::styled(" > Navigation", Style::default().fg(Color::LightYellow)),
-        ]),
-        Spans::from(vec![ 
-            Span::styled("UP", Style::default().fg(Color::LightBlue)),
-            Span::from(" -> "),
-            Span::from("k, [UP]")
-        ]),
-        Spans::from(vec![ 
-            Span::styled("DOWN", Style::default().fg(Color::LightBlue)),
-            Span::from(" -> "),
-            Span::from("j, [DOWN]")
-        ]),
-        Spans::from(vec![ 
-            Span::styled("RIGHT", Style::default().fg(Color::LightBlue)),
-            Span::from(" -> "),
-            Span::from("l, [RIGHT]")
-        ]),
-        Spans::from(vec![ 
-            Span::styled("LEFT", Style::default().fg(Color::LightBlue)),
-            Span::from(" -> "),
-            Span::from("h, [LEFT]")
-        ]),
+            Spans::from(vec![
+                Span::styled("Welcome to TReq! =D", Style::default().fg(Color::LightRed)),
+            ]),
+            Spans::from(""),
+            Spans::from(vec![
+                Span::styled(" > About", Style::default().fg(Color::LightYellow)),
+            ]),
+            Spans::from("It follows the Vim's philosophy. There are MODES. Normally you are in NORMAL Mode, where each key you press trigger a Command"),
+            Spans::from(""),
+            Spans::from("A essential concept in TReq is the fact each KEY trigger a ACTION and each Action execute differently based on your current state."),
+            Spans::from(""),
+            Spans::from("For example, if you press TAB, it triggers the 'SWITCH' action. In Body section it change to Header view, but in Url section it change the method used."),
+            Spans::from(""),
+            Spans::from(vec![
+                Span::styled(" > Navigation", Style::default().fg(Color::LightYellow)),
+            ]),
+            Spans::from(vec![
+                Span::styled("UP", Style::default().fg(Color::LightBlue)),
+                Span::from(" -> "),
+                Span::from("k, [UP]")
+            ]),
+            Spans::from(vec![
+                Span::styled("DOWN", Style::default().fg(Color::LightBlue)),
+                Span::from(" -> "),
+                Span::from("j, [DOWN]")
+            ]),
+            Spans::from(vec![
+                Span::styled("RIGHT", Style::default().fg(Color::LightBlue)),
+                Span::from(" -> "),
+                Span::from("l, [RIGHT]")
+            ]),
+            Spans::from(vec![
+                Span::styled("LEFT", Style::default().fg(Color::LightBlue)),
+                Span::from(" -> "),
+                Span::from("h, [LEFT]")
+            ]),
 
         // Actions
         Spans::from(""),
         Spans::from(vec![
             Span::styled(" > Actions", Style::default().fg(Color::LightYellow)),
         ]),
-        Spans::from(vec![ 
+        Spans::from(vec![
             Span::styled("EDIT", Style::default().fg(Color::LightBlue)),
             Span::from(" -> "),
             Span::from("e")
@@ -358,7 +360,7 @@ mod Drawers {
         ]),
 
         Spans::from(""),
-        Spans::from(vec![ 
+        Spans::from(vec![
             Span::styled("SWITCH", Style::default().fg(Color::LightBlue)),
             Span::from(" -> "),
             Span::from("[TAB]")
@@ -377,11 +379,7 @@ mod Drawers {
         ]),
     ];
 
-
-
         let (&_, content) = content.split_at(store.position_reading);
-
-
 
         let popup_block = Block::default()
             .title("Press any key to close this window")
@@ -398,5 +396,4 @@ mod Drawers {
         frame.render_widget(Clear, popup_area);
         frame.render_widget(popup_text, popup_area);
     }
-
 }
