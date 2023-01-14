@@ -20,14 +20,19 @@ where
 
     pub async fn submit(&self, request_to_do: Request) -> Result<Response, String> {
         let Request {
-            url, headers, body, ..
+            mut url, headers, body, ..
         } = request_to_do;
 
+        //
+        // TODO:
+        // This verification should not be hard coded here. It'd be great some validator before
+        // the calls below. Extensible and configurable
         let has_the_protocol_in_begin =
-            regex::Regex::new("^(?!https?://.)*$").map_err(|e| e.to_string())?;
+            regex::Regex::new(r"^((http|https)://)(.+)$").map_err(|e| e.to_string())?;
 
         if !has_the_protocol_in_begin.is_match(&url) {
-            println!("FOII CARAI");
+            let protocol = "http://".to_string();
+            url = protocol + &url;
         }
 
         let response = match request_to_do.method {
