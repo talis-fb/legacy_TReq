@@ -1,9 +1,5 @@
 use super::Actions;
-use crate::{
-    app::states::{manager::StateManager, State},
-    base::commands::Command,
-};
-use crossterm::event::Event;
+use crate::{app::states::manager::StateManager, base::commands::Command};
 
 #[derive(Clone)]
 pub struct ActionsManager {

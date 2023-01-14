@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 pub type EventListenerFn = fn();
 
 pub mod manager;

@@ -19,7 +19,7 @@ mod Drawers {
 
     use crate::base::{logs::LogType, web::request::METHODS};
 
-    use super::{help::DocView, *};
+    use super::*;
     pub fn draw_tablist_requests<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore) -> ()
     where
         T: Backend,

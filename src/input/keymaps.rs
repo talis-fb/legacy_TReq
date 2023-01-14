@@ -1,7 +1,6 @@
 use crate::base::actions::Actions;
 use crossterm::event::KeyCode;
 use std::collections::HashMap;
-use std::rc::Rc;
 
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub struct Actionable {

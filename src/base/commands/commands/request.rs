@@ -1,11 +1,7 @@
-use crate::base::logs::{Log, LogType};
 use crate::base::web::request::METHODS;
 use crate::commands::{Command, Commands};
-use crate::states::{self, State, States};
 use crate::App;
 use std::collections::HashMap;
-use std::process::{Command as OSCommand, Stdio};
-use std::time::Duration;
 
 impl Commands {
     pub fn save_request() -> Command {

@@ -2,16 +2,10 @@ use crate::{
     base::web::request::Request,
     utils::{
         custom_types::uuid::UUID,
-        files::FileUtils,
-        file_facades::{request_file::RequestFile, FileFacade}
+        file_facades::{request_file::RequestFile, FileFacade},
     },
 };
-use serde::{Deserialize, Serialize};
-use std::{
-    collections::HashMap,
-    fs::{File, OpenOptions},
-    path::Path,
-};
+use std::collections::HashMap;
 
 use super::{Configuration, ConfigurationEditable};
 
@@ -31,17 +25,16 @@ impl Configuration<UUID, RequestFile, Request> for SaveFiles {
             let path = entry.map_err(|e| e.to_string())?.path();
             let app_file = RequestFile::from_path(path);
 
-
             // Verify if content in File is valid
             let content_file = app_file.get_content();
             if let Err(_) = content_file {
                 continue;
             }
-            let is_valid_json: Option<Request> = serde_json::from_str(&content_file.unwrap()).unwrap_or(None);
+            let is_valid_json: Option<Request> =
+                serde_json::from_str(&content_file.unwrap()).unwrap_or(None);
             if let None = is_valid_json {
                 continue;
             }
-
 
             all_files.insert(UUID::new(), app_file);
         }
@@ -61,7 +54,7 @@ impl Configuration<UUID, RequestFile, Request> for SaveFiles {
     }
 
     fn get_map(&self) -> &HashMap<UUID, RequestFile> {
-       &self.map
+        &self.map
     }
 }
 impl ConfigurationEditable<UUID, RequestFile, Request> for SaveFiles {

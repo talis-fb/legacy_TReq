@@ -1,31 +1,15 @@
+use super::states::manager::StateManager;
 use crate::base::actions::{manager::ActionsManager, Actions};
-use crate::base::commands::{handler::CommandHandler, Command, Commands};
-use crate::base::logs::{Log, LogType};
+use crate::base::commands::{handler::CommandHandler, Command};
+use crate::base::stores::MainStore;
 use crate::base::web::client::WebClient;
 use crate::base::web::repository::reqwest::ReqwestClientRepository;
-use crate::base::web::repository::HttpClientRepository;
 use crate::base::web::response::Response;
 use crate::config::configurations::save_files::SaveFiles;
-use crate::states::{default::DefaultState, State};
-use crossterm::event::KeyCode;
-use std::collections::hash_map::HashMap;
+use crate::input::buffer::InputKeyboardBuffer;
+use crate::states::State;
 use std::sync::mpsc::Sender;
 use std::sync::Arc;
-use std::thread;
-
-use tui::layout::Rect;
-use tui::widgets::Widget;
-
-use crate::base::web::request::{Request, METHODS};
-use crate::input::listener::KeyboardListerner;
-
-use crate::input::buffer::{InputBuffer, InputKeyboardBuffer};
-
-use super::states::empty::EmptyState;
-use super::states::manager::StateManager;
-use super::states::States;
-
-use crate::base::stores::MainStore;
 
 #[derive(Copy, Clone, Debug)]
 pub enum InputMode {

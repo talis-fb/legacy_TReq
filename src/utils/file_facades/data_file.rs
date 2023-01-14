@@ -1,5 +1,5 @@
-use std::path::{Path, PathBuf};
 use super::{FileFacade, FileUtils};
+use std::path::PathBuf;
 
 #[derive(Clone, Debug)]
 pub struct DataFile {

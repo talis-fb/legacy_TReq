@@ -1,5 +1,3 @@
-use crate::app::states::StatesNames;
-
 use super::{CommandsMap, State};
 
 pub struct StateManager {

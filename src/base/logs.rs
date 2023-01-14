@@ -1,5 +1,3 @@
-use std::sync::{Arc, Mutex};
-
 #[derive(Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum LogType {
     Error,

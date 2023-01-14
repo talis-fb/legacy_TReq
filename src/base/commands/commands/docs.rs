@@ -1,7 +1,6 @@
 use crate::app::app::InputMode;
 use crate::base::doc::DocsFactory;
 use crate::commands::{Command, Commands};
-use crate::states::{self, State, States};
 use crate::App;
 
 impl Commands {

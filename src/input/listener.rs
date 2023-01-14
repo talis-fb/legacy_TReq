@@ -1,11 +1,7 @@
 use crate::base::actions::Actions;
-use crate::input::keymaps::{Actionable, KeyMap};
+use crate::input::keymaps::KeyMap;
 use crossterm::event::KeyCode;
-use std::boxed::Box;
-use std::rc::Rc;
 use std::sync::Arc;
-
-use crate::input::keymaps::default_keymap_factory;
 
 //
 // TODO:

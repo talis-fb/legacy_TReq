@@ -1,38 +1,18 @@
-use std::{
-    collections::HashMap,
-    iter::Fuse,
-    sync::{
-        atomic::{AtomicBool, Ordering},
-        Mutex,
-    },
-    time::Duration,
-};
-
-use crate::{
-    app::app::{App, InputMode},
-    base::stores::MainStore,
-    states::{active_tablist::TabActiveState, StatesNames},
-};
+use crate::{app::app::InputMode, base::stores::MainStore, states::StatesNames};
 
 use crossterm::{
-    event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
+    event::DisableMouseCapture,
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use std::{error::Error, io};
-use tokio::task::JoinHandle;
+use std::io;
 use tui::{
-    backend::{Backend, CrosstermBackend},
-    layout::{Alignment, Constraint, Direction, Layout, Rect},
-    style::{Color, Modifier, Style},
-    text::{Span, Spans},
-    widgets::{Block, BorderType, Borders, Clear, Paragraph, Tabs, Widget},
-    Frame, Terminal,
+    backend::CrosstermBackend,
+    layout::{Alignment, Constraint, Direction, Layout},
+    style::{Color, Style},
+    widgets::{Block, BorderType, Borders},
+    Terminal,
 };
-
-use std::sync::mpsc::{self, Receiver, Sender};
-
-use std::sync::Arc;
 
 use crate::view::Drawers;
 

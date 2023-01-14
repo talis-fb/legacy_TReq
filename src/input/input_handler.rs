@@ -1,16 +1,9 @@
 use crossterm::event::{self, Event, KeyCode};
-use std::{
-    io::Read,
-    sync::{mpsc::Sender, Arc, Mutex},
-};
+use std::sync::{mpsc::Sender, Arc, Mutex};
 
 use tempfile::Builder;
 
-use crate::{
-    app::app::App,
-    base::{actions::Actions, stores::MainStore},
-    utils::custom_types::async_bool::AsyncBool,
-};
+use crate::{base::actions::Actions, utils::custom_types::async_bool::AsyncBool};
 
 use super::{buffer::InputKeyboardBuffer, listener::KeyboardListerner};
 use std::io::Write;
@@ -51,7 +44,9 @@ impl InputHandler {
             }
         }
 
-        if new_index < 0 { new_index = 0 }
+        if new_index < 0 {
+            new_index = 0
+        }
 
         ((new_index as usize), false)
     }

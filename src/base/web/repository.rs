@@ -1,8 +1,7 @@
-use async_trait::async_trait;
 pub mod reqwest;
-use std::{collections::HashMap, error::Error};
-
-use super::{request::Request, response::Response};
+use super::response::Response;
+use async_trait::async_trait;
+use std::collections::HashMap;
 
 #[async_trait]
 pub trait HttpClientRepository {

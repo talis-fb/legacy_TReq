@@ -1,6 +1,5 @@
 use crate::actions::Actions;
-use crate::app::app::App;
-use crate::commands::{self, Command, Commands};
+use crate::commands::{Command, Commands};
 use std::collections::HashMap;
 
 // States Names

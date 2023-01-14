@@ -1,8 +1,8 @@
 use async_trait::async_trait;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
-use std::{collections::HashMap, error::Error, str::FromStr};
+use std::{collections::HashMap, str::FromStr};
 
-use crate::{app::states, base::web::response::Response};
+use crate::base::web::response::Response;
 
 use super::HttpClientRepository;
 use reqwest::Client;

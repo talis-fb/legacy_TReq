@@ -1,7 +1,6 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
-#![allow(unused_imports)]
-use app::states::empty::EmptyState;
+// #![allow(unused_imports)]
 use app::states::manager::StateManager;
 use base::actions::manager::ActionsManager;
 use base::actions::Actions;
@@ -11,16 +10,12 @@ use base::stores::MainStore;
 use base::web::client::WebClient;
 use base::web::repository::reqwest::ReqwestClientRepository;
 use commands::Commands;
-use config::configurations::Configuration;
 use config::configurations::save_files::SaveFiles;
+use config::configurations::Configuration;
 use config::manager::ConfigManager;
-use crossterm::event::{self, Event, KeyCode};
-use directories::ProjectDirs;
-use input::buffer::InputBuffer;
 use states::{default::DefaultState, State};
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, Mutex};
-use std::{error::Error, io};
+use std::error::Error;
+use std::sync::Arc;
 
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::time::Duration;
@@ -36,7 +31,6 @@ use input::listener::KeyboardListerner;
 
 mod base;
 // use base::commands;
-use base::web::request::Request;
 use base::{actions, commands};
 
 mod view;

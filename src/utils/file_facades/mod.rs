@@ -1,17 +1,10 @@
 pub mod data_file;
 pub mod request_file;
 
-use std::collections::HashMap;
-use std::fmt::Display;
+use super::files::FileUtils;
 use std::fs::{File, OpenOptions};
 use std::io::Write;
-use std::os::unix::prelude::OsStrExt;
-use std::path::{Path, PathBuf};
-use std::rc::Rc;
-use std::sync::RwLock;
-
-use directories::ProjectDirs;
-use super::files::FileUtils;
+use std::path::PathBuf;
 
 pub trait FileFacade {
     fn get_path(&self) -> PathBuf;

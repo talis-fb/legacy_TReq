@@ -1,17 +1,18 @@
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 
 pub mod requests;
 
 use crate::{
     app::{app::InputMode, states::StatesNames},
-    input::buffer::{InputBuffer, InputKeyboardBuffer},
+    input::buffer::InputKeyboardBuffer,
 };
 
 use self::requests::RequestStore;
 
 use super::{
+    doc::handler::DocReaderHandler,
     logs::LogType,
-    web::{request::Request, response::Response}, doc::handler::DocReaderHandler,
+    web::{request::Request, response::Response},
 };
 
 use std::sync::Mutex;
@@ -21,7 +22,7 @@ use super::logs::Log;
 #[derive(Clone)]
 pub struct MainStore {
     // Web
-    requests: RequestStore ,
+    requests: RequestStore,
     last_response: Arc<Mutex<Response>>,
 
     // States

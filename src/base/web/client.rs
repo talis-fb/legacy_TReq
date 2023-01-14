@@ -1,10 +1,6 @@
-use reqwest::Client;
-
 use super::repository::HttpClientRepository;
 use super::request::METHODS;
 use super::{request::Request, response::Response};
-
-use std::sync::mpsc::{self, Receiver, Sender};
 
 pub struct WebClient<T: HttpClientRepository> {
     http_client: T,
@@ -33,8 +29,6 @@ where
         if !has_the_protocol_in_begin.is_match(&url) {
             println!("FOII CARAI");
         }
-
-
 
         let response = match request_to_do.method {
             METHODS::GET => self.http_client.call_get(url, headers).await,
