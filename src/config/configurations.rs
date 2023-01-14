@@ -1,4 +1,5 @@
 pub mod save_files;
+pub mod external_editor;
 
 use std::collections::HashMap;
 

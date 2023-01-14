@@ -3,6 +3,7 @@ use std::sync::{mpsc::Sender, Arc, Mutex};
 
 use tempfile::Builder;
 
+use crate::config::configurations::external_editor::ExternalEditor;
 use crate::{base::actions::Actions, utils::custom_types::async_bool::AsyncBool};
 
 use super::{buffer::InputKeyboardBuffer, listener::KeyboardListerner};
@@ -11,11 +12,13 @@ use std::process::{Command as OSCommand, Stdio};
 
 pub struct InputHandler {
     listener: Arc<Mutex<KeyboardListerner>>,
+    configuration: ExternalEditor,
 }
 impl InputHandler {
-    pub fn init(listener: KeyboardListerner /* , action_queue: Sender<Actions> */) -> Self {
+    pub fn init(listener: KeyboardListerner, configuration: ExternalEditor) -> Self {
         Self {
             listener: Arc::new(Mutex::new(listener)),
+            configuration,
         }
     }
 
@@ -85,7 +88,7 @@ impl InputHandler {
 
         let file_path = temp_file.path();
 
-        let mut child = OSCommand::new("nvim")
+        let mut child = OSCommand::new(&self.configuration.editor)
             .arg(file_path)
             .stdin(Stdio::inherit())
             .stdout(Stdio::inherit())

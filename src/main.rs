@@ -10,6 +10,7 @@ use base::stores::MainStore;
 use base::web::client::WebClient;
 use base::web::repository::reqwest::ReqwestClientRepository;
 use commands::Commands;
+use config::configurations::external_editor::ExternalEditor;
 use config::configurations::save_files::SaveFiles;
 use config::configurations::Configuration;
 use config::manager::ConfigManager;
@@ -50,7 +51,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Configurations and Setup of necessary folders
     ConfigManager::setup_env().expect("Error creating folders .local/share/treq. If error persist create it with mkdir $HOME/.local/share/treq");
     let saved_requests = SaveFiles::setup_and_init().unwrap();
-    let config_manager = ConfigManager { saved_requests };
+    let editor = ExternalEditor::setup_and_init().unwrap();
+    let config_manager = ConfigManager { saved_requests, editor };
 
     // Init of Data Stores
     let request_store = RequestStore::init(config_manager.saved_requests);
@@ -69,7 +71,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let has_clicked_before = Arc::new(AsyncBool::init(true));
     let commands = default_keymap_factory();
     let keymap = KeyboardListerner::init(commands);
-    let input_handler = InputHandler::init(keymap);
+    let input_handler = InputHandler::init(keymap, config_manager.editor);
 
     // Init UI
     let mut view = UI::init();
