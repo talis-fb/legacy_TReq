@@ -1,6 +1,7 @@
 use crate::{
     base::web::request::Request,
-    utils::config::{AppFile, APP_DATA_PATH, APP_DATA_PATH_REQUESTS, UUID},
+    utils::{config::{AppFile, APP_DATA_PATH, APP_DATA_PATH_REQUESTS, UUID}, files::{IFile, DataFile, FileUtils}},
+    utils::files::RequestFile
 };
 use serde::{Deserialize, Serialize};
 use std::{
@@ -11,18 +12,20 @@ use std::{
 
 #[derive(Clone)]
 pub struct SaveFiles {
-    pub files_map: HashMap<UUID, AppFile>,
+    pub files_map: HashMap<UUID, RequestFile>,
 }
 impl SaveFiles {
     pub fn init() -> Result<Self, String> {
         let mut all_files = HashMap::new();
 
-        let path = Path::new(APP_DATA_PATH_REQUESTS);
+        let path = RequestFile::get_parent_path();
         let paths = std::fs::read_dir(path).map_err(|e| e.to_string())?;
         for entry in paths {
             let path = entry.map_err(|e| e.to_string())?.path();
+            let app_file = RequestFile::from_path(path);
+
             let uuid = UUID::new();
-            let app_file = AppFile::init(path);
+
             all_files.insert(uuid, app_file);
         }
 
@@ -32,20 +35,15 @@ impl SaveFiles {
     }
 
     pub fn create_saved_file(&mut self, uuid: &UUID, request: &Request) -> Result<UUID, String> {
-        let file_path = uuid.value.as_str();
-
-        let mut new_file_path = Path::new(APP_DATA_PATH_REQUESTS).join(file_path);
-        new_file_path.set_extension("json");
-
-        let mut new_app_file = AppFile::init(new_file_path);
-        let file = new_app_file.open_or_create_file()?;
-
+        // Content
         let request_str = serde_json::to_string(&request).unwrap();
 
-        new_app_file.save_content(request_str)?;
+        // File
+        let file_path_name = uuid.value.clone();
+        let mut new_saved_file = RequestFile::from_name(file_path_name);
+        new_saved_file.save_content(request_str)?;
 
-        self.files_map.insert(uuid.clone(), new_app_file);
-
+        self.files_map.insert(uuid.clone(), new_saved_file);
         Ok(uuid.clone())
     }
 

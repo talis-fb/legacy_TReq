@@ -1,7 +1,7 @@
 pub mod help;
 pub mod ui;
 
-use crate::{app::states::StatesNames, base::store::DataStore};
+use crate::{app::states::StatesNames, base::store::MainStore};
 use tui::{
     backend::Backend,
     layout::{Alignment, Rect},
@@ -20,7 +20,7 @@ mod Drawers {
     use crate::base::{logs::LogType, web::request::METHODS};
 
     use super::{help::DocView, *};
-    pub fn draw_tablist_requests<T>(frame: &mut Frame<T>, area: Rect, store: &DataStore) -> ()
+    pub fn draw_tablist_requests<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore) -> ()
     where
         T: Backend,
     {
@@ -66,7 +66,7 @@ mod Drawers {
         frame.render_widget(tabs, area)
     }
 
-    pub fn draw_logs_section<T>(frame: &mut Frame<T>, area: Rect, store: &DataStore) -> ()
+    pub fn draw_logs_section<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore) -> ()
     where
         T: Backend,
     {
@@ -110,7 +110,7 @@ mod Drawers {
         frame.render_widget(log_command_queue, area);
     }
 
-    pub fn draw_body_request_section<T>(frame: &mut Frame<T>, area: Rect, store: &DataStore) -> ()
+    pub fn draw_body_request_section<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore) -> ()
     where
         T: Backend,
     {
@@ -155,7 +155,7 @@ mod Drawers {
         frame.render_widget(body_text, area);
     }
 
-    pub fn draw_method_and_url<T>(frame: &mut Frame<T>, area: Rect, store: &DataStore) -> ()
+    pub fn draw_method_and_url<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore) -> ()
     where
         T: Backend,
     {
@@ -195,7 +195,7 @@ mod Drawers {
         frame.render_widget(url_text, layout[1]);
     }
 
-    pub fn draw_body_response_section<T>(frame: &mut Frame<T>, area: Rect, store: &DataStore) -> ()
+    pub fn draw_body_response_section<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore) -> ()
     where
         T: Backend,
     {
@@ -273,7 +273,7 @@ mod Drawers {
         frame.render_widget(response_text, response_layout[1]);
     }
 
-    pub fn draw_input_popup<T>(frame: &mut Frame<T>, area: Rect, store: &DataStore) -> ()
+    pub fn draw_input_popup<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore) -> ()
     where
         T: Backend,
     {
@@ -315,7 +315,7 @@ mod Drawers {
             .split(popup_layout[1])[1]
     }
 
-    pub fn draw_help_popup<T>(frame: &mut Frame<T>, area: Rect, store: &DataStore) -> ()
+    pub fn draw_help_popup<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore) -> ()
     where
         T: Backend,
     {

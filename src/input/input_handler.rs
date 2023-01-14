@@ -8,7 +8,7 @@ use tempfile::Builder;
 
 use crate::{
     app::app::App,
-    base::{actions::Actions, store::DataStore},
+    base::{actions::Actions, store::MainStore},
     utils::AsyncBool,
 };
 

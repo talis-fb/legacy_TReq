@@ -7,12 +7,14 @@ use base::actions::manager::ActionsManager;
 use base::actions::Actions;
 use base::commands::handler::CommandHandler;
 use base::store::requests_active::RequestStore;
-use base::store::DataStore;
+use base::store::MainStore;
 use base::web::client::WebClient;
 use base::web::repository::reqwest::ReqwestClientRepository;
 use commands::Commands;
 use config::saves::SaveFiles;
+use config::ConfigManager;
 use crossterm::event::{self, Event, KeyCode};
+use directories::ProjectDirs;
 use input::buffer::InputBuffer;
 use states::{default::DefaultState, State};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -50,28 +52,19 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let action_manager = ActionsManager {};
     let command_handler = CommandHandler {};
 
-    // Load saved files
-    let saved_files = SaveFiles::init().unwrap();
-    let request_store = RequestStore::init(saved_files);
+    // Configurations and Setup of necessary folders
+    ConfigManager::setup_env().expect("Error creating folders .local/share/treq. If error persist create it with mkdir $HOME/.local/share/treq");
+    let saved_requests = SaveFiles::init().unwrap();
+    let config_manager = ConfigManager { saved_requests };
 
-    let mut data_store = DataStore::init(request_store);
+    // Init of Data Stores
+    let request_store = RequestStore::init(config_manager.saved_requests);
+    let mut data_store = MainStore::init(request_store);
     data_store.set_log_warning(String::from("NEEDING HELP,"), String::from("press [?]"));
 
+    // Init Web Client
     let web_client: WebClient<ReqwestClientRepository> =
         WebClient::init(ReqwestClientRepository::default());
-
-    // Init app -> start with a empty request
-    let mut app = App::default();
-    app.set_state_manager(state_manager);
-    app.set_action_manager(action_manager);
-    app.set_command_handler(command_handler);
-    app.set_web_client(web_client);
-    app.set_data_store(data_store);
-
-    // Init UI
-    let mut view = UI::init();
-    let delay_between_renders = Duration::from_millis(50);
-    let mut interval_render = tokio::time::interval(delay_between_renders);
 
     // User Input
     let (action_queue_sender, action_queue_receiver): (Sender<Actions>, Receiver<Actions>) =
@@ -83,7 +76,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let keymap = KeyboardListerner::init(commands);
     let input_handler = InputHandler::init(keymap);
 
-    // Scrolling in readings modes
+    // Init UI
+    let mut view = UI::init();
+    let delay_between_renders = Duration::from_millis(50);
+    let mut interval_render = tokio::time::interval(delay_between_renders);
+
+    // Init app -> it starts with a empty request
+    let mut app = App::default();
+    app.set_state_manager(state_manager);
+    app.set_action_manager(action_manager);
+    app.set_command_handler(command_handler);
+    app.set_web_client(web_client);
+    app.set_data_store(data_store);
 
     while !app.is_finished {
         view.render(app.get_data_store());
@@ -91,7 +95,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         match app.get_mode() {
             InputMode::Help => {
                 let doc_reader = app.get_data_store_mut().doc_reader.as_mut().unwrap();
-                let (i, is_finished) = input_handler.sync_handler_doc_reading(doc_reader.get_position() as i32);
+                let (i, is_finished) =
+                    input_handler.sync_handler_doc_reading(doc_reader.get_position() as i32);
 
                 doc_reader.position = i;
 

@@ -2,6 +2,7 @@ use std::sync::atomic::Ordering;
 use std::sync::{atomic::AtomicBool, Arc, Mutex};
 
 pub mod config;
+pub mod files;
 
 pub struct AsyncBool {
     value: Arc<Mutex<AtomicBool>>,

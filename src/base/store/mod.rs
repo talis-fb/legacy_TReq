@@ -19,9 +19,9 @@ use std::sync::Mutex;
 use super::logs::Log;
 
 #[derive(Clone)]
-pub struct DataStore {
+pub struct MainStore {
     // Web
-    requests: RequestStore,
+    requests: RequestStore ,
     last_response: Arc<Mutex<Response>>,
 
     // States
@@ -38,7 +38,7 @@ pub struct DataStore {
     pub doc_reader: Option<DocReaderHandler>,
 }
 
-impl DataStore {
+impl MainStore {
     pub fn init(requests: RequestStore) -> Self {
         let last_response = Arc::new(Mutex::new(Response::default()));
 

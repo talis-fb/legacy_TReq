@@ -25,7 +25,7 @@ use super::states::empty::EmptyState;
 use super::states::manager::StateManager;
 use super::states::States;
 
-use crate::base::store::DataStore;
+use crate::base::store::MainStore;
 
 #[derive(Copy, Clone, Debug)]
 pub enum InputMode {
@@ -37,10 +37,10 @@ pub enum InputMode {
 
 pub struct App {
     pub is_finished: bool,
-    renderer: Option<Sender<DataStore>>,
+    renderer: Option<Sender<MainStore>>,
 
     // Datas
-    pub data_store: Option<DataStore>,
+    pub data_store: Option<MainStore>,
     pub save_files: Option<SaveFiles>,
 
     // States
@@ -74,7 +74,7 @@ impl Default for App {
 
 impl App {
     // Builders -------- ---------------------
-    pub fn set_data_store(&mut self, data_store: DataStore) -> () {
+    pub fn set_data_store(&mut self, data_store: MainStore) -> () {
         self.data_store = Some(data_store)
     }
     pub fn set_save_file(&mut self, save_files: SaveFiles) -> () {
@@ -92,7 +92,7 @@ impl App {
     pub fn set_web_client(&mut self, client: WebClient<ReqwestClientRepository>) -> () {
         self.client_web = Some(Arc::new(client))
     }
-    pub fn set_renderer(&mut self, renderer: Sender<DataStore>) -> () {
+    pub fn set_renderer(&mut self, renderer: Sender<MainStore>) -> () {
         self.renderer = Some(renderer)
     }
 
@@ -178,11 +178,11 @@ impl App {
     }
 
     // Data store ---------------------
-    pub fn get_data_store(&self) -> &DataStore {
+    pub fn get_data_store(&self) -> &MainStore {
         self.data_store.as_ref().unwrap()
     }
 
-    pub fn get_data_store_mut(&mut self) -> &mut DataStore {
+    pub fn get_data_store_mut(&mut self) -> &mut MainStore {
         self.data_store.as_mut().unwrap()
     }
 

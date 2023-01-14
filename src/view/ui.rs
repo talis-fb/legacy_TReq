@@ -10,7 +10,7 @@ use std::{
 
 use crate::{
     app::app::{App, InputMode},
-    base::store::DataStore,
+    base::store::MainStore,
     states::{active_tablist::TabActiveState, StatesNames},
 };
 
@@ -63,7 +63,7 @@ impl UI {
         self.terminal.show_cursor().unwrap();
     }
 
-    pub fn render(&mut self, data_store: &DataStore) {
+    pub fn render(&mut self, data_store: &MainStore) {
         self.terminal
             .draw(|f| {
                 let current_state = data_store.current_state.clone();

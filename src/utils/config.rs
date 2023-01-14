@@ -1,13 +1,11 @@
-use std::{
-    collections::HashMap,
-    fmt::Display,
-    fs::{File, OpenOptions},
-    io::Write,
-    os::unix::prelude::OsStrExt,
-    path::{Path, PathBuf},
-    rc::Rc,
-    sync::RwLock,
-};
+use std::collections::HashMap;
+use std::fmt::Display;
+use std::fs::{File, OpenOptions};
+use std::io::Write;
+use std::os::unix::prelude::OsStrExt;
+use std::path::{Path, PathBuf};
+use std::rc::Rc;
+use std::sync::RwLock;
 
 pub static APP_DATA_PATH: &str = "/home/talis/.local/share/treq/";
 pub static APP_DATA_PATH_REQUESTS: &str = "/home/talis/.local/share/treq/requests";
@@ -33,10 +31,7 @@ pub struct AppFile {
 }
 impl AppFile {
     pub fn init(path: PathBuf) -> Self {
-        Self {
-            path,
-            // file_open: None,
-        }
+        Self { path }
     }
 
     pub fn open_or_create_file(&mut self) -> Result<File, String> {
@@ -49,7 +44,6 @@ impl AppFile {
     }
 
     pub fn get_content(&self) -> Result<String, String> {
-        println!(">>{:?}",self.path.display() );
         std::fs::read_to_string(&self.path).map_err(|e| e.to_string())
     }
 
