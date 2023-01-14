@@ -1,9 +1,6 @@
 use std::path::Path;
-
-use crate::{utils::config::AppFile, view::help::DocView};
-
+use crate::view::help::DocView;
 use self::handler::DocReaderHandler;
-
 pub mod handler;
 
 

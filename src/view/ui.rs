@@ -10,7 +10,7 @@ use std::{
 
 use crate::{
     app::app::{App, InputMode},
-    base::store::MainStore,
+    base::stores::MainStore,
     states::{active_tablist::TabActiveState, StatesNames},
 };
 

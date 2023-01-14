@@ -8,8 +8,8 @@ use tempfile::Builder;
 
 use crate::{
     app::app::App,
-    base::{actions::Actions, store::MainStore},
-    utils::AsyncBool,
+    base::{actions::Actions, stores::MainStore},
+    utils::custom_types::async_bool::AsyncBool,
 };
 
 use super::{buffer::InputKeyboardBuffer, listener::KeyboardListerner};

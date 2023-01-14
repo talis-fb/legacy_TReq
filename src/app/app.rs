@@ -5,7 +5,7 @@ use crate::base::web::client::WebClient;
 use crate::base::web::repository::reqwest::ReqwestClientRepository;
 use crate::base::web::repository::HttpClientRepository;
 use crate::base::web::response::Response;
-use crate::config::saves::SaveFiles;
+use crate::config::configurations::save_files::SaveFiles;
 use crate::states::{default::DefaultState, State};
 use crossterm::event::KeyCode;
 use std::collections::hash_map::HashMap;
@@ -25,7 +25,7 @@ use super::states::empty::EmptyState;
 use super::states::manager::StateManager;
 use super::states::States;
 
-use crate::base::store::MainStore;
+use crate::base::stores::MainStore;
 
 #[derive(Copy, Clone, Debug)]
 pub enum InputMode {

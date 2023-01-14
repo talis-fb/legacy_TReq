@@ -6,13 +6,14 @@ use app::states::manager::StateManager;
 use base::actions::manager::ActionsManager;
 use base::actions::Actions;
 use base::commands::handler::CommandHandler;
-use base::store::requests_active::RequestStore;
-use base::store::MainStore;
+use base::stores::requests::RequestStore;
+use base::stores::MainStore;
 use base::web::client::WebClient;
 use base::web::repository::reqwest::ReqwestClientRepository;
 use commands::Commands;
-use config::saves::SaveFiles;
-use config::ConfigManager;
+use config::configurations::Configuration;
+use config::configurations::save_files::SaveFiles;
+use config::manager::ConfigManager;
 use crossterm::event::{self, Event, KeyCode};
 use directories::ProjectDirs;
 use input::buffer::InputBuffer;
@@ -28,7 +29,6 @@ mod app;
 mod utils;
 use app::app::{App, InputMode};
 use app::states;
-use utils::AsyncBool;
 
 mod input;
 use input::keymaps::default_keymap_factory;
@@ -45,6 +45,7 @@ use view::ui::UI;
 mod config;
 
 use input::input_handler::InputHandler;
+use utils::custom_types::async_bool::AsyncBool;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -54,7 +55,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Configurations and Setup of necessary folders
     ConfigManager::setup_env().expect("Error creating folders .local/share/treq. If error persist create it with mkdir $HOME/.local/share/treq");
-    let saved_requests = SaveFiles::init().unwrap();
+    let saved_requests = SaveFiles::setup_and_init().unwrap();
     let config_manager = ConfigManager { saved_requests };
 
     // Init of Data Stores

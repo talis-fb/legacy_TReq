@@ -4,7 +4,7 @@ use crate::{
     app::app::App,
     base::{
         commands::{Command, Commands},
-        store::MainStore,
+        stores::MainStore,
     },
     view::ui::UI,
 };

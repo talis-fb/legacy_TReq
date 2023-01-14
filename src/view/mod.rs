@@ -1,7 +1,7 @@
 pub mod help;
 pub mod ui;
 
-use crate::{app::states::StatesNames, base::store::MainStore};
+use crate::{app::states::StatesNames, base::stores::MainStore};
 use tui::{
     backend::Backend,
     layout::{Alignment, Rect},

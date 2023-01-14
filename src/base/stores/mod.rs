@@ -1,13 +1,13 @@
 use std::sync::{Arc, RwLock};
 
-pub mod requests_active;
+pub mod requests;
 
 use crate::{
     app::{app::InputMode, states::StatesNames},
     input::buffer::{InputBuffer, InputKeyboardBuffer},
 };
 
-use self::requests_active::RequestStore;
+use self::requests::RequestStore;
 
 use super::{
     logs::LogType,

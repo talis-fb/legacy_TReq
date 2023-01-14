@@ -1,6 +1,10 @@
 use std::{collections::HashMap, rc::Rc, sync::Arc};
 
-use crate::{base::web::request::Request, config::saves::SaveFiles, utils::config::UUID};
+use crate::{
+    base::web::request::Request,
+    config::configurations::{save_files::SaveFiles, Configuration, ConfigurationEditable},
+    utils::custom_types::uuid::UUID,
+};
 
 #[derive(Clone)]
 pub struct RequestStore {
@@ -14,12 +18,20 @@ pub struct RequestStore {
 }
 
 impl RequestStore {
-    pub fn init(save_files: SaveFiles) -> Self {
-        let mut request_in_memory = save_files.get_map_as_requests();
-
-        if request_in_memory.len() == 0 {
-            request_in_memory.insert(UUID::new(), Request::default());
+    pub fn init(mut save_files: SaveFiles) -> Self {
+        let mut saved_files = save_files.get_map();
+        if saved_files.len() == 0 {
+            save_files.set(&UUID::new(), &Request::default()).unwrap();
+            saved_files = save_files.get_map();
         }
+
+        let request_in_memory: HashMap<UUID, Request> = saved_files
+            .iter()
+            .map(|(k, v)| {
+                let req = save_files.get_as_entity(&k).unwrap();
+                (k.clone(), req.clone())
+            })
+            .collect();
 
         let keys: Vec<UUID> = request_in_memory.clone().into_keys().collect();
         let keys_clone = keys.clone();
@@ -99,7 +111,7 @@ impl RequestStore {
     pub fn save_current_request(&mut self) -> Result<(), String> {
         let uuid = &self.current_uuid;
         let req = self.get_request();
-        self.save_files.save_in_file_as_request(&uuid, &req)?;
+        self.save_files.set(&uuid, &req)?;
 
         // Now mark it as saved
         let req = self.get_request_mut();

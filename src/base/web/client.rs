@@ -27,6 +27,15 @@ where
             url, headers, body, ..
         } = request_to_do;
 
+        let has_the_protocol_in_begin =
+            regex::Regex::new("^(?!https?://.)*$").map_err(|e| e.to_string())?;
+
+        if !has_the_protocol_in_begin.is_match(&url) {
+            println!("FOII CARAI");
+        }
+
+
+
         let response = match request_to_do.method {
             METHODS::GET => self.http_client.call_get(url, headers).await,
             METHODS::POST => self.http_client.call_post(url, headers, body).await,

@@ -7,9 +7,6 @@ use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use std::sync::RwLock;
 
-pub static APP_DATA_PATH: &str = "/home/talis/.local/share/treq/";
-pub static APP_DATA_PATH_REQUESTS: &str = "/home/talis/.local/share/treq/requests";
-
 #[derive(Clone, Hash, PartialEq, Eq, Debug)]
 pub struct UUID {
     pub value: String,
