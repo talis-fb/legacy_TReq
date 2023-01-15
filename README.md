@@ -1,4 +1,8 @@
-# TReq 🦖
+<p align="center">
+<img src="./dino.png" height="120px" />
+</p>
+
+# TReq 
 
 ![](screenshot.png)
 
