@@ -50,6 +50,7 @@ impl KeyboardListerner {
 
 #[cfg(test)]
 mod tests {
+    use crate::input::keymaps::{Actionable, default_keymap_factory};
     use super::*;
 
     #[test]
