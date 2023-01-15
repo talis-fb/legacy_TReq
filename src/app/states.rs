@@ -20,24 +20,28 @@ pub trait State {
 
 // List of all States ------------------
 pub mod active_logs;
-pub mod active_request_body;
-pub mod active_request_headers;
-pub mod active_request_url;
-pub mod active_response_body;
-pub mod active_response_headers;
-pub mod active_tablist;
-pub mod default;
-pub mod empty;
+pub use active_logs::LogsState;
 
-pub mod States {
-    use super::*;
-    pub use active_logs::LogsState;
-    pub use active_request_body::RequestActiveState;
-    pub use active_request_headers::RequestHeaderActiveState;
-    pub use active_request_url::RequestUrlActiveState;
-    pub use active_response_body::ResponseBodyActiveState;
-    pub use active_response_headers::ResponseHeadersState;
-    pub use active_tablist::TabActiveState;
-    pub use default::DefaultState;
-    pub use empty::EmptyState;
-}
+pub mod active_request_body;
+pub use active_request_body::RequestActiveState;
+
+pub mod active_request_headers;
+pub use active_request_headers::RequestHeaderActiveState;
+
+pub mod active_request_url;
+pub use active_request_url::RequestUrlActiveState;
+
+pub mod active_response_body;
+pub use active_response_body::ResponseBodyActiveState;
+
+pub mod active_response_headers;
+pub use active_response_headers::ResponseHeadersState;
+
+pub mod active_tablist;
+pub use active_tablist::TabActiveState;
+
+pub mod default;
+pub use default::DefaultState;
+
+pub mod empty;
+pub use empty::EmptyState;

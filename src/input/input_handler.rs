@@ -31,7 +31,10 @@ impl InputHandler {
                 let action = keymap.get_command(key.code);
 
                 if let Some(act) = action {
-                    queue.send(act);
+                    let res = queue.send(act);
+                    if let Err(_) = res {
+                        return;
+                    }
                 }
                 when_finish.set(true);
             }

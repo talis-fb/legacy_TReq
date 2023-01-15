@@ -112,7 +112,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 if is_finished {
                     view = UI::init();
                     app.clear_log();
-                    app.exec_input_buffer_command();
+                    app.exec_input_buffer_command()?;
                     app.set_mode(InputMode::Normal);
                 }
             }
@@ -125,7 +125,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
                 if is_finished {
                     app.clear_log();
-                    app.exec_input_buffer_command();
+                    app.exec_input_buffer_command()?;
                     app.set_mode(InputMode::Normal);
                 }
             }

@@ -14,7 +14,7 @@ use tui::{
     Terminal,
 };
 
-use crate::view::Drawers;
+use crate::view::drawers;
 
 pub struct UI {
     terminal: Terminal<CrosstermBackend<std::io::Stdout>>,
@@ -93,22 +93,22 @@ impl UI {
                     .split(content_layout[0]);
 
                 // Tablit
-                Drawers::draw_tablist_requests(f, full_screen_layout[0], data_store);
+                drawers::draw_tablist_requests(f, full_screen_layout[0], data_store);
 
                 // Request
-                Drawers::draw_method_and_url(f, request_layout[0], data_store);
-                Drawers::draw_body_request_section(f, request_layout[1], data_store);
+                drawers::draw_method_and_url(f, request_layout[0], data_store);
+                drawers::draw_body_request_section(f, request_layout[1], data_store);
 
                 // Response
-                Drawers::draw_body_response_section(f, content_layout[1], data_store);
+                drawers::draw_body_response_section(f, content_layout[1], data_store);
 
                 // Logs
-                Drawers::draw_logs_section(f, full_screen_layout[2], data_store);
+                drawers::draw_logs_section(f, full_screen_layout[2], data_store);
 
                 // Variants of InputModes
                 match data_store.get_mode() {
-                    InputMode::Insert => Drawers::draw_input_popup(f, f.size(), data_store),
-                    InputMode::Help => Drawers::draw_help_popup(f, f.size(), data_store),
+                    InputMode::Insert => drawers::draw_input_popup(f, f.size(), data_store),
+                    InputMode::Help => drawers::draw_help_popup(f, f.size(), data_store),
                     _ => {}
                 }
             })

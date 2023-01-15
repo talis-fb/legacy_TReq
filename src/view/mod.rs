@@ -11,7 +11,7 @@ use tui::{
     Frame,
 };
 
-mod Drawers {
+mod drawers {
     use tui::{
         layout::{Constraint, Direction, Layout},
         widgets::{Clear, Wrap},
