@@ -1,32 +1,6 @@
 pub mod request;
 pub mod response;
 
-// pub trait IValidator<T: Clone> {
-//     fn execute(&self, value: &mut T) -> Result<(), String>;
-// }
-//
-// pub struct ValidatorsHandler<T> {
-//     value: T,
-// }
-// impl<T: Clone> ValidatorsHandler<T> {
-//     fn from(value: T) -> Self {
-//         Self { value }
-//     }
-//     fn execute(&self, itr: Vec<Box<dyn IValidator<T>>>) -> Result<T, String> {
-//         let mut fold = self.value.clone();
-//
-//         for cb in itr.into_iter() {
-//             let res = cb.execute(&mut fold);
-//             if let Err(e) = res {
-//                 return Err(e);
-//             }
-//         }
-//
-//         Ok(fold)
-//     }
-// }
-// -------------------------------------------
-
 pub type Validator<T> = fn(app: &mut T) -> Result<(), String>;
 
 pub struct Validators;
@@ -38,13 +12,32 @@ impl<T: Clone> ValidatorsHandler<T> {
     pub fn from(value: T) -> Self {
         Self { value }
     }
-    pub fn execute(&self, itr: Vec<Validator<T>>) -> Result<T, String> {
+
+    pub fn execute<I>(&self, itr: I) -> Result<T, String>
+    where
+        I: IntoIterator<Item = Validator<T>>,
+    {
         let mut result = self.value.clone();
 
         for validator_fn in itr.into_iter() {
             let res = validator_fn(&mut result);
             if let Err(e) = res {
                 return Err(e);
+            }
+        }
+
+        Ok(result)
+    }
+
+    pub fn execute_ignoring_errors<I>(&self, itr: I) -> Result<T, String>
+    where
+        I: IntoIterator<Item = Validator<T>>,
+    {
+        let mut result = self.value.clone();
+
+        for validator_fn in itr.into_iter() {
+            if let Err(_) = validator_fn(&mut result) {
+                // do nothing
             }
         }
 
@@ -89,7 +82,7 @@ mod tests {
         let value = String::from("Mew");
 
         let t1 = ValidatorsHandler::from(value.clone())
-            .execute(vec![validator_to_append_two()])
+            .execute([validator_to_append_two()])
             .unwrap();
 
         assert_eq!("Mewtwo", t1.as_str());
@@ -100,7 +93,7 @@ mod tests {
         let value = String::from("Mew");
 
         let t1 = ValidatorsHandler::from(value.clone())
-            .execute(vec![
+            .execute([
                 validator_to_append_space(),
                 validator_to_append_space(),
             ])
@@ -114,7 +107,7 @@ mod tests {
         let value = String::from("Mew");
 
         let t1 = ValidatorsHandler::from(value.clone())
-            .execute(vec![
+            .execute([
                 validator_to_append_two(),
                 validator_to_append_space(),
                 validator_to_append_mew(),
@@ -122,5 +115,30 @@ mod tests {
             .unwrap();
 
         assert_eq!("Mewtwo mew", t1.as_str());
+    }
+
+
+    // Ignoring errors TEST CASES
+    fn validator_to_throw_error() -> Validator<String> {
+        |parameter: &mut String| {
+            Err("".to_string())
+        }
+    }
+
+    #[test]
+    fn should_execute_multiples_validators_differently_with_ignore_errors() {
+        let value = String::from("Mew");
+
+        let t1 = ValidatorsHandler::from(value.clone())
+            .execute_ignoring_errors([
+                validator_to_append_two(),
+                validator_to_append_space(),
+                validator_to_throw_error(),
+                validator_to_append_mew(),
+                validator_to_append_two(),
+                validator_to_throw_error(),
+            ]).unwrap();
+
+        assert_eq!("Mewtwo mewtwo", t1.as_str());
     }
 }

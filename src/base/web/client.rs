@@ -22,7 +22,7 @@ where
 
     pub async fn submit(&self, request: Request) -> Result<Response, String> {
         let request_to_do = ValidatorsHandler::from(request.clone())
-            .execute(vec![Validators::url_protocol_request()])?;
+            .execute([Validators::url_protocol_request()])?;
 
         let Request {
             url, headers, body, ..
@@ -37,9 +37,8 @@ where
             METHODS::DELETE => self.http_client.call_delete(url, headers, body).await,
         };
 
-        let response = ValidatorsHandler::from(response?.clone()).execute(vec![
-            Validators::set_pretty_json_response()
-        ])?;
+        let response = ValidatorsHandler::from(response?.clone())
+            .execute_ignoring_errors([Validators::set_pretty_json_response()])?;
 
         Ok(response)
     }
