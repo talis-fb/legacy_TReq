@@ -20,7 +20,10 @@ where
 
     pub async fn submit(&self, request_to_do: Request) -> Result<Response, String> {
         let Request {
-            mut url, headers, body, ..
+            mut url,
+            headers,
+            body,
+            ..
         } = request_to_do;
 
         //

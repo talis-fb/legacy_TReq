@@ -1,4 +1,5 @@
-use super::states::manager::StateManager;
+use crate::base::states::manager::StateManager;
+use crate::base::states::states::State;
 use crate::base::actions::{manager::ActionsManager, Actions};
 use crate::base::commands::{handler::CommandHandler, Command};
 use crate::base::stores::MainStore;
@@ -7,7 +8,6 @@ use crate::base::web::repository::reqwest::ReqwestClientRepository;
 use crate::base::web::response::Response;
 use crate::config::configurations::save_files::SaveFiles;
 use crate::input::buffer::InputKeyboardBuffer;
-use crate::states::State;
 use std::sync::mpsc::Sender;
 use std::sync::Arc;
 

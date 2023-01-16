@@ -1,7 +1,5 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
-// #![allow(unused_imports)]
-use app::states::manager::StateManager;
 use base::actions::manager::ActionsManager;
 use base::actions::Actions;
 use base::commands::handler::CommandHandler;
@@ -14,24 +12,25 @@ use config::configurations::external_editor::ExternalEditor;
 use config::configurations::save_files::SaveFiles;
 use config::configurations::Configuration;
 use config::manager::ConfigManager;
-use states::{default::DefaultState, State};
 use std::error::Error;
 use std::sync::Arc;
+
+use base::states::manager::StateManager;
+use base::states::states::{DefaultState, State};
 
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::time::Duration;
 
 mod app;
+use app::{App, InputMode};
+
 mod utils;
-use app::app::{App, InputMode};
-use app::states;
 
 mod input;
 use input::keymaps::default_keymap_factory;
 use input::listener::KeyboardListerner;
 
 mod base;
-// use base::commands;
 use base::{actions, commands};
 
 mod view;
@@ -52,7 +51,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     ConfigManager::setup_env().expect("Error creating folders .local/share/treq. If error persist create it with mkdir $HOME/.local/share/treq");
     let saved_requests = SaveFiles::setup_and_init().unwrap();
     let editor = ExternalEditor::setup_and_init().unwrap();
-    let config_manager = ConfigManager { saved_requests, editor };
+    let config_manager = ConfigManager {
+        saved_requests,
+        editor,
+    };
 
     // Init of Data Stores
     let request_store = RequestStore::init(config_manager.saved_requests);

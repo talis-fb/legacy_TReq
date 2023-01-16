@@ -1,13 +1,14 @@
 use crate::actions::Actions;
-use crate::states::{Commands, CommandsMap, State, StatesNames};
+use crate::base::states::states::{CommandsMap, State, StatesNames};
+use crate::commands::Commands;
 use std::collections::HashMap;
 
-pub struct RequestHeaderActiveState {
+pub struct RequestActiveState {
     pub maps: CommandsMap,
 }
-impl State for RequestHeaderActiveState {
+impl State for RequestActiveState {
     fn get_state_name(&self) -> StatesNames {
-        StatesNames::RequestHeaders
+        StatesNames::RequestBody
     }
     fn get_map(&self) -> &CommandsMap {
         &self.maps
@@ -15,10 +16,11 @@ impl State for RequestHeaderActiveState {
     fn init() -> Self {
         Self {
             maps: HashMap::from([
-                (Actions::Edit, Commands::edit_request_headers_vim()),
-                (Actions::Switch, Commands::go_to_request_body_section()),
+                (Actions::Edit, Commands::edit_request_body_vim()),
+                (Actions::Switch, Commands::go_to_request_header_section()),
                 (Actions::Up, Commands::go_to_url_section()),
                 (Actions::Down, Commands::go_to_log_section()),
+                (Actions::Right, Commands::go_to_response_body_section()),
             ]),
         }
     }

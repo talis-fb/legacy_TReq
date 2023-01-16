@@ -2,10 +2,9 @@ use std::sync::Arc;
 
 pub mod requests;
 
-use crate::{
-    app::{app::InputMode, states::StatesNames},
-    input::buffer::InputKeyboardBuffer,
-};
+use crate::app::InputMode;
+use crate::base::states::names::StatesNames;
+use crate::input::buffer::InputKeyboardBuffer;
 
 use self::requests::RequestStore;
 

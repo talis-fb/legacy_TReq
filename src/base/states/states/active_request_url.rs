@@ -1,5 +1,6 @@
 use crate::actions::Actions;
-use crate::states::{Commands, CommandsMap, State, StatesNames};
+use crate::base::states::states::{CommandsMap, State, StatesNames};
+use crate::commands::Commands;
 use std::collections::HashMap;
 
 pub struct RequestUrlActiveState {

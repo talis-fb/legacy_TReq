@@ -1,4 +1,4 @@
-use crate::app::app::InputMode;
+use crate::app::InputMode;
 use crate::base::doc::DocsFactory;
 use crate::commands::{Command, Commands};
 use crate::App;

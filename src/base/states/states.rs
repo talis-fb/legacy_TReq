@@ -1,13 +1,9 @@
 use crate::actions::Actions;
-use crate::commands::{Command, Commands};
+use crate::commands::Command;
 use std::collections::HashMap;
+use super::names::StatesNames;
 
-// States Names
-pub mod states_names;
-pub use states_names::*;
-
-pub mod manager;
-
+// Interfaces
 pub type CommandsMap = HashMap<Actions, Command>;
 
 pub trait State {
@@ -19,29 +15,29 @@ pub trait State {
 }
 
 // List of all States ------------------
-pub mod active_logs;
+mod active_logs;
 pub use active_logs::LogsState;
 
-pub mod active_request_body;
+mod active_request_body;
 pub use active_request_body::RequestActiveState;
 
-pub mod active_request_headers;
+mod active_request_headers;
 pub use active_request_headers::RequestHeaderActiveState;
 
-pub mod active_request_url;
+mod active_request_url;
 pub use active_request_url::RequestUrlActiveState;
 
-pub mod active_response_body;
+mod active_response_body;
 pub use active_response_body::ResponseBodyActiveState;
 
-pub mod active_response_headers;
+mod active_response_headers;
 pub use active_response_headers::ResponseHeadersState;
 
-pub mod active_tablist;
+mod active_tablist;
 pub use active_tablist::TabActiveState;
 
-pub mod default;
+mod default;
 pub use default::DefaultState;
 
-pub mod empty;
+mod empty;
 pub use empty::EmptyState;

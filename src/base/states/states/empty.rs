@@ -1,4 +1,4 @@
-use crate::states::{CommandsMap, State, StatesNames};
+use crate::base::states::states::{CommandsMap, State, StatesNames};
 use std::collections::HashMap;
 
 pub struct EmptyState {
