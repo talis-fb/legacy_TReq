@@ -21,7 +21,7 @@ where
     }
 
     pub async fn submit(&self, request: Request) -> Result<Response, String> {
-        let request_to_do = ValidatorsHandler::from(request.clone())
+        let request_to_do = ValidatorsHandler::from(&request)
             .execute([Validators::url_protocol_request()])?;
 
         let Request {
@@ -35,9 +35,9 @@ where
             METHODS::PATCH => self.http_client.call_patch(url, headers, body).await,
             METHODS::HEAD => self.http_client.call_head(url, headers, body).await,
             METHODS::DELETE => self.http_client.call_delete(url, headers, body).await,
-        };
+        }?;
 
-        let response = ValidatorsHandler::from(response?.clone())
+        let response = ValidatorsHandler::from(&response)
             .execute_ignoring_errors([Validators::set_pretty_json_response()])?;
 
         Ok(response)

@@ -5,12 +5,12 @@ pub type Validator<T> = fn(app: &mut T) -> Result<(), String>;
 
 pub struct Validators;
 
-pub struct ValidatorsHandler<T> {
-    value: T,
+pub struct ValidatorsHandler<'a, T> {
+    value: &'a T,
 }
-impl<T: Clone> ValidatorsHandler<T> {
-    pub fn from(value: T) -> Self {
-        Self { value }
+impl<'a, T: Clone> ValidatorsHandler<'a, T> {
+    pub fn from(value: &'a T) -> Self {
+        Self { value: &value }
     }
 
     pub fn execute<I>(&self, itr: I) -> Result<T, String>
@@ -81,7 +81,7 @@ mod tests {
     fn should_execute_a_single_validator() {
         let value = String::from("Mew");
 
-        let t1 = ValidatorsHandler::from(value.clone())
+        let t1 = ValidatorsHandler::from(&value)
             .execute([validator_to_append_two()])
             .unwrap();
 
@@ -92,7 +92,7 @@ mod tests {
     fn should_execute_multiples_validators() {
         let value = String::from("Mew");
 
-        let t1 = ValidatorsHandler::from(value.clone())
+        let t1 = ValidatorsHandler::from(&value)
             .execute([
                 validator_to_append_space(),
                 validator_to_append_space(),
@@ -106,7 +106,7 @@ mod tests {
     fn should_execute_multiples_validators_differently() {
         let value = String::from("Mew");
 
-        let t1 = ValidatorsHandler::from(value.clone())
+        let t1 = ValidatorsHandler::from(&value)
             .execute([
                 validator_to_append_two(),
                 validator_to_append_space(),
@@ -129,7 +129,7 @@ mod tests {
     fn should_execute_multiples_validators_differently_with_ignore_errors() {
         let value = String::from("Mew");
 
-        let t1 = ValidatorsHandler::from(value.clone())
+        let t1 = ValidatorsHandler::from(&value)
             .execute_ignoring_errors([
                 validator_to_append_two(),
                 validator_to_append_space(),

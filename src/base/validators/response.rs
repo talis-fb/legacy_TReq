@@ -23,7 +23,7 @@ mod tests {
         let mut response = Response::default();
         response.body = r#"{ "StatusCode": "200", "SomeMessenger": "Here's something interesting", "Notes": ["Here live anothers interesting things"] }"#.to_string();
 
-        let response_final = ValidatorsHandler::from(response.clone())
+        let response_final = ValidatorsHandler::from(&response)
             .execute(vec![Validators::set_pretty_json_response()])
             .unwrap();
 

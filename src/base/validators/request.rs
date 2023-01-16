@@ -28,7 +28,7 @@ mod tests {
         let mut req_with_http = Request::default();
         req_with_http.url = String::from("http://url.com");
 
-        let req_final = ValidatorsHandler::from(req_with_http.clone())
+        let req_final = ValidatorsHandler::from(&req_with_http)
             .execute(vec![Validators::url_protocol_request()])
             .unwrap();
         assert_eq!(req_with_http.url, req_final.url);
@@ -37,7 +37,7 @@ mod tests {
         let mut req_with_https = Request::default();
         req_with_https.url = String::from("https://url.com");
 
-        let req_final = ValidatorsHandler::from(req_with_https.clone())
+        let req_final = ValidatorsHandler::from(&req_with_https)
             .execute(vec![Validators::url_protocol_request()])
             .unwrap();
         assert_eq!(req_with_https.url, req_final.url);
@@ -49,7 +49,7 @@ mod tests {
         let mut req = Request::default();
         req.url = String::from("url.com");
 
-        let req_final = ValidatorsHandler::from(req.clone())
+        let req_final = ValidatorsHandler::from(&req)
             .execute(vec![Validators::url_protocol_request()])
             .unwrap();
         assert_eq!("http://url.com".to_string(), req_final.url);
