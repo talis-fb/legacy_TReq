@@ -35,10 +35,10 @@ pub struct ValidatorsHandler<T> {
     value: T,
 }
 impl<T: Clone> ValidatorsHandler<T> {
-    fn from(value: T) -> Self {
+    pub fn from(value: T) -> Self {
         Self { value }
     }
-    fn execute(&self, itr: Vec<Validator<T>>) -> Result<T, String> {
+    pub fn execute(&self, itr: Vec<Validator<T>>) -> Result<T, String> {
         let mut result = self.value.clone();
 
         for validator_fn in itr.into_iter() {
