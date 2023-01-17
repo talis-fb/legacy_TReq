@@ -13,7 +13,7 @@ impl DocsFactory {
     }
 
     pub fn help_reader() -> DocReaderHandler {
-        let content = DocsFactory::get_file_content("help.json");
+        let content = include_str!("views/help.json").to_string();
         DocReaderHandler::init(DocView::from_string(content))
     }
 }
