@@ -1,4 +1,4 @@
-use crate::{app::InputMode, base::stores::MainStore, base::states::names::StatesNames};
+use crate::{app::InputMode, base::states::names::StatesNames, base::stores::MainStore};
 
 use crossterm::{
     event::DisableMouseCapture,

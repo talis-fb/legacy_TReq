@@ -1,5 +1,5 @@
-use crate::commands::{Command, Commands};
 use crate::base::states::states::{self, State};
+use crate::commands::{Command, Commands};
 use crate::App;
 
 impl Commands {

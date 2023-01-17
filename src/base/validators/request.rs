@@ -41,7 +41,6 @@ mod tests {
             .execute(vec![Validators::url_protocol_request()])
             .unwrap();
         assert_eq!(req_with_https.url, req_final.url);
-
     }
 
     #[test]
@@ -53,6 +52,5 @@ mod tests {
             .execute(vec![Validators::url_protocol_request()])
             .unwrap();
         assert_eq!("http://url.com".to_string(), req_final.url);
-
     }
 }

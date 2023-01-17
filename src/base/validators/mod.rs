@@ -93,10 +93,7 @@ mod tests {
         let value = String::from("Mew");
 
         let t1 = ValidatorsHandler::from(&value)
-            .execute([
-                validator_to_append_space(),
-                validator_to_append_space(),
-            ])
+            .execute([validator_to_append_space(), validator_to_append_space()])
             .unwrap();
 
         assert_eq!("Mew  ", t1.as_str());
@@ -117,12 +114,9 @@ mod tests {
         assert_eq!("Mewtwo mew", t1.as_str());
     }
 
-
     // Ignoring errors TEST CASES
     fn validator_to_throw_error() -> Validator<String> {
-        |parameter: &mut String| {
-            Err("".to_string())
-        }
+        |parameter: &mut String| Err("".to_string())
     }
 
     #[test]
@@ -137,7 +131,8 @@ mod tests {
                 validator_to_append_mew(),
                 validator_to_append_two(),
                 validator_to_throw_error(),
-            ]).unwrap();
+            ])
+            .unwrap();
 
         assert_eq!("Mewtwo mewtwo", t1.as_str());
     }

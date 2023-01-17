@@ -1,7 +1,7 @@
+use super::names::StatesNames;
 use crate::actions::Actions;
 use crate::commands::Command;
 use std::collections::HashMap;
-use super::names::StatesNames;
 
 // Interfaces
 pub type CommandsMap = HashMap<Actions, Command>;

@@ -1,5 +1,5 @@
 use super::Actions;
-use crate::{base::states::manager::StateManager, base::commands::Command};
+use crate::{base::commands::Command, base::states::manager::StateManager};
 
 #[derive(Clone)]
 pub struct ActionsManager {
