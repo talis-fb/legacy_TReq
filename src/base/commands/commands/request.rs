@@ -41,24 +41,7 @@ impl Commands {
             Ok(())
         }
     }
-    pub fn edit_request_body() -> Command {
-        |app: &mut App| {
-            app.set_input_mode_with_command(
-                |app: &mut App| {
-                    let buffer = app.get_input_buffer_value();
-                    let data_store = app.get_data_store_mut();
 
-                    let mut req = (*data_store.get_request()).clone();
-                    req.set_body(buffer);
-
-                    data_store.update_request(req);
-                    Ok(())
-                },
-                app.get_data_store().get_request().body.clone(),
-            );
-            Ok(())
-        }
-    }
     pub fn edit_request_headers_vim() -> Command {
         |app: &mut App| {
             let initial_headers = app.get_data_store().get_request().headers.clone();
