@@ -81,7 +81,7 @@ mod tests {
     fn should_grow_only_until_10() {
         let mut view = ViewConfig::init();
         view.dimension_horizontal_blocks.0 = 3; // Left
-        view.dimension_horizontal_blocks.1 = 3; // Right
+        view.dimension_horizontal_blocks.1 = 1; // Right
 
         view.grow_left_block(); // to 4
         view.grow_left_block(); // to 5
@@ -94,6 +94,8 @@ mod tests {
         view.grow_left_block(); // to 10 Again because max
         assert_eq!(view.dimension_horizontal_blocks.0, 10);
 
+        view.dimension_horizontal_blocks.0 = 1; // Left
+        view.dimension_horizontal_blocks.1 = 3; // Right
         view.grow_right_block(); // to 4
         view.grow_right_block(); // to 5
         view.grow_right_block(); // to 6
