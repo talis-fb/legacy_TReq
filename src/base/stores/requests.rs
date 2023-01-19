@@ -60,6 +60,19 @@ impl RequestStore {
         self.goto_request(i);
         i
     }
+
+    pub fn delete_current_request(&mut self) -> Result<(), String> {
+        let uuid = self.current_uuid.clone();
+        let ii = self.requests.iter().position(|u| *u == uuid);
+        if let Some(i) = ii {
+            self.goto_next_request();
+            self.request_in_memory.remove(&uuid);
+            self.requests.remove(i);
+            self.save_files.lock().unwrap().remove(&uuid)?;
+        }
+        Ok(())
+    }
+
     pub fn goto_request(&mut self, index: usize) -> Option<()> {
         let key = self.requests.get(index)?;
         self.current_uuid = key.clone();

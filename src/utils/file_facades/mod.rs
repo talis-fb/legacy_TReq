@@ -38,4 +38,8 @@ pub trait FileFacade {
             .map_err(|e| e.to_string())?;
         Ok(())
     }
+
+    fn remove(&mut self) -> Result<(), String> {
+        std::fs::remove_file(self.get_path()).map_err(|e| e.to_string())
+    }
 }

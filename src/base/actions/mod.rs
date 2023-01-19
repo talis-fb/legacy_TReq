@@ -15,6 +15,7 @@ pub enum Actions {
     Submit,
     Undo,
     New,
+    Delete,
 
     // General Moves
     Up,

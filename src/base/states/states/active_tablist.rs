@@ -21,6 +21,7 @@ impl State for TabActiveState {
                 (Actions::New, Commands::add_new_tab()),
                 (Actions::Up, Commands::do_nothing()),
                 (Actions::Down, Commands::go_to_url_section()),
+                (Actions::Delete, Commands::delete_tab()),
             ]),
         }
     }

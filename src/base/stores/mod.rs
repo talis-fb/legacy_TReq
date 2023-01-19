@@ -2,9 +2,9 @@ use std::sync::Arc;
 
 pub mod requests;
 
-use crate::{app::InputMode, config::manager::ConfigManager};
 use crate::base::states::names::StatesNames;
 use crate::input::buffer::InputKeyboardBuffer;
+use crate::{app::InputMode, config::manager::ConfigManager};
 
 use self::requests::RequestStore;
 
@@ -38,15 +38,14 @@ pub struct MainStore {
     pub doc_reader: Option<DocReaderHandler>,
 
     // Config
-    pub config: ConfigManager
+    pub config: ConfigManager,
 }
 
 impl MainStore {
     pub fn init(config: ConfigManager) -> Self {
-
         let last_response = Arc::new(Mutex::new(Response::default()));
 
-         Self {
+        Self {
             requests: RequestStore::init(config.saved_requests.clone()),
             last_response,
             current_state: StatesNames::Default,
@@ -54,13 +53,11 @@ impl MainStore {
             input_buffer: InputKeyboardBuffer::init(),
             log: Log::default(),
             doc_reader: None,
-            config
+            config,
         }
-
 
         // let requests = RequestStore::init(dd.config.saved_requests);
         // dd.requests = requests;
-
     }
 
     // Logs
@@ -122,6 +119,12 @@ impl MainStore {
 
     pub fn add_request(&mut self) -> usize {
         self.requests.add_request()
+    }
+
+    pub fn delete_current_request(&mut self) -> () {
+        if let Err(e) = self.requests.delete_current_request() {
+            self.log.with_type(LogType::Error).with_detail(e);
+        }
     }
 
     // Response

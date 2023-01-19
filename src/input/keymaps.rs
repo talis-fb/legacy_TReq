@@ -44,6 +44,13 @@ pub fn default_keymap_factory() -> KeyMap {
             },
         ),
         (
+            KeyCode::Char('d'),
+            Actionable {
+                action: Actions::Delete,
+                sub_action: None,
+            },
+        ),
+        (
             KeyCode::Tab,
             Actionable {
                 action: Actions::Switch,

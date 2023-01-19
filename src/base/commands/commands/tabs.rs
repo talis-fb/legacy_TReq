@@ -46,8 +46,7 @@ impl Commands {
 
     pub fn delete_tab() -> Command {
         |app: &mut App| {
-            let req = Request::default();
-            // app.create_request(req);
+            app.get_data_store_mut().delete_current_request();
             Ok(())
         }
     }

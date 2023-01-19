@@ -73,6 +73,12 @@ impl ConfigurationEditable<UUID, RequestFile, Request> for SaveFiles {
         Ok(())
     }
 }
+impl SaveFiles {
+    pub fn remove(&mut self, key: &UUID) -> Result<(), String> { 
+        let file_in_map = self.map.get_mut(&key).unwrap();
+        file_in_map.remove()
+    }
+}
 
 // #[derive(Clone)]
 // pub struct SaveFiles {
