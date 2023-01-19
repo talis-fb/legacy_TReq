@@ -3,14 +3,10 @@
 use base::actions::manager::ActionsManager;
 use base::actions::Actions;
 use base::commands::handler::CommandHandler;
-use base::stores::requests::RequestStore;
 use base::stores::MainStore;
 use base::web::client::WebClient;
 use base::web::repository::reqwest::ReqwestClientRepository;
 use commands::Commands;
-use config::configurations::external_editor::ExternalEditor;
-use config::configurations::save_files::SaveFiles;
-use config::configurations::Configuration;
 use config::manager::ConfigManager;
 use std::error::Error;
 use std::sync::Arc;
@@ -49,16 +45,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Configurations and Setup of necessary folders
     ConfigManager::setup_env().expect("Error creating folders .local/share/treq. If error persist create it with mkdir $HOME/.local/share/treq");
-    let saved_requests = SaveFiles::setup_and_init().unwrap();
-    let editor = ExternalEditor::setup_and_init().unwrap();
-    let config_manager = ConfigManager {
-        saved_requests,
-        editor,
-    };
+    let config_manager = ConfigManager::init();
+    // let request_store = RequestStore::init(config_manager.saved_requests);
 
     // Init of Data Stores
-    let request_store = RequestStore::init(config_manager.saved_requests);
-    let mut data_store = MainStore::init(request_store);
+    let mut data_store = MainStore::init(config_manager);
     data_store.set_log_warning(String::from("NEEDING HELP,"), String::from("press [?]"));
 
     // Init Web Client
@@ -73,7 +64,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let has_clicked_before = Arc::new(AsyncBool::init(true));
     let commands = default_keymap_factory();
     let keymap = KeyboardListerner::init(commands);
-    let input_handler = InputHandler::init(keymap, config_manager.editor);
+    let input_handler = InputHandler::init(keymap, data_store.config.editor.clone());
 
     // Init UI
     let mut view = UI::init();

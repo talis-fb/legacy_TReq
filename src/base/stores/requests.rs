@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, rc::Rc, sync::Mutex};
 
 use crate::{
     base::web::request::Request,
@@ -8,7 +8,7 @@ use crate::{
 
 #[derive(Clone)]
 pub struct RequestStore {
-    save_files: SaveFiles,
+    save_files: Rc<Mutex<SaveFiles>>,
 
     request_in_memory: HashMap<UUID, Request>,
     requests: Vec<UUID>,
@@ -18,17 +18,20 @@ pub struct RequestStore {
 }
 
 impl RequestStore {
-    pub fn init(mut save_files: SaveFiles) -> Self {
-        let mut saved_files = save_files.get_map();
-        if saved_files.len() == 0 {
-            save_files.set(&UUID::new(), &Request::default()).unwrap();
-            saved_files = save_files.get_map();
+    pub fn init(save_files: Rc<Mutex<SaveFiles>>) -> Self {
+        let save_files_cc = save_files.clone();
+        let mut save_files_content =  save_files_cc.lock().unwrap();
+
+        let mut map_saved_files = save_files_content.get_map();
+        if map_saved_files.len() == 0 {
+            save_files_content.set(&UUID::new(), &Request::default()).unwrap();
+            map_saved_files = save_files_content.get_map();
         }
 
-        let request_in_memory: HashMap<UUID, Request> = saved_files
+        let request_in_memory: HashMap<UUID, Request> = map_saved_files
             .iter()
             .map(|(k, v)| {
-                let req = save_files.get_as_entity(&k).unwrap();
+                let req = save_files_content.get_as_entity(&k).unwrap();
                 (k.clone(), req.clone())
             })
             .collect();
@@ -111,7 +114,7 @@ impl RequestStore {
     pub fn save_current_request(&mut self) -> Result<(), String> {
         let uuid = &self.current_uuid;
         let req = self.get_request();
-        self.save_files.set(&uuid, &req)?;
+        self.save_files.lock().unwrap().set(&uuid, &req)?;
 
         // Now mark it as saved
         let req = self.get_request_mut();

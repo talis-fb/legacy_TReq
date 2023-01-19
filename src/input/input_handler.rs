@@ -1,4 +1,5 @@
 use crossterm::event::{self, Event, KeyCode};
+use std::rc::Rc;
 use std::sync::{mpsc::Sender, Arc, Mutex};
 
 use tempfile::Builder;
@@ -12,10 +13,10 @@ use std::process::{Command as OSCommand, Stdio};
 
 pub struct InputHandler {
     listener: Arc<Mutex<KeyboardListerner>>,
-    configuration: ExternalEditor,
+    configuration: Rc<ExternalEditor>
 }
 impl InputHandler {
-    pub fn init(listener: KeyboardListerner, configuration: ExternalEditor) -> Self {
+    pub fn init(listener: KeyboardListerner, configuration: Rc<ExternalEditor>) -> Self {
         Self {
             listener: Arc::new(Mutex::new(listener)),
             configuration,

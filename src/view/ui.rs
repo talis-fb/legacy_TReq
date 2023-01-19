@@ -1,4 +1,4 @@
-use crate::{app::InputMode, base::states::names::StatesNames, base::stores::MainStore};
+use crate::{app::InputMode, base::states::names::StatesNames, base::stores::MainStore, config::configurations::view::ViewConfig};
 
 use crossterm::{
     event::DisableMouseCapture,
@@ -18,6 +18,7 @@ use crate::view::drawers;
 
 pub struct UI {
     terminal: Terminal<CrosstermBackend<std::io::Stdout>>,
+    configs: ViewConfig
 }
 
 impl UI {
@@ -29,7 +30,9 @@ impl UI {
         let backend = CrosstermBackend::new(stdout);
         let terminal = Terminal::new(backend).unwrap();
 
-        UI { terminal }
+        // TODO:
+        // Receive this from main.rs
+        UI { terminal, configs: ViewConfig::init() }
     }
 
     pub fn close(&mut self) -> () {
@@ -72,10 +75,12 @@ impl UI {
                     .split(f.size());
 
                 // Layout request + response
+                let sizes_layout = data_store.config.view.lock().unwrap();
+                let (left, right) = sizes_layout.get_dimension_percentage();
                 let content_layout = Layout::default()
                     .direction(Direction::Horizontal)
                     .margin(0)
-                    .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
+                    .constraints([Constraint::Percentage(left as u16), Constraint::Percentage(right as u16)].as_ref())
                     .split(full_screen_layout[1]);
 
                 // REQUEST BLOCK

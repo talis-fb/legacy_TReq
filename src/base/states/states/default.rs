@@ -40,6 +40,8 @@ impl State for DefaultState {
                 (Actions::Quit, Commands::quit()),
                 (Actions::AskForHelp, Commands::open_help_screen()),
                 (Actions::Save, Commands::save_request()),
+                (Actions::GrowHorizontalUiLeft, Commands::grow_left_ui()),
+                (Actions::GrowHorizontalUiRight, Commands::grow_right_ui()),
             ]),
         }
     }

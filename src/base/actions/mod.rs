@@ -50,4 +50,8 @@ pub enum Actions {
     RequestHeadersEdit,
     UrlEdit,
     MethodEdit,
+
+    // 
+    GrowHorizontalUiRight,
+    GrowHorizontalUiLeft,
 }

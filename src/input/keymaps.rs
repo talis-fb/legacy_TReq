@@ -104,6 +104,20 @@ pub fn default_keymap_factory() -> KeyMap {
                             sub_action: None,
                         },
                     ),
+                    (
+                        KeyCode::Char('l'),
+                        Actionable {
+                            action: Actions::GrowHorizontalUiRight,
+                            sub_action: None,
+                        },
+                    ),
+                    (
+                        KeyCode::Char('h'),
+                        Actionable {
+                            action: Actions::GrowHorizontalUiLeft,
+                            sub_action: None,
+                        },
+                    ),
                 ])),
             },
         ),
