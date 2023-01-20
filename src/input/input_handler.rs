@@ -1,25 +1,28 @@
 use crossterm::event::{self, Event, KeyCode};
+use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::{mpsc::Sender, Arc, Mutex};
 
-use tempfile::Builder;
-
 use crate::config::configurations::external_editor::ExternalEditor;
+use crate::utils::custom_types::uuid::UUID;
+use crate::utils::file_facades::edition_file::EditionFile;
+use crate::utils::file_facades::FileFacade;
 use crate::{base::actions::Actions, utils::custom_types::async_bool::AsyncBool};
 
 use super::{buffer::InputKeyboardBuffer, listener::KeyboardListerner};
-use std::io::Write;
 use std::process::{Command as OSCommand, Stdio};
 
 pub struct InputHandler {
     listener: Arc<Mutex<KeyboardListerner>>,
-    configuration: Rc<ExternalEditor>
+    configuration: Rc<ExternalEditor>,
+    files: HashMap<UUID, EditionFile>,
 }
 impl InputHandler {
     pub fn init(listener: KeyboardListerner, configuration: Rc<ExternalEditor>) -> Self {
         Self {
             listener: Arc::new(Mutex::new(listener)),
             configuration,
+            files: HashMap::new(),
         }
     }
 
@@ -84,16 +87,22 @@ impl InputHandler {
         (new_buffer.value, is_finished)
     }
 
-    pub fn sync_open_vim(&self, buffer: String) -> (String, bool) {
-        let temp_file = Builder::new().suffix(".json").tempfile().unwrap();
+    pub fn sync_open_vim(&mut self, buffer: String, uuid: &UUID) -> (String, bool) {
+        let tempfile = match self.files.get_mut(&uuid) {
+            Some(file) => file,
+            None => {
+                let file = EditionFile::from_name(uuid.value.clone());
+                self.files.insert(uuid.clone(), file);
+                self.files.get_mut(&uuid).unwrap()
+            }
+        };
 
-        let mut file = temp_file.as_file();
-        file.write_all(buffer.as_bytes()).unwrap();
+        tempfile.save_content(buffer).unwrap();
 
-        let file_path = temp_file.path();
+        let file_path = tempfile.get_path();
 
         let mut child = OSCommand::new(&self.configuration.editor)
-            .arg(file_path)
+            .arg(file_path.clone())
             .stdin(Stdio::inherit())
             .stdout(Stdio::inherit())
             .stderr(Stdio::inherit())

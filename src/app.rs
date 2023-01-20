@@ -112,8 +112,8 @@ impl App {
     pub fn get_input_buffer_mut(&mut self) -> &mut InputKeyboardBuffer {
         &mut self.get_data_store_mut().input_buffer
     }
-    pub fn get_input_buffer_value(&mut self) -> String {
-        self.get_data_store_mut().input_buffer.value.clone()
+    pub fn get_input_buffer_value(&self) -> String {
+        self.get_data_store().input_buffer.value.clone()
     }
     pub fn set_input_buffer_value(&mut self, buffer: String) {
         self.get_data_store_mut().input_buffer.value = buffer;

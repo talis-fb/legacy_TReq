@@ -4,6 +4,7 @@ pub mod requests;
 
 use crate::base::states::names::StatesNames;
 use crate::input::buffer::InputKeyboardBuffer;
+use crate::utils::custom_types::uuid::UUID;
 use crate::{app::InputMode, config::manager::ConfigManager};
 
 use self::requests::RequestStore;
@@ -85,6 +86,10 @@ impl MainStore {
 
     pub fn get_request(&self) -> Arc<Request> {
         Arc::new(self.requests.get_request())
+    }
+
+    pub fn get_request_uuid(&self) -> &UUID {
+        self.requests.get_request_uuid()
     }
 
     pub fn get_requests(&self) -> Vec<&Request> {

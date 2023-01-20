@@ -96,6 +96,11 @@ impl RequestStore {
         let key = self.requests.get(self.current_ind).unwrap();
         self.request_in_memory.get(key).unwrap().clone()
     }
+
+    pub fn get_request_uuid(&self) -> &UUID {
+        &self.current_uuid
+    }
+
     fn get_request_mut(&mut self) -> &mut Request {
         let key = self.requests.get(self.current_ind).unwrap();
         self.request_in_memory.get_mut(key).unwrap()

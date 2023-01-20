@@ -64,7 +64,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let has_clicked_before = Arc::new(AsyncBool::init(true));
     let commands = default_keymap_factory();
     let keymap = KeyboardListerner::init(commands);
-    let input_handler = InputHandler::init(keymap, data_store.config.editor.clone());
+    let mut input_handler = InputHandler::init(keymap, data_store.config.editor.clone());
 
     // Init UI
     let mut view = UI::init();
@@ -98,8 +98,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
             InputMode::Vim => {
                 view.close();
 
-                let (new_buffer, is_finished) =
-                    input_handler.sync_open_vim(app.get_input_buffer_value());
+                let (new_buffer, is_finished) = input_handler.sync_open_vim(
+                    app.get_input_buffer_value(),
+                    app.get_data_store().get_request_uuid(),
+                );
                 app.set_input_buffer_value(new_buffer);
 
                 if is_finished {

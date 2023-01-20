@@ -1,5 +1,6 @@
 pub mod data_file;
 pub mod request_file;
+pub mod edition_file;
 
 use super::files::FileUtils;
 use std::fs::{File, OpenOptions};
