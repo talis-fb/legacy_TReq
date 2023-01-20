@@ -79,6 +79,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.set_web_client(web_client);
     app.set_data_store(data_store);
 
+    // Store jobs running in tokio::spawn to abort them in the end
+    let mut async_tasks = vec![];
+
     while !app.is_finished {
         view.render(app.get_data_store());
 
@@ -128,8 +131,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
             InputMode::Normal => {
                 // Init listener of user input if previous one had done --------
                 if has_clicked_before.get() {
-                    input_handler
+                    let task = input_handler
                         .async_handler(action_queue_sender.clone(), has_clicked_before.clone());
+
+                    async_tasks.push(task);
                     has_clicked_before.set(false);
                 }
 
@@ -156,6 +161,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     view.close();
+
+    for task in async_tasks  {
+        task.abort();
+    }
+
 
     Ok(())
 }
