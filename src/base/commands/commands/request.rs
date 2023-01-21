@@ -117,4 +117,20 @@ impl Commands {
             Ok(())
         }
     }
+    pub fn restart_body_of_file() -> Command {
+        |app: &mut App| {
+            let data_store = app.get_data_store_mut();
+            let current_uuid = data_store.get_request_uuid();
+            let file_handler_cc = data_store.config.edition_files_handler.clone();
+            let mut file_handler = file_handler_cc.lock().unwrap();
+            let buffer = file_handler.get_content(current_uuid)?;
+
+            let mut req = (*data_store.get_request()).clone();
+            req.set_body(buffer.clone());
+
+            data_store.update_request(req);
+
+            Ok(())
+        }
+    }
 }

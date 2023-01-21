@@ -42,6 +42,7 @@ impl State for DefaultState {
                 (Actions::Save, Commands::save_request()),
                 (Actions::GrowHorizontalUiLeft, Commands::grow_left_ui()),
                 (Actions::GrowHorizontalUiRight, Commands::grow_right_ui()),
+                (Actions::ReloadBody, Commands::restart_body_of_file()),
             ]),
         }
     }

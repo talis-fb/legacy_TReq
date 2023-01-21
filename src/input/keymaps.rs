@@ -149,5 +149,12 @@ pub fn default_keymap_factory() -> KeyMap {
                 sub_action: None,
             },
         ),
+        (
+            KeyCode::Char('r'),
+            Actionable {
+                action: Actions::ReloadBody,
+                sub_action: None,
+            },
+        ),
     ])
 }

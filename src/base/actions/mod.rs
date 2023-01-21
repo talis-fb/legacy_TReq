@@ -51,6 +51,7 @@ pub enum Actions {
     RequestHeadersEdit,
     UrlEdit,
     MethodEdit,
+    ReloadBody,
 
     // 
     GrowHorizontalUiRight,
