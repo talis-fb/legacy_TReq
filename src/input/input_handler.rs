@@ -26,10 +26,10 @@ impl InputHandler {
         }
     }
 
-    pub fn async_handler(&self, queue: Sender<Actions>, when_finish: Arc<AsyncBool>) {
+    pub fn async_handler(&self, queue: Sender<Actions>, when_finish: Arc<AsyncBool>) -> tokio::task::JoinHandle<()> {
         let listener = self.listener.clone();
 
-        let reading = tokio::task::spawn(async move {
+        tokio::task::spawn(async move {
             let mut keymap = listener.lock().unwrap();
             if let Event::Key(key) = event::read().unwrap() {
                 let action = keymap.get_command(key.code);
@@ -42,7 +42,7 @@ impl InputHandler {
                 }
                 when_finish.set(true);
             }
-        });
+        })
     }
     pub fn sync_handler_doc_reading(&self, index_to_start: i32) -> (usize, bool) {
         let mut new_index = index_to_start;
