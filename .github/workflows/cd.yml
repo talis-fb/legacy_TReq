@@ -3,7 +3,7 @@ name: CD - Crates Publish
 on:
   push:
     tags:
-      - '*.*.*'
+      - '*'
 
 env:
   CARGO_TERM_COLOR: always
@@ -41,6 +41,14 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install and Run Cargo AUR to gen PKGBUILD
         run: cargo install cargo-aur && cargo aur && cat ./PKGBUILD
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          tag: ${{ github.ref }}
+          overwrite: true
+          file: '*.tar.gz'
+          file_glob: true
 
       - name: Publish AUR package
         uses: KSXGitHub/github-actions-deploy-aur@v2.6.0
