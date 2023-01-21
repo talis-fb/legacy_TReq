@@ -2,15 +2,14 @@ name: CD - Crates Publish
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    tags:
+      - '*.*.*'
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -18,8 +17,37 @@ jobs:
       run: cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
-
+      
+  publish_cargo:
+    name: Publish in Crates.io
+    runs-on: ubuntu-latest
+    needs:
+      - test
+      
+    steps:
     - name: Login in Crates.io
       run: cargo login ${{ secrets.CARGO_TOKEN }}
     - name: Publish
       run: cargo publish --verbose
+      
+  publish_aur:
+    name: Publish in AUR Package
+    runs-on: ubuntu-latest
+    needs:
+      - test
+      
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install and Run Cargo AUR to gen PKGBUILD
+        run: cargo install cargo-aur && cargo aur
+
+      - name: Publish AUR package
+        uses: KSXGitHub/github-actions-deploy-aur@<TAG>
+        with:
+          pkgname: treq
+          pkgbuild: ./PKGBUILD
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Update AUR package
+          ssh_keyscan_types: rsa,dsa,ecdsa,ed25519
