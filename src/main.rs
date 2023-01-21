@@ -64,7 +64,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let has_clicked_before = Arc::new(AsyncBool::init(true));
     let commands = default_keymap_factory();
     let keymap = KeyboardListerner::init(commands);
-    let mut input_handler = InputHandler::init(keymap, data_store.config.editor.clone());
+    let mut input_handler = InputHandler::init(
+        keymap,
+        data_store.config.editor.clone(),
+        data_store.config.edition_files_handler.clone(),
+    );
 
     // Init UI
     let mut view = UI::init();
@@ -162,10 +166,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     view.close();
 
-    for task in async_tasks  {
+    for task in async_tasks {
         task.abort();
     }
-
 
     Ok(())
 }

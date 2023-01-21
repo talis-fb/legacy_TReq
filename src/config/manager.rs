@@ -1,16 +1,18 @@
-use std::rc::Rc;
-use std::sync::Mutex;
-use super::configurations::Configuration;
 use super::configurations::external_editor::ExternalEditor;
 use super::configurations::view::ViewConfig;
+use super::configurations::Configuration;
+use crate::base::os::file_edition_handler::FileEditionHandler;
 use crate::config::configurations::save_files::SaveFiles;
 use crate::utils::file_facades::{data_file::DataFile, request_file::RequestFile, FileFacade};
+use std::rc::Rc;
+use std::sync::Mutex;
 
 #[derive(Clone)]
 pub struct ConfigManager {
     pub saved_requests: Rc<Mutex<SaveFiles>>,
     pub editor: Rc<ExternalEditor>,
-    pub view: Rc< Mutex<ViewConfig>>,
+    pub view: Rc<Mutex<ViewConfig>>,
+    pub edition_files_handler: Rc<Mutex<FileEditionHandler>>,
 }
 impl ConfigManager {
     pub fn init() -> Self {
@@ -21,6 +23,7 @@ impl ConfigManager {
             saved_requests: Rc::new(Mutex::new(saved_requests)),
             view: Rc::new(Mutex::new(view)),
             editor: Rc::new(editor),
+            edition_files_handler: Rc::new(Mutex::new(FileEditionHandler::default())),
         }
     }
 

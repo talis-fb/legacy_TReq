@@ -1,12 +1,10 @@
 use crossterm::event::{self, Event, KeyCode};
-use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::{mpsc::Sender, Arc, Mutex};
 
+use crate::base::os::file_edition_handler::FileEditionHandler;
 use crate::config::configurations::external_editor::ExternalEditor;
 use crate::utils::custom_types::uuid::UUID;
-use crate::utils::file_facades::edition_file::EditionFile;
-use crate::utils::file_facades::FileFacade;
 use crate::{base::actions::Actions, utils::custom_types::async_bool::AsyncBool};
 
 use super::{buffer::InputKeyboardBuffer, listener::KeyboardListerner};
@@ -15,18 +13,26 @@ use std::process::{Command as OSCommand, Stdio};
 pub struct InputHandler {
     listener: Arc<Mutex<KeyboardListerner>>,
     configuration: Rc<ExternalEditor>,
-    files: HashMap<UUID, EditionFile>,
+    files: Rc<Mutex<FileEditionHandler>>,
 }
 impl InputHandler {
-    pub fn init(listener: KeyboardListerner, configuration: Rc<ExternalEditor>) -> Self {
+    pub fn init(
+        listener: KeyboardListerner,
+        configuration: Rc<ExternalEditor>,
+        files: Rc<Mutex<FileEditionHandler>>,
+    ) -> Self {
         Self {
             listener: Arc::new(Mutex::new(listener)),
             configuration,
-            files: HashMap::new(),
+            files,
         }
     }
 
-    pub fn async_handler(&self, queue: Sender<Actions>, when_finish: Arc<AsyncBool>) -> tokio::task::JoinHandle<()> {
+    pub fn async_handler(
+        &self,
+        queue: Sender<Actions>,
+        when_finish: Arc<AsyncBool>,
+    ) -> tokio::task::JoinHandle<()> {
         let listener = self.listener.clone();
 
         tokio::task::spawn(async move {
@@ -88,18 +94,8 @@ impl InputHandler {
     }
 
     pub fn sync_open_vim(&mut self, buffer: String, uuid: &UUID) -> (String, bool) {
-        let tempfile = match self.files.get_mut(&uuid) {
-            Some(file) => file,
-            None => {
-                let file = EditionFile::from_name(uuid.value.clone());
-                self.files.insert(uuid.clone(), file);
-                self.files.get_mut(&uuid).unwrap()
-            }
-        };
-
-        tempfile.save_content(buffer).unwrap();
-
-        let file_path = tempfile.get_path();
+        self.files.lock().unwrap().save_content(uuid, buffer).unwrap();
+        let file_path = self.files.lock().unwrap().get_path(uuid);
 
         let mut child = OSCommand::new(&self.configuration.editor)
             .arg(file_path.clone())

@@ -1,6 +1,7 @@
 pub mod actions;
 pub mod commands;
 pub mod doc;
+pub mod os;
 pub mod logs;
 pub mod states;
 pub mod stores;

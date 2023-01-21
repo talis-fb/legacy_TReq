@@ -18,7 +18,7 @@ impl FileFacade for EditionFile {
         let temp_file = Builder::new()
             .prefix(&filename)
             .suffix(".json")
-            .rand_bytes(0)
+            .rand_bytes(10)
             .tempfile()
             .unwrap();
         let path = temp_file.path().to_path_buf();
