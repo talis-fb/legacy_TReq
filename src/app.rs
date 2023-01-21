@@ -21,7 +21,7 @@ pub enum InputMode {
 
 pub struct App {
     pub is_finished: bool,
-    renderer: Option<Sender<MainStore>>,
+    renderer: Option<Sender<Actions>>,
 
     // Datas
     pub data_store: Option<MainStore>,
@@ -76,7 +76,7 @@ impl App {
     pub fn set_web_client(&mut self, client: WebClient<ReqwestClientRepository>) -> () {
         self.client_web = Some(Arc::new(client))
     }
-    pub fn set_renderer(&mut self, renderer: Sender<MainStore>) -> () {
+    pub fn set_renderer(&mut self, renderer: Sender<Actions>) -> () {
         self.renderer = Some(renderer)
     }
 
@@ -149,6 +149,8 @@ impl App {
 
         let data_store = self.get_data_store().clone();
 
+        let renderer = self.renderer.as_ref().unwrap().clone();
+
         tokio::task::spawn(async move {
             let new_response = client
                 .submit((*request).clone())
@@ -157,7 +159,8 @@ impl App {
 
             let mut data = response_data_store.lock().unwrap();
 
-            *data = new_response.unwrap_or_else(|err| Response::default_internal_error(err))
+            *data = new_response.unwrap_or_else(|err| Response::default_internal_error(err));
+            renderer.send(Actions::Null).unwrap();
         });
     }
 
@@ -172,5 +175,9 @@ impl App {
 
     pub fn clear_log(&mut self) -> () {
         self.get_data_store_mut().clear_log()
+    }
+
+    pub fn rerender(&self) -> () {
+        self.renderer.as_ref().unwrap().send(Actions::Null).unwrap();
     }
 }
