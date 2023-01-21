@@ -40,12 +40,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install and Run Cargo AUR to gen PKGBUILD
-        run: cargo install cargo-aur && cargo aur
+        run: cargo install cargo-aur && cargo aur && cat ./PKGBUILD
 
       - name: Publish AUR package
         uses: KSXGitHub/github-actions-deploy-aur@v2.6.0
         with:
-          pkgname: treq
+          pkgname: treq-bin
           pkgbuild: ./PKGBUILD
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
