@@ -37,17 +37,20 @@ impl InputHandler {
 
         tokio::task::spawn(async move {
             let mut keymap = listener.lock().unwrap();
-            if let Event::Key(key) = event::read().unwrap() {
-                let action = keymap.get_command(key.code);
 
-                if let Some(act) = action {
-                    let res = queue.send(act);
-                    if let Err(_) = res {
-                        return;
-                    }
-                }
-                when_finish.set(true);
+            let action_default = Actions::Null;
+            let mut action = action_default;
+
+            if let Event::Key(key) = event::read().unwrap() {
+                action = keymap.get_command(key.code).unwrap_or(action_default);
             }
+
+            let res = queue.send(action);
+            if let Err(e) = res {
+                println!("Erro at run command: {:?}", e);
+            }
+
+            when_finish.set(true);
         })
     }
     pub fn sync_handler_doc_reading(&self, index_to_start: i32) -> (usize, bool) {
@@ -94,7 +97,11 @@ impl InputHandler {
     }
 
     pub fn sync_open_vim(&mut self, buffer: String, uuid: &UUID) -> (String, bool) {
-        self.files.lock().unwrap().save_content(uuid, buffer).unwrap();
+        self.files
+            .lock()
+            .unwrap()
+            .save_content(uuid, buffer)
+            .unwrap();
         let file_path = self.files.lock().unwrap().get_path(uuid);
 
         let mut child = OSCommand::new(&self.configuration.editor)

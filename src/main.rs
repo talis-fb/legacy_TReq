@@ -15,7 +15,6 @@ use base::states::manager::StateManager;
 use base::states::states::{DefaultState, State};
 
 use std::sync::mpsc::{self, Receiver, Sender};
-use std::time::Duration;
 
 mod app;
 use app::{App, InputMode};
@@ -59,8 +58,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // User Input
     let (action_queue_sender, action_queue_receiver): (Sender<Actions>, Receiver<Actions>) =
         mpsc::channel();
-    let (typing_queue_sender, typing_queue_receiver): (Sender<Actions>, Receiver<Actions>) =
-        mpsc::channel();
     let has_clicked_before = Arc::new(AsyncBool::init(true));
     let commands = default_keymap_factory();
     let keymap = KeyboardListerner::init(commands);
@@ -72,8 +69,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Init UI
     let mut view = UI::init();
-    let delay_between_renders = Duration::from_millis(50);
-    let mut interval_render = tokio::time::interval(delay_between_renders);
 
     // Init app -> it starts with a empty request
     let mut app = App::default();
@@ -82,6 +77,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.set_command_handler(command_handler);
     app.set_web_client(web_client);
     app.set_data_store(data_store);
+    app.set_renderer(action_queue_sender.clone());
 
     // Store jobs running in tokio::spawn to abort them in the end
     let mut async_tasks = vec![];
@@ -143,8 +139,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 }
 
                 // Listen queue of user's events to execute --------------------
-                interval_render.tick().await;
-                match action_queue_receiver.recv_timeout(delay_between_renders) {
+                match action_queue_receiver.recv() {
                     Ok(action_to_exec) => {
                         let command = app
                             .get_command_of_action(action_to_exec)
