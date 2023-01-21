@@ -25,6 +25,7 @@ jobs:
       - test
       
     steps:
+    - uses: actions/checkout@v3
     - name: Login in Crates.io
       run: cargo login ${{ secrets.CARGO_TOKEN }}
     - name: Publish
@@ -42,7 +43,7 @@ jobs:
         run: cargo install cargo-aur && cargo aur
 
       - name: Publish AUR package
-        uses: KSXGitHub/github-actions-deploy-aur@<TAG>
+        uses: KSXGitHub/github-actions-deploy-aur@v2.6.0
         with:
           pkgname: treq
           pkgbuild: ./PKGBUILD
