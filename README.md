@@ -14,7 +14,7 @@
 
 <br />
 
-![](screenshot.png)
+![](showcase.gif)
 
 # Instalation
 
@@ -39,10 +39,10 @@ $ sudo dpkg -i path_to_file.deb
 ```
 
 ### Arch Linux, Manjaro
-TReq is available in [AUR](https://aur.archlinux.org/packages/treq/) Repository.
+TReq is available in [AUR](https://aur.archlinux.org/packages/treq-bin/) Repository.
 
 ```sh
-$ git clone https://aur.archlinux.org/treq.git
+$ git clone https://aur.archlinux.org/treq-bin.git
 $ cd treq
 $ makepkg -si
 ```
@@ -50,7 +50,7 @@ $ makepkg -si
 Or, if you use the [yay](https://github.com/Jguer/yay) just run...
 
 ```sh
-$ yay -S treq
+$ yay -S treq-bin
 ```
 
 # Setup
