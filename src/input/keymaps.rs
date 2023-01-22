@@ -65,7 +65,21 @@ pub fn default_keymap_factory() -> KeyMap {
             },
         ),
         (
+            KeyCode::Down,
+            Actionable {
+                action: Actions::Down,
+                sub_action: None,
+            },
+        ),
+        (
             KeyCode::Char('k'),
+            Actionable {
+                action: Actions::Up,
+                sub_action: None,
+            },
+        ),
+        (
+            KeyCode::Up,
             Actionable {
                 action: Actions::Up,
                 sub_action: None,
@@ -79,7 +93,21 @@ pub fn default_keymap_factory() -> KeyMap {
             },
         ),
         (
+            KeyCode::Right,
+            Actionable {
+                action: Actions::Right,
+                sub_action: None,
+            },
+        ),
+        (
             KeyCode::Char('h'),
+            Actionable {
+                action: Actions::Left,
+                sub_action: None,
+            },
+        ),
+        (
+            KeyCode::Left,
             Actionable {
                 action: Actions::Left,
                 sub_action: None,
