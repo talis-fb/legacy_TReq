@@ -8,32 +8,31 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/talis-fb/treq)
 ![AUR version](https://img.shields.io/aur/version/treq-bin)
 
-#### TReq is a extremelly tiny and fast Http/API Rest Client in Terminal. It's inspired in softwares like [Insominia](https://insomnia.rest/download), [Postman](https://www.postman.com/) and [Neovim](https://github.com/neovim/neovim)
+#### TReq is a extremely tiny and fast Http/API Rest Client in Terminal. It is inspired by software like [Insominia](https://insomnia.rest/download), [Postman](https://www.postman.com/) and [Neovim](https://github.com/neovim/neovim)
 ### 
-#### It integrates with your favorite text editor, letting you edit the body of request as you prefer and get quickly the response. 
+#### It integrates with your favorite text editor, letting you edit the body of request as you prefer, and quickly get the response. 
 
 <br />
 
 ![](showcase.gif)
 
-# Instalation
+# Installation
 
 ### Recommended
 
-For any linux environment is possible to download TReq by [Crates.io](https://crates.io/crates/treq) repository. Using this method requires to have [Rust](https://www.rust-lang.org/pt-BR/tools/install) installed. 
+In any Linux environment, it is possible to download TReq with the [Crates.io](https://crates.io/crates/treq) repository. Using this method requires having [Rust](https://www.rust-lang.org/pt-BR/tools/install) installed. 
 
-After install Rust just run:
+After Rust is installed, run this command to download and compile Treq:
 
 ```sh
 cargo install treq
 ```
 
-Due to fact it will compile and build TReq, this can to take a while.
+This can to take a while, due to needing to compile the project and all of its dependencies.
 
 ### Debian, Ubuntu, Linux Mint, PopOS, Zorin
-It's possible to download TReq using the [.deb file](https://github.com/talis-fb/TReq/releases).
+It is possible to download a prebuild .deb file [HERE](https://github.com/talis-fb/TReq/releases). After downloading the .deb file, you can unpackage it with the command below.
 
-After download it by link [HERE](https://github.com/talis-fb/TReq/releases) you can just run the command below pointing to file.
 ```sh
 $ sudo dpkg -i path_to_file.deb
 ```
@@ -47,7 +46,7 @@ $ cd treq
 $ makepkg -si
 ```
 
-Or, if you use the [yay](https://github.com/Jguer/yay) just run...
+Or, if you use [yay](https://github.com/Jguer/yay) just run...
 
 ```sh
 $ yay -S treq-bin
@@ -55,29 +54,28 @@ $ yay -S treq-bin
 
 # Setup
 
-To use TReq is necessary setup the `EDITOR` env variable. It'll use this configuration to open the Text Editor.
+To make use of the full set of feature provided by TReq, the`EDITOR` environment variable needs to be set. TReq will use this variable when opening the text editor.
 
-TReq doesn't have a way to edit a Body of Requests. It delegates this work to a Text Editor of your choice. The. It's recommend use a Terminal Text Edtiro like 'vim', 'neovim', 'nano' or even 'emacs'.
+TReq doesn't have a built in way to edit a Body of Requests. It delegates this work to the text editor of your choice. It is recommend you use a terminal text editor like 'vim', 'neovim', 'nano', or even 'emacs' to edit these.
 
-You can set up the EDITOR env variable in a terminal session using this command below. However, after you close the terminal session (window) this configuration'll be dropped.
+If you do not already have an EDITOR set (to check, type `echo $EDITOR`, into your terminal. The output is the editor that will be used by TReq), you can set up the EDITOR environment variable in a terminal session using the command below. However, after you close the terminal session (window) this configuration will be dropped.
 ```sh
-export EDITOR=vim # instead vim you can use 'code', 'nano', 'emacs', etc..
+# instead vim you can use 'code', 'nano', 'emacs', etc..
+export EDITOR=vim 
 ```
 
-To set this up permanent it's necessary puts this in your shell configuration.
+To set this up permanent it is necessary to edit your shell configuration. For example:
 ```sh
-# to bash users
+# for bash users
 echo 'export EDITOR=vim' >> ~/.bashrc 
 
-# to zsh users
+# for zsh users
 echo 'export EDITOR=vim' >> ~/.zshrc
 
-# to fish users
+# for fish users
 echo 'export EDITOR=vim' >> ~/.config/fish/config.fish 
 ```
 
-Normally, some Linux Systems already have this set up. Using some basic Unix Text Editor like _vi_ or _nano_.
+However, it is quite commmon for this editor to already be set, but beware of non-terminal editors being set (like `writer` from LibreOffice Writer), because they will not work smoothly with TReq. It is recommended to use a terminal text editor like _vi_ or _nano_.
 
-It's great use some terminal editor, like Vim or Emacs to have a smooth experience. Since you'll can open them in same terminal session of TReq.
-
-However, it's totally fine use some Graphical editor like VS Code or Atom. In these cases, when you hit the command to edit body TReq will open it up and then you'll need to hit 'r' to reload the content of file in TReq ever time you make some change. Since, TReq gets the content of opened file with editor when the command to call it ends. 
+However, TReq will work fine with some graphical editors, like VS Code or Atom. In these cases, when you hit the command to 'edit body', TReq will open the graphical editor up, and you will need to hit reload the file with 'r' in TReq ever time you make some change.
