@@ -23,23 +23,39 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - test
-      
     steps:
     - uses: actions/checkout@v3
     - name: Login in Crates.io
       run: cargo login ${{ secrets.CARGO_TOKEN }}
     - name: Publish
       run: cargo publish --verbose
+  
+  create_deb:
+    name: Create .deb File in Release
+    runs-on: ubuntu-latest
+    needs:
+      - test
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install and Run Cargo Deb to generate the .deb File
+        run: cargo install cargo-deb && cargo deb --output . && ls -la
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          tag: ${{ github.ref }}
+          overwrite: true
+          file: '*.deb'
+          file_glob: true
       
   publish_aur:
     name: Publish in AUR Package
     runs-on: ubuntu-latest
     needs:
       - test
-      
     steps:
       - uses: actions/checkout@v3
-      - name: Install and Run Cargo AUR to gen PKGBUILD
+      - name: Install and Run Cargo AUR to generate PKGBUILD
         run: cargo install cargo-aur && cargo aur && cat ./PKGBUILD
         
       - name: Upload binaries to release

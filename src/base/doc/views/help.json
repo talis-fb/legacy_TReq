@@ -18,6 +18,7 @@
         [ ["SUBMIT", "ColorBlue"], [" -> [ENTER]", null] ],
         [ ["NEW", "ColorBlue"], [" -> n", null] ],
         [ ["RELOAD", "ColorBlue"], [" -> r", null] ],
+        [ ["SAVE", "ColorBlue"], [" -> s", null] ],
         [ ["", null] ],
         [ [" > What each Action does in each State?", "ColorYellow"] ],
         [ ["Tab List Active", "ColorBlue"] ],
@@ -42,6 +43,7 @@
         [ ["--- SUBMIT: ", "ColorCyan"], ["Make the HTTP Request", null] ],
         [ ["--- QUIT ", "ColorCyan"], ["Say goodbye", null] ],
         [ ["--- RELOAD: ", "ColorCyan"], ["Reload any modification of files used for editing body (only necessary if using external Text Editor)", null] ],
+        [ ["--- SAVE: ", "ColorCyan"], ["Save the modifications of current Request", null] ],
         [ ["", null] ]
     ]
 }
