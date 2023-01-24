@@ -2,7 +2,7 @@
 <img src="./dino.png" height="120px" />
 </p>
 
-# Treq
+# TReq
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/talis-fb/treq/cd.yml)
 ![GitHub repo size](https://img.shields.io/github/repo-size/talis-fb/treq)
