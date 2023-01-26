@@ -11,7 +11,7 @@ impl Commands {
             match result {
                 Err(e) => app
                     .get_data_store_mut()
-                    .set_log_error("ERROR SAVE REQUEST".to_string(), e.to_string()),
+                    .set_log_error("ERROR SAVE REQUEST".to_string(), e),
                 Ok(_) => app
                     .get_data_store_mut()
                     .set_log_helping("SAVED".to_string(), "".to_string()),
@@ -46,7 +46,7 @@ impl Commands {
         |app: &mut App| {
             let initial_headers = app.get_data_store().get_request().headers.clone();
             let initial_headers_as_str =
-                serde_json::to_string_pretty(&initial_headers).unwrap_or(String::new());
+                serde_json::to_string_pretty(&initial_headers).unwrap_or_default();
 
             app.set_vim_mode_with_command(
                 |app: &mut App| {
@@ -61,7 +61,7 @@ impl Commands {
                             store.input_buffer.reset_to_backup();
                             let buffer_backup_str = &store.input_buffer.value;
                             let buffer_backup_map = serde_json::from_str(buffer_backup_str);
-                            buffer_backup_map.unwrap_or(HashMap::new())
+                            buffer_backup_map.unwrap_or_default()
                         });
 
                     let data_store = app.get_data_store_mut();
@@ -126,7 +126,7 @@ impl Commands {
             let buffer = file_handler.get_content(current_uuid)?;
 
             let mut req = (*data_store.get_request()).clone();
-            req.set_body(buffer.clone());
+            req.set_body(buffer);
 
             data_store.update_request(req);
 

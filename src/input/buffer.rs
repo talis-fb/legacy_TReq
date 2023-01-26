@@ -18,10 +18,10 @@ impl InputKeyboardBuffer {
             value_backup: None,
         }
     }
-    pub fn set_backup(&mut self, s: String) -> () {
+    pub fn set_backup(&mut self, s: String) {
         self.value_backup = Some(s)
     }
-    pub fn reset_to_backup(&mut self) -> () {
-        self.value = self.value_backup.clone().unwrap_or(String::new())
+    pub fn reset_to_backup(&mut self) {
+        self.value = self.value_backup.clone().unwrap_or_default()
     }
 }

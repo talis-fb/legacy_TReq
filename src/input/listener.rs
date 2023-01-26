@@ -20,7 +20,7 @@ impl KeyboardListerner {
         let default_map = Arc::new(default_map);
         KeyboardListerner {
             default: default_map.clone(),
-            current: default_map.clone(),
+            current: default_map,
         }
     }
 
@@ -37,7 +37,7 @@ impl KeyboardListerner {
             }
 
             // Otherwise... Return the command normaly
-            let dd = i.action.clone();
+            let dd = i.action;
             self.current = self.default.clone();
             return Some(dd);
         }
