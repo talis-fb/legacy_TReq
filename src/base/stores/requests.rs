@@ -55,20 +55,26 @@ impl RequestStore {
         self.request_in_memory.insert(uuid.clone(), req);
         self.requests.push(uuid);
 
-        let i = self.requests.len() - 1;
+        let last_index = self.requests.len() - 1;
 
-        self.goto_request(i);
-        i
+        self.goto_request(last_index);
+        last_index
     }
 
     pub fn delete_current_request(&mut self) -> Result<(), String> {
         let uuid = self.current_uuid.clone();
-        let ii = self.requests.iter().position(|u| *u == uuid);
-        if let Some(i) = ii {
+        let index_request_selected = self.requests.iter().position(|u| *u == uuid);
+        if let Some(i) = index_request_selected {
             self.goto_next_request();
             self.request_in_memory.remove(&uuid);
             self.requests.remove(i);
-            self.save_files.lock().unwrap().remove(&uuid)?;
+
+
+            let mut save_files = self.save_files.lock().unwrap();
+            if let Some(_) = save_files.exist(&uuid) {
+                save_files.remove(&uuid)?;
+            }
+
         }
         Ok(())
     }
