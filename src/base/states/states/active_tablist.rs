@@ -18,6 +18,7 @@ impl State for TabActiveState {
             maps: HashMap::from([
                 (Actions::Edit, Commands::rename_tab()),
                 (Actions::Switch, Commands::go_to_next_tab()),
+                (Actions::InverseSwitch, Commands::go_to_previous_tab()),
                 (Actions::New, Commands::add_new_tab()),
                 (Actions::Up, Commands::do_nothing()),
                 (Actions::Down, Commands::go_to_url_section()),

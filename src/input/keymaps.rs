@@ -58,6 +58,13 @@ pub fn default_keymap_factory() -> KeyMap {
             },
         ),
         (
+            KeyCode::BackTab,
+            Actionable {
+                action: Actions::InverseSwitch,
+                sub_action: None,
+            },
+        ),
+        (
             KeyCode::Char('j'),
             Actionable {
                 action: Actions::Down,

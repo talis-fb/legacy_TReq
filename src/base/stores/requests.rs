@@ -1,4 +1,4 @@
-use std::{collections::HashMap, rc::Rc, sync::Mutex};
+use std::{rc::Rc, sync::Mutex};
 
 use crate::{
     base::web::request::Request,
@@ -9,26 +9,24 @@ use crate::{
 #[derive(Clone)]
 pub struct RequestStore {
     save_files: Rc<Mutex<SaveFiles>>,
-
-    request_in_memory: HashMap<UUID, Request>,
-    requests: Vec<UUID>,
-
-    current_uuid: UUID,
+    requests: Vec<(UUID, Request)>,
     current_ind: usize,
 }
 
 impl RequestStore {
     pub fn init(save_files: Rc<Mutex<SaveFiles>>) -> Self {
         let save_files_cc = save_files.clone();
-        let mut save_files_content =  save_files_cc.lock().unwrap();
+        let mut save_files_content = save_files_cc.lock().unwrap();
 
         let mut map_saved_files = save_files_content.get_map();
         if map_saved_files.is_empty() {
-            save_files_content.set(&UUID::new(), &Request::default()).unwrap();
+            save_files_content
+                .set(&UUID::new(), &Request::default())
+                .unwrap();
             map_saved_files = save_files_content.get_map();
         }
 
-        let request_in_memory: HashMap<UUID, Request> = map_saved_files
+        let requests: Vec<(UUID, Request)> = map_saved_files
             .iter()
             .map(|(k, v)| {
                 let req = save_files_content.get_as_entity(k).unwrap();
@@ -36,15 +34,9 @@ impl RequestStore {
             })
             .collect();
 
-        let keys: Vec<UUID> = request_in_memory.clone().into_keys().collect();
-        let keys_clone = keys.clone();
-        let first_key = keys_clone.get(0).unwrap();
-
         Self {
             save_files,
-            request_in_memory,
-            requests: keys,
-            current_uuid: first_key.clone(),
+            requests,
             current_ind: 0,
         }
     }
@@ -52,30 +44,41 @@ impl RequestStore {
     pub fn add_request(&mut self) -> usize {
         let uuid = UUID::new();
         let req = Request::default();
-        self.request_in_memory.insert(uuid.clone(), req);
-        self.requests.push(uuid);
+        self.requests.push((uuid, req));
 
-        let i = self.requests.len() - 1;
+        let last_index = self.requests.len() - 1;
 
-        self.goto_request(i);
-        i
+        self.goto_request(last_index);
+        last_index
     }
 
     pub fn delete_current_request(&mut self) -> Result<(), String> {
-        let uuid = self.current_uuid.clone();
-        let ii = self.requests.iter().position(|u| *u == uuid);
-        if let Some(i) = ii {
-            self.goto_next_request();
-            self.request_in_memory.remove(&uuid);
-            self.requests.remove(i);
-            self.save_files.lock().unwrap().remove(&uuid)?;
+        let i = self.current_ind;
+        let (uuid, _) = self.requests.get(i).unwrap();
+        let uuid = uuid.clone();
+
+        self.requests.remove(i);
+
+        if self.requests.is_empty() {
+            self.add_request();
         }
+
+        self.current_ind = if self.requests.get(i).is_some() {
+            i
+        } else {
+            i - 1
+        };
+
+        let mut save_files = self.save_files.lock().unwrap();
+        if let Some(_) = save_files.exist(&uuid) {
+            save_files.remove(&uuid)?;
+        }
+
         Ok(())
     }
 
     pub fn goto_request(&mut self, index: usize) -> Option<()> {
         let key = self.requests.get(index)?;
-        self.current_uuid = key.clone();
         self.current_ind = index;
         Some(())
     }
@@ -86,31 +89,33 @@ impl RequestStore {
         }
     }
     pub fn goto_prev_request(&mut self) {
-        let prev_ind = self.current_ind - 1;
-        if self.goto_request(prev_ind).is_none() {
+        let prev_ind = (self.current_ind as i32) - 1;
+
+        if prev_ind < 0 {
             self.goto_request(self.get_total_requests() - 1);
+            return;
         }
+
+        self.goto_request(prev_ind as usize);
     }
 
     pub fn get_request(&self) -> Request {
         let key = self.requests.get(self.current_ind).unwrap();
-        self.request_in_memory.get(key).unwrap().clone()
+        key.1.clone()
     }
 
     pub fn get_request_uuid(&self) -> &UUID {
-        &self.current_uuid
+        let key = self.requests.get(self.current_ind).unwrap();
+        &key.0
     }
 
     fn get_request_mut(&mut self) -> &mut Request {
-        let key = self.requests.get(self.current_ind).unwrap();
-        self.request_in_memory.get_mut(key).unwrap()
+        let req = self.requests.get_mut(self.current_ind).unwrap();
+        &mut req.1
     }
 
     pub fn get_requests(&self) -> Vec<&Request> {
-        self.requests
-            .iter()
-            .map(|k| self.request_in_memory.get(k).unwrap())
-            .collect()
+        self.requests.iter().map(|(uuid, req)| req).collect()
     }
 
     pub fn request_ind(&self) -> usize {
@@ -118,20 +123,18 @@ impl RequestStore {
     }
 
     pub fn get_total_requests(&self) -> usize {
-        self.request_in_memory.len()
+        self.requests.len()
     }
 
     pub fn update_request(&mut self, mut request: Request) {
-        let key = self.requests.get(self.current_ind).unwrap();
-        let request_in_memory = self.request_in_memory.get_mut(key).unwrap();
+        let key = self.requests.get_mut(self.current_ind).unwrap();
 
         request.has_changed = true;
-        *request_in_memory = request;
+        key.1 = request;
     }
 
     pub fn save_current_request(&mut self) -> Result<(), String> {
-        let uuid = &self.current_uuid;
-        let req = self.get_request();
+        let (uuid, req) = self.requests.get(self.current_ind).unwrap();
         self.save_files.lock().unwrap().set(uuid, &req)?;
 
         // Now mark it as saved
