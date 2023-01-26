@@ -82,5 +82,9 @@ impl SaveFiles {
     pub fn exist(&self, key: &UUID) -> Option<()> {
         self.get_map().get(key).map(|_| ())
     }
+
+    pub fn exist_already_some_file(&self) -> bool {
+        !self.get_map().is_empty()
+    }
 }
 
