@@ -12,6 +12,7 @@ pub enum Actions {
     // Main actions
     Edit,
     Switch,
+    InverseSwitch,
     Submit,
     Undo,
     New,

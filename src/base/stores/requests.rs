@@ -89,10 +89,14 @@ impl RequestStore {
         }
     }
     pub fn goto_prev_request(&mut self) {
-        let prev_ind = self.current_ind - 1;
-        if self.goto_request(prev_ind).is_none() {
+        let prev_ind = (self.current_ind as i32) - 1;
+
+        if prev_ind < 0 {
             self.goto_request(self.get_total_requests() - 1);
+            return;
         }
+
+        self.goto_request(prev_ind as usize);
     }
 
     pub fn get_request(&self) -> Request {
