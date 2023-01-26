@@ -42,7 +42,7 @@ impl Configuration<UUID, RequestFile, Request> for SaveFiles {
         Ok(Self { map: all_files })
     }
 
-    fn get_as_file(&self, key: &UUID) -> Option<&RequestFile> {
+    fn get_as_file<'a>(&'a self, key: &UUID) -> Option<&'a RequestFile> {
         self.get_map().get(key)
     }
 
