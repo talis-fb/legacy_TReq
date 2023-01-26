@@ -10,7 +10,7 @@ pub struct ValidatorsHandler<'a, T> {
 }
 impl<'a, T: Clone> ValidatorsHandler<'a, T> {
     pub fn from(value: &'a T) -> Self {
-        Self { value: &value }
+        Self { value }
     }
 
     pub fn execute<I>(&self, itr: I) -> Result<T, String>
@@ -21,9 +21,7 @@ impl<'a, T: Clone> ValidatorsHandler<'a, T> {
 
         for validator_fn in itr.into_iter() {
             let res = validator_fn(&mut result);
-            if let Err(e) = res {
-                return Err(e);
-            }
+            res?
         }
 
         Ok(result)
@@ -36,7 +34,7 @@ impl<'a, T: Clone> ValidatorsHandler<'a, T> {
         let mut result = self.value.clone();
 
         for validator_fn in itr.into_iter() {
-            if let Err(_) = validator_fn(&mut result) {
+            if validator_fn(&mut result).is_err() {
                 // do nothing
             }
         }
@@ -65,7 +63,7 @@ mod tests {
 
     fn validator_to_append_space() -> Validator<String> {
         |parameter: &mut String| -> Result<(), String> {
-            parameter.push_str(" ");
+            parameter.push(' ');
             Ok(())
         }
     }

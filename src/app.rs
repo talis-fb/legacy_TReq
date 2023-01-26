@@ -19,6 +19,7 @@ pub enum InputMode {
     Help,
 }
 
+#[derive(Default)]
 pub struct App {
     pub is_finished: bool,
     renderer: Option<Sender<Actions>>,
@@ -40,43 +41,29 @@ pub struct App {
     pub client_web: Option<Arc<WebClient<ReqwestClientRepository>>>,
 }
 
-impl Default for App {
-    fn default() -> Self {
-        Self {
-            is_finished: false,
 
-            renderer: None,
-            data_store: None,
-            save_files: None,
-            state_manager: None,
-            action_manager: None,
-            command_handler: None,
-            client_web: None,
-        }
-    }
-}
 
 impl App {
     // Builders -------- ---------------------
-    pub fn set_data_store(&mut self, data_store: MainStore) -> () {
+    pub fn set_data_store(&mut self, data_store: MainStore) {
         self.data_store = Some(data_store)
     }
-    pub fn set_save_file(&mut self, save_files: SaveFiles) -> () {
+    pub fn set_save_file(&mut self, save_files: SaveFiles) {
         self.save_files = Some(save_files)
     }
-    pub fn set_state_manager(&mut self, state_manager: StateManager) -> () {
+    pub fn set_state_manager(&mut self, state_manager: StateManager) {
         self.state_manager = Some(state_manager)
     }
-    pub fn set_action_manager(&mut self, action_manager: ActionsManager) -> () {
+    pub fn set_action_manager(&mut self, action_manager: ActionsManager) {
         self.action_manager = Some(action_manager)
     }
-    pub fn set_command_handler(&mut self, command_handler: CommandHandler) -> () {
+    pub fn set_command_handler(&mut self, command_handler: CommandHandler) {
         self.command_handler = Some(command_handler)
     }
-    pub fn set_web_client(&mut self, client: WebClient<ReqwestClientRepository>) -> () {
+    pub fn set_web_client(&mut self, client: WebClient<ReqwestClientRepository>) {
         self.client_web = Some(Arc::new(client))
     }
-    pub fn set_renderer(&mut self, renderer: Sender<Actions>) -> () {
+    pub fn set_renderer(&mut self, renderer: Sender<Actions>) {
         self.renderer = Some(renderer)
     }
 
@@ -95,7 +82,7 @@ impl App {
         data_store.set_log_input_mode();
         self.get_input_buffer_mut()
             .set_backup(initial_buffer.clone());
-        self.set_input_buffer_value(initial_buffer.clone());
+        self.set_input_buffer_value(initial_buffer);
     }
     pub fn set_vim_mode_with_command(&mut self, callback: Command, initial_buffer: String) {
         self.set_mode(InputMode::Vim);
@@ -104,7 +91,7 @@ impl App {
 
         self.get_input_buffer_mut()
             .set_backup(initial_buffer.clone());
-        self.set_input_buffer_value(initial_buffer.clone());
+        self.set_input_buffer_value(initial_buffer);
     }
     pub fn get_input_buffer(&mut self) -> &InputKeyboardBuffer {
         &self.get_data_store_mut().input_buffer
@@ -128,7 +115,7 @@ impl App {
         Some(self.state_manager.as_ref()?.get_state())
     }
     pub fn set_new_state(&mut self, new_state: impl State + 'static) -> Option<()> {
-        self.get_data_store_mut().current_state = new_state.get_state_name().clone();
+        self.get_data_store_mut().current_state = new_state.get_state_name();
         self.state_manager.as_mut()?.set_state(new_state);
         Some(())
     }
@@ -138,14 +125,14 @@ impl App {
         let state_manager = self.state_manager.as_ref()?;
         self.action_manager
             .as_ref()?
-            .get_command_of_action(action, &state_manager)
+            .get_command_of_action(action, state_manager)
     }
 
     // Web client ---------------------
-    pub fn dispatch_submit(&self) -> () {
+    pub fn dispatch_submit(&self) {
         let client = self.client_web.as_ref().unwrap().clone();
-        let request = self.data_store.as_ref().unwrap().get_request().clone();
-        let response_data_store = self.data_store.as_ref().unwrap().get_response().clone();
+        let request = self.data_store.as_ref().unwrap().get_request();
+        let response_data_store = self.data_store.as_ref().unwrap().get_response();
 
         let data_store = self.get_data_store().clone();
 
@@ -154,12 +141,11 @@ impl App {
         tokio::task::spawn(async move {
             let new_response = client
                 .submit((*request).clone())
-                .await
-                .map_err(|e| e.to_string());
+                .await;
 
             let mut data = response_data_store.lock().unwrap();
 
-            *data = new_response.unwrap_or_else(|err| Response::default_internal_error(err));
+            *data = new_response.unwrap_or_else(Response::default_internal_error);
             renderer.send(Actions::Null).unwrap();
         });
     }
@@ -173,11 +159,11 @@ impl App {
         self.data_store.as_mut().unwrap()
     }
 
-    pub fn clear_log(&mut self) -> () {
+    pub fn clear_log(&mut self) {
         self.get_data_store_mut().clear_log()
     }
 
-    pub fn rerender(&self) -> () {
+    pub fn rerender(&self) {
         self.renderer.as_ref().unwrap().send(Actions::Null).unwrap();
     }
 }

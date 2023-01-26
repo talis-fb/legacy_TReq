@@ -12,7 +12,7 @@ impl AsyncBool {
         }
     }
 
-    pub fn set(&self, val: bool) -> () {
+    pub fn set(&self, val: bool) {
         self.value.lock().unwrap().store(val, Ordering::SeqCst);
     }
 

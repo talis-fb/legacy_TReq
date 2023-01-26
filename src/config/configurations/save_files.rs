@@ -27,12 +27,12 @@ impl Configuration<UUID, RequestFile, Request> for SaveFiles {
 
             // Verify if content in File is valid
             let content_file = app_file.get_content();
-            if let Err(_) = content_file {
+            if content_file.is_err() {
                 continue;
             }
             let is_valid_json: Option<Request> =
                 serde_json::from_str(&content_file.unwrap()).unwrap_or(None);
-            if let None = is_valid_json {
+            if is_valid_json.is_none() {
                 continue;
             }
 
@@ -47,7 +47,7 @@ impl Configuration<UUID, RequestFile, Request> for SaveFiles {
     }
 
     fn get_as_entity(&self, key: &UUID) -> Result<Request, String> {
-        let file = self.get_as_file(&key).unwrap();
+        let file = self.get_as_file(key).unwrap();
         let file_content = file.get_content()?;
         let req: Request = serde_json::from_str(&file_content).map_err(|e| e.to_string())?;
         Ok(req)
@@ -59,7 +59,7 @@ impl Configuration<UUID, RequestFile, Request> for SaveFiles {
 }
 impl ConfigurationEditable<UUID, RequestFile, Request> for SaveFiles {
     fn set(&mut self, key: &UUID, value: &Request) -> Result<(), String> {
-        let file_in_map = self.map.get_mut(&key);
+        let file_in_map = self.map.get_mut(key);
         let request_str = serde_json::to_string(&value).unwrap();
 
         if let Some(f) = file_in_map {
@@ -75,7 +75,7 @@ impl ConfigurationEditable<UUID, RequestFile, Request> for SaveFiles {
 }
 impl SaveFiles {
     pub fn remove(&mut self, key: &UUID) -> Result<(), String> { 
-        let file_in_map = self.map.get_mut(&key).unwrap();
+        let file_in_map = self.map.get_mut(key).unwrap();
         file_in_map.remove()
     }
 }

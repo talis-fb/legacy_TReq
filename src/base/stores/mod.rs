@@ -62,25 +62,25 @@ impl MainStore {
     }
 
     // Logs
-    pub fn set_log(&mut self, log_type: LogType, title: String, detail: String) -> () {
+    pub fn set_log(&mut self, log_type: LogType, title: String, detail: String) {
         self.log = Log::default()
             .with_type(log_type)
             .with_title(title)
             .with_detail(detail);
     }
-    pub fn set_log_error(&mut self, title: String, detail: String) -> () {
+    pub fn set_log_error(&mut self, title: String, detail: String) {
         self.set_log(LogType::Error, title, detail)
     }
-    pub fn set_log_warning(&mut self, title: String, detail: String) -> () {
+    pub fn set_log_warning(&mut self, title: String, detail: String) {
         self.set_log(LogType::Warning, title, detail)
     }
-    pub fn set_log_helping(&mut self, title: String, detail: String) -> () {
+    pub fn set_log_helping(&mut self, title: String, detail: String) {
         self.set_log(LogType::Help, title, detail)
     }
-    pub fn set_log_input_mode(&mut self) -> () {
+    pub fn set_log_input_mode(&mut self) {
         self.set_log(LogType::InputMode, "INSERT".to_string(), "".to_string())
     }
-    pub fn clear_log(&mut self) -> () {
+    pub fn clear_log(&mut self) {
         self.set_log(LogType::Empty, "".to_string(), "".to_string())
     }
 
@@ -103,7 +103,7 @@ impl MainStore {
         self.requests.get_total_requests()
     }
 
-    pub fn update_request(&mut self, request: Request) -> () {
+    pub fn update_request(&mut self, request: Request) {
         self.requests.update_request(request)
     }
 
@@ -115,10 +115,10 @@ impl MainStore {
         self.requests.goto_request(index)
     }
 
-    pub fn goto_next_request(&mut self) -> () {
+    pub fn goto_next_request(&mut self) {
         self.requests.goto_next_request()
     }
-    pub fn goto_prev_request(&mut self) -> () {
+    pub fn goto_prev_request(&mut self) {
         self.requests.goto_prev_request()
     }
 
@@ -126,7 +126,7 @@ impl MainStore {
         self.requests.add_request()
     }
 
-    pub fn delete_current_request(&mut self) -> () {
+    pub fn delete_current_request(&mut self) {
         if let Err(e) = self.requests.delete_current_request() {
             self.log.with_type(LogType::Error).with_detail(e);
         }
@@ -142,11 +142,11 @@ impl MainStore {
     }
 
     pub fn get_mode(&self) -> InputMode {
-        self.mode.clone()
+        self.mode
     }
 
     // doc_reader
-    pub fn set_doc_reader(&mut self, doc_reader: DocReaderHandler) -> () {
+    pub fn set_doc_reader(&mut self, doc_reader: DocReaderHandler) {
         self.doc_reader = Some(doc_reader)
     }
 }

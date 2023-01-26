@@ -143,8 +143,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     Ok(action_to_exec) => {
                         let command = app
                             .get_command_of_action(action_to_exec)
-                            .unwrap_or(Commands::do_nothing())
-                            .clone();
+                            .unwrap_or(Commands::do_nothing());
 
                         let command_result = CommandHandler::execute(&mut app, command);
 

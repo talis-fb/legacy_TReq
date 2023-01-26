@@ -21,7 +21,7 @@ mod drawers {
     use crate::base::{logs::LogType, web::request::METHODS};
 
     use super::*;
-    pub fn draw_tablist_requests<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore) -> ()
+    pub fn draw_tablist_requests<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore)
     where
         T: Backend,
     {
@@ -67,7 +67,7 @@ mod drawers {
         frame.render_widget(tabs, area)
     }
 
-    pub fn draw_logs_section<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore) -> ()
+    pub fn draw_logs_section<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore)
     where
         T: Backend,
     {
@@ -102,7 +102,7 @@ mod drawers {
             .alignment(Alignment::Left)
             .block(log_block.clone());
 
-        let log_command_queue = Paragraph::new(store.get_keys_queue().clone())
+        let log_command_queue = Paragraph::new(store.get_keys_queue())
             .alignment(Alignment::Right)
             .block(log_block.clone());
 
@@ -111,7 +111,7 @@ mod drawers {
         frame.render_widget(log_command_queue, area);
     }
 
-    pub fn draw_body_request_section<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore) -> ()
+    pub fn draw_body_request_section<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore)
     where
         T: Backend,
     {
@@ -143,7 +143,7 @@ mod drawers {
         let content = match store.current_state {
             StatesNames::RequestBody => store.get_request().body.clone(),
             StatesNames::RequestHeaders => {
-                serde_json::to_string_pretty(&store.get_request().headers).unwrap_or(String::new())
+                serde_json::to_string_pretty(&store.get_request().headers).unwrap_or_default()
             }
             _ => store.get_request().body.clone(),
         };
@@ -156,7 +156,7 @@ mod drawers {
         frame.render_widget(body_text, area);
     }
 
-    pub fn draw_method_and_url<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore) -> ()
+    pub fn draw_method_and_url<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore)
     where
         T: Backend,
     {
@@ -196,7 +196,7 @@ mod drawers {
         frame.render_widget(url_text, layout[1]);
     }
 
-    pub fn draw_body_response_section<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore) -> ()
+    pub fn draw_body_response_section<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore)
     where
         T: Backend,
     {
@@ -222,13 +222,13 @@ mod drawers {
             .constraints([Constraint::Length(1), Constraint::Min(1)].as_ref())
             .split(area);
 
-        let response = store.get_response().clone();
+        let response = store.get_response();
         let response_data = response.lock().unwrap().clone();
 
         let status = response_data.status;
         let content = match store.current_state {
             StatesNames::ResponseHeader => {
-                serde_json::to_string_pretty(&response_data.headers).unwrap_or(String::new())
+                serde_json::to_string_pretty(&response_data.headers).unwrap_or_default()
             }
             _ => response_data.body,
         };
@@ -274,7 +274,7 @@ mod drawers {
         frame.render_widget(response_text, response_layout[1]);
     }
 
-    pub fn draw_input_popup<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore) -> ()
+    pub fn draw_input_popup<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore)
     where
         T: Backend,
     {
@@ -316,7 +316,7 @@ mod drawers {
             .split(popup_layout[1])[1]
     }
 
-    pub fn draw_help_popup<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore) -> ()
+    pub fn draw_help_popup<T>(frame: &mut Frame<T>, area: Rect, store: &MainStore)
     where
         T: Backend,
     {

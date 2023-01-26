@@ -35,7 +35,7 @@ impl UI {
         UI { terminal, configs: ViewConfig::init() }
     }
 
-    pub fn close(&mut self) -> () {
+    pub fn close(&mut self) {
         disable_raw_mode().unwrap();
         execute!(
             self.terminal.backend_mut(),
@@ -49,7 +49,7 @@ impl UI {
     pub fn render(&mut self, data_store: &MainStore) {
         self.terminal
             .draw(|f| {
-                let current_state = data_store.current_state.clone();
+                let current_state = data_store.current_state;
                 let style_if_state_is = |state: StatesNames| {
                     if state == current_state {
                         Style::default().fg(Color::LightYellow)
