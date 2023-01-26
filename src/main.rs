@@ -45,7 +45,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Configurations and Setup of necessary folders
     ConfigManager::setup_env().expect("Error creating folders .local/share/treq. If error persist create it with mkdir $HOME/.local/share/treq");
     let config_manager = ConfigManager::init();
-    // let request_store = RequestStore::init(config_manager.saved_requests);
+    let already_opened = config_manager.saved_requests.lock().unwrap().exist_already_some_file();
 
     // Init of Data Stores
     let mut data_store = MainStore::init(config_manager);
@@ -78,6 +78,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.set_web_client(web_client);
     app.set_data_store(data_store);
     app.set_renderer(action_queue_sender.clone());
+
+    if !already_opened {
+        CommandHandler::execute(&mut app, Commands::open_welcome_screen());
+    }
 
     // Store jobs running in tokio::spawn to abort them in the end
     let mut async_tasks = vec![];
