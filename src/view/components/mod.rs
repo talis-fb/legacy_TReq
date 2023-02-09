@@ -1,8 +1,8 @@
 use tui::layout::Rect;
 
-use crate::view::renderer::Backend;
+use crate::view::renderer::{Backend, Tui};
 
-use super::renderer::{tui_rs::BackendTuiRs, Tui};
+use super::renderer::tui_rs::BackendTuiRs;
 
 pub trait Component {
     type Backend: Backend;
@@ -17,10 +17,10 @@ pub trait StatedComponents<State> {
 // Components
 // ------------------------------------------------
 
-struct TextView {
-    area: Rect,
-    title: String,
-    content: String,
+pub struct TextView {
+    pub area: Rect,
+    pub title: String,
+    pub content: String,
 }
 impl Component for TextView {
     type Backend = BackendTuiRs;
@@ -29,10 +29,10 @@ impl Component for TextView {
     }
 }
 
-struct Tabslist {
-    area: Rect,
-    tabs: Vec<String>,
-    current: usize,
+pub struct Tabslist {
+    pub area: Rect,
+    pub tabs: Vec<String>,
+    pub current: usize,
 }
 impl Component for Tabslist {
     type Backend = BackendTuiRs;
