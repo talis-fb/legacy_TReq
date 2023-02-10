@@ -3,18 +3,19 @@ use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
 use tui::layout::Rect;
 
-pub struct TabBlockText {
+pub struct TabBlockText<'a> {
     pub area: Rect,
-    pub texts: Vec<(String, String)>,
+    pub texts: Vec<(&'a str, &'a str)>,
     pub current: usize,
 }
-impl Component for TabBlockText {
+impl Component for TabBlockText<'_> {
     type Backend = BackendTuiRs;
     fn render(&self, f: &mut Self::Backend) {
         let (_, current_content) = self.texts.get(self.current).unwrap();
 
-        let titles_vec: Vec<&str> = self.texts.iter().map(|(title, _)| title.as_str()).collect();
+        let titles_vec: Vec<&str> = self.texts.iter().map(|(title, _)| *title).collect();
         let mut title = String::new();
+        let titles_len = titles_vec.len();
 
         for (i, content) in titles_vec.into_iter().enumerate() {
             if i == self.current {
@@ -23,7 +24,8 @@ impl Component for TabBlockText {
                 title.push_str(content);
             }
 
-            if i < titles_vec.len() {
+            let last_index = titles_len - 1;
+            if i < last_index {
                 title.push_str(" / ");
             }
         }

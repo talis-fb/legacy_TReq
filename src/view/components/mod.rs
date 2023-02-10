@@ -1,6 +1,4 @@
-use tui::layout::Rect;
-use crate::view::renderer::{Backend, Tui};
-use super::renderer::tui_rs::BackendTuiRs;
+use crate::view::renderer::Backend;
 
 pub trait Component {
     type Backend: Backend;
@@ -17,3 +15,4 @@ pub trait StatedComponents<State> {
 pub mod TabList;
 pub mod BlockText;
 pub mod TabBlockedText;
+pub mod views;
