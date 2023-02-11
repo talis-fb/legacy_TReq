@@ -1,8 +1,9 @@
+use super::BlockText::BlockText;
 use super::Component;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
 use crate::view::style::{Color, Style, Text, Texts};
-use tui::layout::Rect;
+use tui::layout::{Rect, Layout};
 
 pub struct TabBlockText<'a> {
     pub area: Rect,
@@ -50,6 +51,21 @@ impl Component for TabBlockText<'_> {
 
         let current_content = Texts::from_str(current_content);
 
-        f.render_text_in_block(title, current_content, self.area);
+        // let content_text_layout = Layout::default()
+        //     .margin(1)
+            // .split(self.area);
+
+        // println!("{?}", title);
+
+        let component = BlockText {
+            area: self.area,
+            title, 
+            content: current_content,
+        };
+
+        component.render(f);
+
+        // f.render_block_with_title_left(title, self.area);
+        // f.render_text(current_content, self.area);
     }
 }

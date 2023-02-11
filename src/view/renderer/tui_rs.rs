@@ -1,7 +1,7 @@
 use super::{Backend, Tui};
 use crate::base::doc::handler::DocReaderHandler;
 use crate::config::configurations::view::ViewConfig;
-use crate::view::style::{Texts, Color};
+use crate::view::style::{Color, Texts};
 use tui::layout::{Constraint, Direction, Layout};
 use tui::widgets::{Clear, Wrap};
 use tui::{backend::CrosstermBackend, layout::Rect};
@@ -13,7 +13,6 @@ use tui::{
 };
 use tui::{Frame, Terminal};
 
-
 use std::ops::FnMut;
 
 pub struct BackendTuiRs {
@@ -21,7 +20,7 @@ pub struct BackendTuiRs {
     pub configs: ViewConfig,
 
     // TODO: make it private
-    pub queue_render: Vec<Box<dyn FnMut(&mut Frame<CrosstermBackend<std::io::Stdout>>) -> ()>>, // pub queue_render: Vec<(Box<dyn Widget>, Rect)>
+    pub queue_render: Vec<Box<dyn FnMut(&mut Frame<CrosstermBackend<std::io::Stdout>>) -> ()>>,
 }
 
 impl BackendTuiRs {
@@ -71,7 +70,10 @@ impl BackendTuiRs {
             .iter()
             .map(|f| {
                 if let Some(style) = &f.style {
-                    Span::styled(f.body.to_string(), Style::default().fg(style.color.to_tuirs()))
+                    Span::styled(
+                        f.body.to_string(),
+                        Style::default().fg(style.color.to_tuirs()),
+                    )
                 } else {
                     Span::from(f.body.to_string())
                 }
@@ -112,9 +114,11 @@ impl Tui<Rect> for BackendTuiRs {
     }
 
     fn render_block_with_title_left(&mut self, title: Texts, area: Rect) {
+        let spans = BackendTuiRs::style_span(title);
+
         let body_block = Block::default()
             .borders(Borders::ALL)
-            .title(title.to_string())
+            .title(spans)
             .title_alignment(Alignment::Left)
             .border_type(BorderType::Rounded);
 
@@ -126,9 +130,11 @@ impl Tui<Rect> for BackendTuiRs {
     }
 
     fn render_block_with_title_center(&mut self, title: Texts, area: Rect) {
+        let spans = BackendTuiRs::style_span(title);
+
         let body_block = Block::default()
             .borders(Borders::ALL)
-            .title(title.to_string())
+            .title(spans)
             .title_alignment(Alignment::Center)
             .border_type(BorderType::Rounded);
 
@@ -144,9 +150,10 @@ impl Tui<Rect> for BackendTuiRs {
             .into_iter()
             .enumerate()
             .map(|(i, content)| match i {
-                current if current > 0 => {
-                    Span::styled(content.to_string(), Style::default().fg(Color::Yellow.to_tuirs()))
-                }
+                current if current > 0 => Span::styled(
+                    content.to_string(),
+                    Style::default().fg(Color::Yellow.to_tuirs()),
+                ),
                 0 => Span::from(content.to_string()),
                 _ => Span::from(content.to_string()),
             })
@@ -205,30 +212,26 @@ impl Tui<Rect> for BackendTuiRs {
         self.queue_render.push(Box::new(closure));
     }
 
-    fn render_text_in_block<'a>(&mut self, block_title: Texts, text: Texts, area: Rect) {
-        let spans = BackendTuiRs::style_span(block_title);
-
-        let block = Block::default()
-            .borders(Borders::ALL)
-            .title(spans)
-            .title_alignment(Alignment::Left)
-            .border_type(BorderType::Rounded);
-
-        let text = Paragraph::new(text.to_string())
-            .alignment(Alignment::Left)
-            .block(block);
+    // TODO: Add Custom Style
+    fn render_text_with_bg<'a>(&mut self, text: Texts, color: Color, area: Rect) {
+        let block = Paragraph::new(text.to_string())
+            .style(
+                Style::default()
+                    .bg(color.to_tuirs())
+                    .fg(Color::Black.to_tuirs()),
+            )
+            .alignment(Alignment::Center);
 
         let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
-            f.render_widget(text.clone(), area)
+            f.render_widget(block.clone(), area)
         };
 
         self.queue_render.push(Box::new(closure));
     }
 
-    // TODO: Add Custom Style
-    fn render_text_with_bg<'a>(&mut self, text: Texts, color: Color, area: Rect) {
-        let block = Paragraph::new(text.to_string())
-            .style(Style::default().bg(color.to_tuirs()).fg(Color::Black.to_tuirs()))
+    fn render_bg_color<'a>(&mut self, color: Color, area: Rect) {
+        let block = Paragraph::new("")
+            .style(Style::default().bg(color.to_tuirs()))
             .alignment(Alignment::Center);
 
         let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {

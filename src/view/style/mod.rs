@@ -1,6 +1,7 @@
 use tui::style::Style as StyleTuiRs;
 use tui::style::Color as ColorTuiRs;
 
+#[derive(Clone)]
 pub enum Color {
     Red,
     Blue,
@@ -38,10 +39,12 @@ impl Color {
     }
 }
 
+#[derive(Clone)]
 pub enum Property {
     Marked,
 }
 
+#[derive(Clone)]
 pub struct Style {
     pub color: Color,
     pub property: Option<Property>,
@@ -52,11 +55,13 @@ pub struct Style {
 //     }
 // }
 
+#[derive(Clone)]
 pub struct Text<'a> {
     pub body: &'a str,
     pub style: Option<Style>,
 }
 
+#[derive(Clone)]
 pub struct Texts<'a> {
     pub body: Vec<Text<'a>>,
     // pub body: &'a [Text<'a>],

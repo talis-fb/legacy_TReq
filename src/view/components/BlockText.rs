@@ -2,19 +2,27 @@ use super::Component;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
 use crate::view::style::Texts;
-use tui::layout::Rect;
+use tui::layout::{Rect, Layout, Constraint};
 
-pub struct BlockText {
+pub struct BlockText<'a> {
     pub area: Rect,
-    pub title: String,
-    pub content: String,
+    pub title: Texts<'a>,
+    pub content: Texts<'a>,
 }
-impl Component for BlockText {
+impl Component for BlockText<'_> {
     type Backend = BackendTuiRs;
     fn render(&self, f: &mut Self::Backend) {
-        let title = Texts::from_str(&self.title);
-        let content = Texts::from_str(&self.content);
-        f.render_text_in_block(title, content, self.area);
+        let content_text_layout = Layout::default()
+            .margin(1)
+            .constraints([Constraint::Percentage(100)])
+            .split(self.area);
+
+        // TODO:
+        // Find a better way to not clone here
+        // It's not so bad because Texts only store references and enums
+        // Thus, the clone it not so heavy. But it's still a Vec
+        f.render_block_with_title_left(self.title.clone(), self.area);
+        f.render_text(self.content.clone(), content_text_layout[0]);
     }
 }
 

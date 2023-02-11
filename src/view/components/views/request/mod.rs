@@ -1,5 +1,6 @@
 use crate::base::states::names::StatesNames;
 use crate::base::web::request::METHODS;
+use crate::view::components::BlockText::BlockText;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
 use crate::view::style::{Color, Texts};
@@ -50,11 +51,19 @@ impl Component for RequestView<'_> {
             url_layout[0],
         );
 
-        f.render_text_in_block(
-            Texts::from_str("URL"),
-            Texts::from_str(&request.url),
-            url_layout[1],
-        );
+        let url_block = BlockText {
+            area: url_layout[1],
+            title: Texts::from_str("URL"),
+            content: Texts::from_str(&request.url),
+        };
+        url_block.render(f);
+
+        //
+        // f.render_text_in_block(
+        //     Texts::from_str("URL"),
+        //     Texts::from_str(&request.url),
+        //     url_layout[1],
+        // );
 
         // Edition Block
         let edition_layout = request_layout[1];
