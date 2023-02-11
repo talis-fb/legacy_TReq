@@ -19,7 +19,7 @@ use tui::{
 
 use crate::view::drawers;
 
-use super::components::views::{request::RequestView, logs::LogView};
+use super::components::views::{request::RequestView, logs::LogView, tabs_request::TabRequestView};
 use super::components::views::response::ResponseView;
 use super::components::Component;
 use super::components::TabList::Tabslist;
@@ -98,15 +98,9 @@ impl UI {
             )
             .split(full_screen_layout[1]);
 
-        let tabb = Tabslist {
+        let tabb = TabRequestView {
             area: full_screen_layout[0],
-            tabs: data_store
-                .get_requests()
-                .iter()
-                .map(|f| f.name.clone())
-                .collect(),
-            current: data_store.request_ind(),
-            marked: data_store.current_state == StatesNames::TabList
+            store: data_store
         };
 
         let req_edit = RequestView {
