@@ -126,28 +126,33 @@ impl UI {
             store: data_store,
         };
 
-        // Test
-        // let area_pop = BackendTuiRs::create_absolute_centered_area(Size::Percentage(60), Size::Fixed(4), fff.size());
-
-        let mut boo: Option<DocReader> = None;
-
-        match data_store.get_mode() {
-            InputMode::Help => {
-                boo = Some(DocReader {
-                    area: BackendTuiRs::create_absolute_centered_area(Size::Percentage(60), Size::Percentage(75), fff.size()),
+        let popup_component: Option<Box<dyn Component<Backend = BackendTuiRs>>> =
+            match data_store.get_mode() {
+                InputMode::Insert => Some(Box::new(InputTextBlock {
+                    area: BackendTuiRs::create_absolute_centered_area(
+                        Size::Percentage(60),
+                        Size::Fixed(3),
+                        fff.size(),
+                    ),
+                    text: &data_store.input_buffer.value,
+                })),
+                InputMode::Help => Some(Box::new(DocReader {
+                    area: BackendTuiRs::create_absolute_centered_area(
+                        Size::Percentage(60),
+                        Size::Percentage(75),
+                        fff.size(),
+                    ),
                     doc_handler: data_store.doc_reader.as_ref().unwrap(),
-                });
-            }
-            _ => {}
-        }
-        if let Some(ii) = data_store.doc_reader.as_ref() {}
+                })),
+                _ => None,
+            };
 
         tabb.render(&mut self.backend);
         req_edit.render(&mut self.backend);
         res_edit.render(&mut self.backend);
         log_view.render(&mut self.backend);
 
-        if let Some(b) = boo {
+        if let Some(b) = popup_component {
             b.render(&mut self.backend);
         }
 
