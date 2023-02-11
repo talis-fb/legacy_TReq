@@ -29,7 +29,7 @@ impl Component for BlockText<'_> {
             f.render_block_with_title_left(self.title.clone(), self.area);
         }
 
-        f.render_text(self.content.clone(), content_text_layout[0]);
+        f.render_text_raw(&self.content.to_string(), content_text_layout[0]);
     }
 }
 

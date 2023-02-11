@@ -1,5 +1,5 @@
-use tui::style::Style as StyleTuiRs;
 use tui::style::Color as ColorTuiRs;
+use tui::style::Style as StyleTuiRs;
 
 #[derive(Clone)]
 pub enum Color {
@@ -33,8 +33,7 @@ impl Color {
             Color::Brown => ColorTuiRs::White,
             Color::Orange => ColorTuiRs::White,
             Color::Pink => ColorTuiRs::White,
-
-            Color::Rgb(r, g, b) => ColorTuiRs::Rgb(*r as u8, *g as u8, *b as u8)
+            Color::Rgb(r, g, b) => ColorTuiRs::Rgb(*r as u8, *g as u8, *b as u8),
         }
     }
 }

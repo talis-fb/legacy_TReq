@@ -3,11 +3,12 @@ use crate::base::doc::handler::DocReaderHandler;
 use crate::config::configurations::view::ViewConfig;
 use crate::view::style::{Color, Texts};
 use tui::layout::{Constraint, Direction, Layout};
+use tui::text::Text;
 use tui::widgets::{Clear, Wrap};
 use tui::{backend::CrosstermBackend, layout::Rect};
 use tui::{
     layout::Alignment,
-    style::{Modifier, Style, Color as ColorTuiRs},
+    style::{Color as ColorTuiRs, Modifier, Style},
     text::{Span, Spans},
     widgets::{Block, BorderType, Borders, Paragraph, Tabs},
 };
@@ -268,6 +269,15 @@ impl Tui<Rect> for BackendTuiRs {
     fn render_text<'a>(&mut self, text: Texts, area: Rect) {
         let content = BackendTuiRs::style_span(text);
         let text = Paragraph::new(content).alignment(Alignment::Left);
+
+        let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
+            f.render_widget(text.clone(), area)
+        };
+
+        self.queue_render.push(Box::new(closure));
+    }
+    fn render_text_raw<'a>(&mut self, text: &str, area: Rect) {
+        let text = Paragraph::new(text.to_string()).alignment(Alignment::Left);
 
         let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
             f.render_widget(text.clone(), area)

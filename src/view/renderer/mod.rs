@@ -16,6 +16,7 @@ pub trait Tui<T> {
     fn render_help_window<'a>(&mut self, doc_view: &'a DocReaderHandler, area: T);
 
     fn render_text<'a>(&mut self, text: Texts, area: T);
+    fn render_text_raw<'a>(&mut self, text: &str, area: T);
     fn render_text_with_bg<'a>(&mut self, text: Texts, color: Color, area: T);
 
     fn render_bg_color<'a>(&mut self, color: Color, area: T);
