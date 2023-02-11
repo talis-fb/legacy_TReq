@@ -1,3 +1,6 @@
+use tui::style::Style as StyleTuiRs;
+use tui::style::Color as ColorTuiRs;
+
 pub enum Color {
     Red,
     Blue,
@@ -13,14 +16,40 @@ pub enum Color {
     Rgb(i32, i32, i32),
 }
 
+impl Color {
+    pub fn to_tuirs(&self) -> ColorTuiRs {
+        match self {
+            Color::Red => ColorTuiRs::Red,
+            Color::Blue => ColorTuiRs::Blue,
+            Color::Green => ColorTuiRs::Green,
+            Color::Yellow => ColorTuiRs::Yellow,
+            Color::Black => ColorTuiRs::Black,
+            Color::White => ColorTuiRs::White,
+            Color::Gray => ColorTuiRs::Gray,
+            Color::Cyan => ColorTuiRs::Cyan,
+
+            Color::Brown => ColorTuiRs::White,
+            Color::Orange => ColorTuiRs::White,
+            Color::Pink => ColorTuiRs::White,
+
+            Color::Rgb(r, g, b) => ColorTuiRs::Rgb(*r as u8, *g as u8, *b as u8)
+        }
+    }
+}
+
 pub enum Property {
     Marked,
 }
 
 pub struct Style {
-    pub color: Option<Color>,
+    pub color: Color,
     pub property: Option<Property>,
 }
+// impl Style {
+//     fn to_tuirs(&self) -> StyleTuiRs {
+//         StyleTuiRs::default().fg(color)
+//     }
+// }
 
 pub struct Text<'a> {
     pub body: &'a str,

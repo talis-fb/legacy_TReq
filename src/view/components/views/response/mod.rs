@@ -1,6 +1,6 @@
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
-use crate::view::style::Texts;
+use crate::view::style::{Texts, Color};
 use crate::{base::stores::MainStore, view::components::Component};
 use tui::layout::{Constraint, Direction, Layout, Rect};
 
@@ -33,7 +33,7 @@ impl Component for ResponseView<'_> {
         // TODO: Color for this below
         //
         // Status Block
-        f.render_text_with_bg(Texts::from_str("STATUS"), response_layout[0]);
+        f.render_text_with_bg(Texts::from_str("STATUS"), Color::Red, response_layout[0]);
 
 
         // Edition Block

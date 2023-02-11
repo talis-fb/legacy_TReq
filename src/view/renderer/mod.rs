@@ -1,7 +1,7 @@
 use tui::layout::Rect;
 use crate::{view::components::Component, base::doc::handler::DocReaderHandler};
 
-use super::style::Texts;
+use super::style::{Texts, Color};
 
 pub mod tui_rs;
 
@@ -14,7 +14,7 @@ pub trait Tui<T> {
 
     fn render_text<'a>(&mut self, text: Texts, area: T);
     fn render_text_in_block<'a>(&mut self, block_title: Texts, text: Texts, area: Rect);
-    fn render_text_with_bg<'a>(&mut self, text: Texts, area: Rect);
+    fn render_text_with_bg<'a>(&mut self, text: Texts, color: Color, area: Rect);
 
     fn render_tablist(&mut self, tabs: Vec<Texts>, current: usize, area: T);
 

@@ -38,7 +38,7 @@ impl Component for TabBlockText<'_> {
                     body,
                     style: if *is_styled {
                         Some(Style {
-                            color: Some(Color::Red),
+                            color: Color::Yellow,
                             property: None,
                         })
                     } else {

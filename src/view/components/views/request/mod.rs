@@ -1,6 +1,6 @@
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
-use crate::view::style::Texts;
+use crate::view::style::{Texts, Color};
 use crate::{base::stores::MainStore, view::components::Component};
 use tui::layout::{Constraint, Direction, Layout, Rect};
 
@@ -37,7 +37,8 @@ impl Component for RequestView<'_> {
         // TODO: Color in this block of METHODS
         //
 
-        f.render_text_with_bg(Texts::from_str(request.method.to_string().as_str()), url_layout[0]);
+        f.render_text_with_bg(Texts::from_str(request.method.to_string().as_str()), Color::Yellow, url_layout[0]);
+
         f.render_text_in_block(Texts::from_str("URL"), Texts::from_str(&request.url), url_layout[1]);
 
         // Edition Block

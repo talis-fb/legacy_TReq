@@ -1,19 +1,19 @@
 use super::{Backend, Tui};
 use crate::base::doc::handler::DocReaderHandler;
 use crate::config::configurations::view::ViewConfig;
-use crate::view::style::Texts;
+use crate::view::style::{Texts, Color};
 use tui::layout::{Constraint, Direction, Layout};
 use tui::widgets::{Clear, Wrap};
 use tui::{backend::CrosstermBackend, layout::Rect};
 use tui::{
     layout::Alignment,
-    style::{Color, Modifier, Style},
+    style::{Modifier, Style},
     text::{Span, Spans},
     widgets::{Block, BorderType, Borders, Paragraph, Tabs},
 };
 use tui::{Frame, Terminal};
 
-// use std::default::default;
+
 use std::ops::FnMut;
 
 pub struct BackendTuiRs {
@@ -71,7 +71,7 @@ impl BackendTuiRs {
             .iter()
             .map(|f| {
                 if let Some(style) = &f.style {
-                    Span::styled(f.body.to_string(), Style::default().fg(Color::Red))
+                    Span::styled(f.body.to_string(), Style::default().fg(style.color.to_tuirs()))
                 } else {
                     Span::from(f.body.to_string())
                 }
@@ -100,15 +100,10 @@ impl Tui<Rect> for BackendTuiRs {
             .highlight_style(
                 Style::default()
                     .add_modifier(Modifier::BOLD)
-                    .bg(Color::Black)
-                    .fg(Color::LightYellow),
+                    .bg(Color::Black.to_tuirs())
+                    .fg(Color::Yellow.to_tuirs()),
             );
 
-        // self.terminal.draw(|f|{
-        //     f.render_widget(tabs, area)
-        // });
-
-        // self.queue_render.push(RenderProcess::init(Box::new(tabs), area));
         let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
             f.render_widget(tabs.clone(), area)
         };
@@ -123,10 +118,6 @@ impl Tui<Rect> for BackendTuiRs {
             .title_alignment(Alignment::Left)
             .border_type(BorderType::Rounded);
 
-        // self.terminal.draw(|f|{
-        //     f.render_widget(body_block, area)
-        // });
-        // self.queue_render.push(RenderProcess::init(Box::new(body_block), area));
         let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
             f.render_widget(body_block.clone(), area)
         };
@@ -141,12 +132,6 @@ impl Tui<Rect> for BackendTuiRs {
             .title_alignment(Alignment::Center)
             .border_type(BorderType::Rounded);
 
-        // self.terminal.draw(|f|{
-        //     f.render_widget(body_block, area)
-        // });
-        // self.queue_render
-        //     .push(RenderProcess::init(Box::new(body_block), area));
-
         let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
             f.render_widget(body_block.clone(), area)
         };
@@ -160,7 +145,7 @@ impl Tui<Rect> for BackendTuiRs {
             .enumerate()
             .map(|(i, content)| match i {
                 current if current > 0 => {
-                    Span::styled(content.to_string(), Style::default().fg(Color::LightYellow))
+                    Span::styled(content.to_string(), Style::default().fg(Color::Yellow.to_tuirs()))
                 }
                 0 => Span::from(content.to_string()),
                 _ => Span::from(content.to_string()),
@@ -173,12 +158,6 @@ impl Tui<Rect> for BackendTuiRs {
             .title_alignment(Alignment::Center)
             .border_type(BorderType::Rounded);
 
-        // self.terminal.draw(|f|{
-        // f.render_widget(body_block, area)
-        // });
-        // self.queue_render
-        //     .push(RenderProcess::init(Box::new(body_block), area));
-
         let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
             f.render_widget(body_block.clone(), area)
         };
@@ -187,11 +166,6 @@ impl Tui<Rect> for BackendTuiRs {
     }
 
     fn render_help_window<'a>(&mut self, doc_handler: &'a DocReaderHandler, area: Rect) {
-        // TODO
-        // TODO: Not passing Spans to queue_render (because Cow inside it)
-        // TODO
-
-        // let mut content = doc_handler.doc.to_vec_spans().clone();
         let mut content = doc_handler.get_doc_spans();
 
         let position = doc_handler.position.clone();
@@ -205,41 +179,24 @@ impl Tui<Rect> for BackendTuiRs {
         let popup_block = Block::default()
             .title("Navigate -> [UP] and [DOWN] / Press any other key to close")
             .borders(Borders::ALL)
-            .border_style(Style::default().fg(Color::LightYellow))
+            .border_style(Style::default().fg(Color::Yellow.to_tuirs()))
             .title_alignment(Alignment::Center);
 
         let popup_text = Paragraph::new(content)
             .alignment(Alignment::Left)
-            // .block(popup_block)
             .wrap(Wrap { trim: true });
 
         let popup_area = BackendTuiRs::centered_rect(60, 75, area);
-
-        // self.terminal.draw(|f| f.render_widget(Clear, popup_area));
-        // self.terminal.draw(|f| f.render_widget(popup_text, popup_area));
-
-        // let aaa = Box::new(popup_text);
-        // self.queue_render.push(RenderProcess::init(Box::new(Clear), popup_area));
-        // self.queue_render.push(RenderProcess::init(aaa, popup_area));
 
         let closure1 = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
             f.render_widget(Clear, popup_area)
         };
 
-        // let closure2 = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
-        //     f.render_widget(popup_text, popup_area)
-        // };
-
         self.queue_render.push(Box::new(closure1));
-        // self.queue_render.push(Box::new(closure2));
     }
 
     fn render_text<'a>(&mut self, text: Texts, area: Rect) {
         let text = Paragraph::new(text.to_string()).alignment(Alignment::Left);
-
-        // self.terminal.draw(|f| f.render_widget(text, area));
-        // self.queue_render
-        //     .push(RenderProcess::init(Box::new(text), area));
 
         let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
             f.render_widget(text.clone(), area)
@@ -269,15 +226,10 @@ impl Tui<Rect> for BackendTuiRs {
     }
 
     // TODO: Add Custom Style
-    fn render_text_with_bg<'a>(&mut self, text: Texts, area: Rect) {
+    fn render_text_with_bg<'a>(&mut self, text: Texts, color: Color, area: Rect) {
         let block = Paragraph::new(text.to_string())
-            .style(Style::default().bg(Color::Blue).fg(Color::Black))
+            .style(Style::default().bg(color.to_tuirs()).fg(Color::Black.to_tuirs()))
             .alignment(Alignment::Center);
-
-        // self.terminal.draw(|f| f.render_widget(block, area));
-
-        // self.queue_render
-        //     .push(RenderProcess::init(Box::new(block), area));
 
         let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
             f.render_widget(block.clone(), area)
