@@ -19,11 +19,19 @@ use tui::{
 
 use crate::view::drawers;
 
-use super::components::views::{request::RequestView, logs::LogView, tabs_request::TabRequestView};
 use super::components::views::response::ResponseView;
 use super::components::Component;
 use super::components::TabList::Tabslist;
 use super::renderer::tui_rs::BackendTuiRs;
+use super::{
+    components::{
+        doc_reader::DocReader,
+        input_block::InputTextBlock,
+        views::{logs::LogView, request::RequestView, tabs_request::TabRequestView},
+        BlockText::BlockText,
+    },
+    style::Size,
+};
 
 // OLD -------------------------------------------------------------
 pub struct UI {
@@ -100,7 +108,7 @@ impl UI {
 
         let tabb = TabRequestView {
             area: full_screen_layout[0],
-            store: data_store
+            store: data_store,
         };
 
         let req_edit = RequestView {
@@ -118,10 +126,30 @@ impl UI {
             store: data_store,
         };
 
+        // Test
+        // let area_pop = BackendTuiRs::create_absolute_centered_area(Size::Percentage(60), Size::Fixed(4), fff.size());
+
+        let mut boo: Option<DocReader> = None;
+
+        match data_store.get_mode() {
+            InputMode::Help => {
+                boo = Some(DocReader {
+                    area: BackendTuiRs::create_absolute_centered_area(Size::Percentage(60), Size::Percentage(75), fff.size()),
+                    doc_handler: data_store.doc_reader.as_ref().unwrap(),
+                });
+            }
+            _ => {}
+        }
+        if let Some(ii) = data_store.doc_reader.as_ref() {}
+
         tabb.render(&mut self.backend);
         req_edit.render(&mut self.backend);
         res_edit.render(&mut self.backend);
         log_view.render(&mut self.backend);
+
+        if let Some(b) = boo {
+            b.render(&mut self.backend);
+        }
 
         self.backend.draw_all();
 

@@ -17,6 +17,7 @@ pub trait Tui<T> {
 
     fn render_text<'a>(&mut self, text: Texts, area: T);
     fn render_text_raw<'a>(&mut self, text: &str, area: T);
+    fn render_rows_texts<'a>(&mut self, text: Vec<Texts>, area: T);
     fn render_text_with_bg<'a>(&mut self, text: Texts, color: Color, area: T);
 
     fn render_bg_color<'a>(&mut self, color: Color, area: T);
@@ -25,6 +26,8 @@ pub trait Tui<T> {
     fn render_tablist_marked(&mut self, tabs: Vec<Texts>, current: usize, area: T);
 
     fn render_divider_with_text(&mut self, text: Texts, area: T);
+
+    fn render_clear_area(&mut self, area: T);
 }
 
 // TODO 

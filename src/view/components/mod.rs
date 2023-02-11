@@ -16,3 +16,5 @@ pub mod TabList;
 pub mod BlockText;
 pub mod TabBlockedText;
 pub mod views;
+pub mod input_block;
+pub mod doc_reader;

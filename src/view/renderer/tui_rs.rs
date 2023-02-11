@@ -1,9 +1,8 @@
 use super::{Backend, Tui};
 use crate::base::doc::handler::DocReaderHandler;
 use crate::config::configurations::view::ViewConfig;
-use crate::view::style::{Color, Texts};
+use crate::view::style::{Color, Size, Texts};
 use tui::layout::{Constraint, Direction, Layout};
-use tui::text::Text;
 use tui::widgets::{Clear, Wrap};
 use tui::{backend::CrosstermBackend, layout::Rect};
 use tui::{
@@ -63,6 +62,45 @@ impl BackendTuiRs {
                 .as_ref(),
             )
             .split(popup_layout[1])[1]
+    }
+
+    pub fn create_absolute_centered_area(size_x: Size, size_y: Size, r: Rect) -> Rect {
+        let size_x = match size_x {
+            Size::Percentage(i) => [
+                Constraint::Percentage((100 - i) / 2),
+                Constraint::Percentage(i),
+                Constraint::Percentage((100 - i) / 2),
+            ],
+            Size::Fixed(i) => [
+                Constraint::Length((r.width / 2) - (i / 2)),
+                Constraint::Length(i),
+                Constraint::Length((r.width / 2) - (i / 2)),
+                // Constraint::Min(1),
+            ],
+        };
+
+        let size_y = match size_y {
+            Size::Percentage(i) => [
+                Constraint::Percentage((100 - i) / 2),
+                Constraint::Percentage(i),
+                Constraint::Percentage((100 - i) / 2),
+            ],
+            Size::Fixed(i) => [
+                Constraint::Length((r.height / 2) - (i / 2)),
+                Constraint::Length(i),
+                Constraint::Length((r.height / 2) - (i / 2)),
+            ],
+        };
+
+        let layout_y = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints(size_y)
+            .split(r);
+
+        Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints(size_x)
+            .split(layout_y[1])[1]
     }
 
     fn style_span<'a>(texts: Texts) -> Spans<'a> {
@@ -237,38 +275,40 @@ impl Tui<Rect> for BackendTuiRs {
     }
 
     fn render_help_window<'a>(&mut self, doc_handler: &'a DocReaderHandler, area: Rect) {
-        let mut content = doc_handler.get_doc_spans();
-
-        let position = doc_handler.position.clone();
-
-        if position >= content.len() {
-            content.clear();
-        } else {
-            let (_, content) = content.split_at(position);
-        }
-
-        let popup_block = Block::default()
-            .title("Navigate -> [UP] and [DOWN] / Press any other key to close")
-            .borders(Borders::ALL)
-            .border_style(Style::default().fg(Color::Yellow.to_tuirs()))
-            .title_alignment(Alignment::Center);
-
-        let popup_text = Paragraph::new(content)
-            .alignment(Alignment::Left)
-            .wrap(Wrap { trim: true });
-
-        let popup_area = BackendTuiRs::centered_rect(60, 75, area);
-
-        let closure1 = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
-            f.render_widget(Clear, popup_area)
-        };
-
-        self.queue_render.push(Box::new(closure1));
+        // let mut content = doc_handler.get_doc_spans();
+        //
+        // let position = doc_handler.position.clone();
+        //
+        // if position >= content.len() {
+        //     content.clear();
+        // } else {
+        //     let (_, content) = content.split_at(position);
+        // }
+        //
+        // let popup_block = Block::default()
+        //     .title("Navigate -> [UP] and [DOWN] / Press any other key to close")
+        //     .borders(Borders::ALL)
+        //     .border_style(Style::default().fg(Color::Yellow.to_tuirs()))
+        //     .title_alignment(Alignment::Center);
+        //
+        // let popup_text = Paragraph::new(content)
+        //     .alignment(Alignment::Left)
+        //     .wrap(Wrap { trim: true });
+        //
+        // let popup_area = BackendTuiRs::centered_rect(60, 75, area);
+        //
+        // let closure1 = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
+        //     f.render_widget(Clear, popup_area)
+        // };
+        //
+        // self.queue_render.push(Box::new(closure1));
     }
 
     fn render_text<'a>(&mut self, text: Texts, area: Rect) {
         let content = BackendTuiRs::style_span(text);
-        let text = Paragraph::new(content).alignment(Alignment::Left);
+        let text = Paragraph::new(content)
+            .alignment(Alignment::Left)
+            .wrap(Wrap { trim: true });
 
         let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
             f.render_widget(text.clone(), area)
@@ -276,6 +316,24 @@ impl Tui<Rect> for BackendTuiRs {
 
         self.queue_render.push(Box::new(closure));
     }
+
+    fn render_rows_texts<'a>(&mut self, text: Vec<Texts>, area: Rect) {
+        let content: Vec<Spans> = text
+            .into_iter()
+            .map(|t| BackendTuiRs::style_span(t))
+            .collect();
+
+        let text = Paragraph::new(content)
+            .alignment(Alignment::Left)
+            .wrap(Wrap { trim: true });
+
+        let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
+            f.render_widget(text.clone(), area)
+        };
+
+        self.queue_render.push(Box::new(closure));
+    }
+
     fn render_text_raw<'a>(&mut self, text: &str, area: Rect) {
         let text = Paragraph::new(text.to_string()).alignment(Alignment::Left);
 
@@ -327,6 +385,13 @@ impl Tui<Rect> for BackendTuiRs {
         };
 
         self.queue_render.push(Box::new(closure));
+    }
+
+    fn render_clear_area(&mut self, area: Rect) {
+        let closure1 =
+            move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| f.render_widget(Clear, area);
+
+        self.queue_render.push(Box::new(closure1));
     }
 }
 
