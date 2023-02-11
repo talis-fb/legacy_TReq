@@ -55,6 +55,7 @@ impl Component for RequestView<'_> {
             area: url_layout[1],
             title: Texts::from_str("URL"),
             content: Texts::from_str(&request.url),
+            marked: self.store.current_state == StatesNames::Url
         };
         url_block.render(f);
 
@@ -76,6 +77,10 @@ impl Component for RequestView<'_> {
                 StatesNames::RequestHeaders => StatesReqEditionView::HeadersOpened,
                 _ => StatesReqEditionView::BodyOpened,
             },
+            marked: match self.store.current_state {
+                StatesNames::RequestBody | StatesNames::RequestHeaders => true,
+                _ => false
+            } 
         };
 
         edition_block.render(f);

@@ -14,6 +14,7 @@ pub struct RequestEditionView<'a> {
     pub body: &'a str,
     pub headers: &'a str,
     pub opened: StatesReqEditionView,
+    pub marked: bool
 }
 impl Component for RequestEditionView<'_> {
     type Backend = BackendTuiRs;
@@ -25,6 +26,7 @@ impl Component for RequestEditionView<'_> {
                 ("Headers", self.headers),
             ],
             current: 0,
+            marked: self.marked
         };
 
         match self.opened {

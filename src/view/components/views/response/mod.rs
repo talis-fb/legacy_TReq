@@ -62,6 +62,10 @@ impl Component for ResponseView<'_> {
                 StatesNames::ResponseHeader => StatesResEditionView::HeadersOpened,
                 _ => StatesResEditionView::BodyOpened,
             },
+            marked: match self.store.current_state {
+                StatesNames::ResponseBody | StatesNames::ResponseHeader => true,
+                _ => false
+            }
         };
 
         edition_block.render(f);

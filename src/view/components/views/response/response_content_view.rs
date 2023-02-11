@@ -14,6 +14,7 @@ pub struct ResposeEditionView<'a> {
     pub body: &'a str,
     pub headers: &'a str,
     pub opened: StatesResEditionView,
+    pub marked: bool
 }
 impl Component for ResposeEditionView<'_> {
     type Backend = BackendTuiRs;
@@ -25,6 +26,7 @@ impl Component for ResposeEditionView<'_> {
                 ("Headers", self.headers),
             ],
             current: 0,
+            marked: self.marked
         };
 
         match self.opened {

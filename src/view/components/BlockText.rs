@@ -8,6 +8,7 @@ pub struct BlockText<'a> {
     pub area: Rect,
     pub title: Texts<'a>,
     pub content: Texts<'a>,
+    pub marked: bool
 }
 impl Component for BlockText<'_> {
     type Backend = BackendTuiRs;
@@ -21,7 +22,13 @@ impl Component for BlockText<'_> {
         // Find a better way to not clone here
         // It's not so bad because Texts only store references and enums
         // Thus, the clone it not so heavy. But it's still a Vec
-        f.render_block_with_title_left(self.title.clone(), self.area);
+
+        if self.marked {
+            f.render_block_with_title_left_marked(self.title.clone(), self.area);
+        } else {
+            f.render_block_with_title_left(self.title.clone(), self.area);
+        }
+
         f.render_text(self.content.clone(), content_text_layout[0]);
     }
 }

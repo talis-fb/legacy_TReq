@@ -106,6 +106,7 @@ impl UI {
                 .map(|f| f.name.clone())
                 .collect(),
             current: data_store.request_ind(),
+            marked: data_store.current_state == StatesNames::TabList
         };
 
         let req_edit = RequestView {

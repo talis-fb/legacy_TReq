@@ -7,7 +7,7 @@ use tui::widgets::{Clear, Wrap};
 use tui::{backend::CrosstermBackend, layout::Rect};
 use tui::{
     layout::Alignment,
-    style::{Modifier, Style},
+    style::{Modifier, Style, Color as ColorTuiRs},
     text::{Span, Spans},
     widgets::{Block, BorderType, Borders, Paragraph, Tabs},
 };
@@ -113,6 +113,35 @@ impl Tui<Rect> for BackendTuiRs {
         self.queue_render.push(Box::new(closure));
     }
 
+    fn render_tablist_marked(&mut self, tabs: Vec<Texts>, current: usize, area: Rect) {
+        let tabs_spans = tabs
+            .into_iter()
+            .map(|s| Spans::from(vec![Span::from(s.to_string())]))
+            .collect();
+
+        let tabs = Tabs::new(tabs_spans)
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .border_type(BorderType::Rounded)
+                    .title("Tabs"),
+            )
+            .select(current)
+            .style(Style::default().fg(ColorTuiRs::LightYellow))
+            .highlight_style(
+                Style::default()
+                    .add_modifier(Modifier::BOLD)
+                    .bg(Color::Black.to_tuirs())
+                    .fg(Color::Yellow.to_tuirs()),
+            );
+
+        let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
+            f.render_widget(tabs.clone(), area)
+        };
+
+        self.queue_render.push(Box::new(closure));
+    }
+
     fn render_block_with_title_left(&mut self, title: Texts, area: Rect) {
         let spans = BackendTuiRs::style_span(title);
 
@@ -163,6 +192,40 @@ impl Tui<Rect> for BackendTuiRs {
             .borders(Borders::ALL)
             .title(tabs_spans)
             .title_alignment(Alignment::Center)
+            .border_type(BorderType::Rounded);
+
+        let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
+            f.render_widget(body_block.clone(), area)
+        };
+
+        self.queue_render.push(Box::new(closure));
+    }
+
+    fn render_block_with_title_left_marked(&mut self, title: Texts, area: Rect) {
+        let spans = BackendTuiRs::style_span(title);
+
+        let body_block = Block::default()
+            .borders(Borders::ALL)
+            .title(spans)
+            .title_alignment(Alignment::Left)
+            .style(Style::default().fg(ColorTuiRs::LightYellow))
+            .border_type(BorderType::Rounded);
+
+        let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
+            f.render_widget(body_block.clone(), area)
+        };
+
+        self.queue_render.push(Box::new(closure));
+    }
+
+    fn render_block_with_title_center_marked(&mut self, title: Texts, area: Rect) {
+        let spans = BackendTuiRs::style_span(title);
+
+        let body_block = Block::default()
+            .borders(Borders::ALL)
+            .title(spans)
+            .title_alignment(Alignment::Center)
+            .style(Style::default().fg(ColorTuiRs::LightYellow))
             .border_type(BorderType::Rounded);
 
         let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {

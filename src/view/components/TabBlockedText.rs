@@ -9,6 +9,7 @@ pub struct TabBlockText<'a> {
     pub area: Rect,
     pub texts: Vec<(&'a str, &'a str)>,
     pub current: usize,
+    pub marked: bool
 }
 impl Component for TabBlockText<'_> {
     type Backend = BackendTuiRs;
@@ -51,16 +52,11 @@ impl Component for TabBlockText<'_> {
 
         let current_content = Texts::from_str(current_content);
 
-        // let content_text_layout = Layout::default()
-        //     .margin(1)
-            // .split(self.area);
-
-        // println!("{?}", title);
-
         let component = BlockText {
             area: self.area,
             title, 
             content: current_content,
+            marked: self.marked
         };
 
         component.render(f);
