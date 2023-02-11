@@ -3,7 +3,7 @@ use crate::base::doc::handler::DocReaderHandler;
 use crate::config::configurations::view::ViewConfig;
 use crate::view::style::Texts;
 use tui::layout::{Constraint, Direction, Layout};
-use tui::widgets::{Clear, Widget, Wrap};
+use tui::widgets::{Clear, Wrap};
 use tui::{backend::CrosstermBackend, layout::Rect};
 use tui::{
     layout::Alignment,
@@ -13,20 +13,8 @@ use tui::{
 };
 use tui::{Frame, Terminal};
 
+// use std::default::default;
 use std::ops::FnMut;
-
-// struct RenderProcess<T> {
-//     pub func: FnOnce(&mut Frame<T>) -> ()
-//     // pub func: FnOnce(&mut Frame<CrosstermBackend<std::io::Stdout>>) -> ()
-//     // pub widget: Box<dyn Widget + 'a>,
-//     // pub area: Rect,
-// }
-
-// impl RenderProcess<_> {
-//     fn from_fn(widget: Box<dyn Widget>, area: Rect) -> Self {
-//         Self { widget, area }
-//     }
-// }
 
 pub struct BackendTuiRs {
     pub terminal: Terminal<CrosstermBackend<std::io::Stdout>>,
@@ -37,15 +25,16 @@ pub struct BackendTuiRs {
 }
 
 impl BackendTuiRs {
-
     pub fn draw_all(&mut self) -> () {
         let queue = &mut self.queue_render;
 
-        self.terminal.draw(|f| {
-            for render_func in queue.iter_mut() {
-                render_func(f)
-            }
-        }).unwrap();
+        self.terminal
+            .draw(|f| {
+                for render_func in queue.iter_mut() {
+                    render_func(f)
+                }
+            })
+            .unwrap();
 
         queue.clear();
     }
@@ -74,6 +63,22 @@ impl BackendTuiRs {
                 .as_ref(),
             )
             .split(popup_layout[1])[1]
+    }
+
+    fn style_span<'a>(texts: Texts) -> Spans<'a> {
+        let spans: Vec<Span> = texts
+            .body
+            .iter()
+            .map(|f| {
+                if let Some(style) = &f.style {
+                    Span::styled(f.body.to_string(), Style::default().fg(Color::Red))
+                } else {
+                    Span::from(f.body.to_string())
+                }
+            })
+            .collect();
+
+        Spans(spans)
     }
 }
 
@@ -174,7 +179,6 @@ impl Tui<Rect> for BackendTuiRs {
         // self.queue_render
         //     .push(RenderProcess::init(Box::new(body_block), area));
 
-
         let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
             f.render_widget(body_block.clone(), area)
         };
@@ -183,7 +187,6 @@ impl Tui<Rect> for BackendTuiRs {
     }
 
     fn render_help_window<'a>(&mut self, doc_handler: &'a DocReaderHandler, area: Rect) {
-
         // TODO
         // TODO: Not passing Spans to queue_render (because Cow inside it)
         // TODO
@@ -219,7 +222,6 @@ impl Tui<Rect> for BackendTuiRs {
         // self.queue_render.push(RenderProcess::init(Box::new(Clear), popup_area));
         // self.queue_render.push(RenderProcess::init(aaa, popup_area));
 
-
         let closure1 = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
             f.render_widget(Clear, popup_area)
         };
@@ -247,21 +249,17 @@ impl Tui<Rect> for BackendTuiRs {
     }
 
     fn render_text_in_block<'a>(&mut self, block_title: Texts, text: Texts, area: Rect) {
+        let spans = BackendTuiRs::style_span(block_title);
+
         let block = Block::default()
             .borders(Borders::ALL)
-            .title(block_title.to_string())
+            .title(spans)
             .title_alignment(Alignment::Left)
             .border_type(BorderType::Rounded);
 
         let text = Paragraph::new(text.to_string())
             .alignment(Alignment::Left)
             .block(block);
-
-        // self.terminal.draw(|f| f.render_widget(text, area));
-        // self.terminal.draw(|f| f.render_widget(block, area));
-
-        // self.queue_render
-        //     .push(RenderProcess::init(Box::new(text), area));
 
         let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
             f.render_widget(text.clone(), area)
@@ -281,13 +279,11 @@ impl Tui<Rect> for BackendTuiRs {
         // self.queue_render
         //     .push(RenderProcess::init(Box::new(block), area));
 
-
         let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
             f.render_widget(block.clone(), area)
         };
 
         self.queue_render.push(Box::new(closure));
-
     }
 
     fn render_divider_with_text(&mut self, text: Texts, area: Rect) {

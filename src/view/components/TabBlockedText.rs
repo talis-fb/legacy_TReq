@@ -1,7 +1,7 @@
 use super::Component;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
-use crate::view::style::Texts;
+use crate::view::style::{Color, Style, Text, Texts};
 use tui::layout::Rect;
 
 pub struct TabBlockText<'a> {
@@ -14,24 +14,40 @@ impl Component for TabBlockText<'_> {
     fn render(&self, f: &mut Self::Backend) {
         let (_, current_content) = self.texts.get(self.current).unwrap();
 
-        let titles_vec: Vec<&str> = self.texts.iter().map(|(title, _)| *title).collect();
-        let mut title = String::new();
+        let titles_vec: Vec<&str> = self.texts.iter().map(|f| f.0).collect();
         let titles_len = titles_vec.len();
+        let mut titles_texts_with_style: Vec<(String, bool)> = vec![];
 
         for (i, content) in titles_vec.into_iter().enumerate() {
             if i == self.current {
-                title.push_str(content.to_uppercase().as_str());
+                titles_texts_with_style.push((content.to_uppercase(), true));
             } else {
-                title.push_str(content);
+                titles_texts_with_style.push((content.to_string(), false));
             }
 
             let last_index = titles_len - 1;
             if i < last_index {
-                title.push_str(" / ");
+                titles_texts_with_style.push((" / ".to_string(), false));
             }
         }
 
-        let title = Texts::from_str(&title);
+        let title = Texts {
+            body: titles_texts_with_style
+                .iter()
+                .map(|(body, is_styled)| Text {
+                    body,
+                    style: if *is_styled {
+                        Some(Style {
+                            color: Some(Color::Red),
+                            property: None,
+                        })
+                    } else {
+                        None
+                    },
+                })
+                .collect(),
+        };
+
         let current_content = Texts::from_str(current_content);
 
         f.render_text_in_block(title, current_content, self.area);
