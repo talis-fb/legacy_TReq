@@ -18,7 +18,7 @@ impl State for DefaultState {
             maps: HashMap::from([
                 // General Move
                 (Actions::Up, Commands::go_to_tab_section()),
-                (Actions::Down, Commands::go_to_log_section()),
+                (Actions::Down, Commands::go_to_tab_section()),
                 (Actions::Right, Commands::go_to_response_body_section()),
                 (Actions::Left, Commands::go_to_request_body_section()),
                 // Jumps
