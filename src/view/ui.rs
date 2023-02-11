@@ -72,10 +72,8 @@ impl UI {
     }
 
     pub fn render(&mut self, data_store: &MainStore) {
-        let fff = self.backend.terminal.get_frame();
-        fff.size();
-
-        // self.backend.terminal.draw(|f| rr = Some(f.size())).unwrap();
+        self.backend.terminal.autoresize().unwrap();
+        let screen_area = self.backend.terminal.get_frame().size();
 
         let full_screen_layout = Layout::default()
             .direction(Direction::Vertical)
@@ -89,7 +87,7 @@ impl UI {
                 ]
                 .as_ref(),
             )
-            .split(fff.size());
+            .split(screen_area);
 
         let sizes_layout = data_store.config.view.lock().unwrap();
         let (left, right) = sizes_layout.get_dimension_percentage();
@@ -132,7 +130,7 @@ impl UI {
                     area: BackendTuiRs::create_absolute_centered_area(
                         Size::Percentage(60),
                         Size::Fixed(3),
-                        fff.size(),
+                        screen_area,
                     ),
                     text: &data_store.input_buffer.value,
                 })),
@@ -140,7 +138,7 @@ impl UI {
                     area: BackendTuiRs::create_absolute_centered_area(
                         Size::Percentage(60),
                         Size::Percentage(75),
-                        fff.size(),
+                        screen_area,
                     ),
                     doc_handler: data_store.doc_reader.as_ref().unwrap(),
                 })),
