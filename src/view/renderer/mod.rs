@@ -15,6 +15,8 @@ pub trait Tui<T> {
     fn render_text_with_bg<'a>(&mut self, text: &str, area: Rect);
 
     fn render_tablist(&mut self, tabs: Vec<&str>, current: usize, area: T);
+
+    fn render_divider_with_text(&mut self, text: &str, area: T);
 }
 
 pub trait Backend: Tui<Rect> {

@@ -249,7 +249,7 @@ impl Tui<Rect> for BackendTuiRs {
         let block = Block::default()
             .borders(Borders::ALL)
             .title(block_title.to_string())
-            .title_alignment(Alignment::Center)
+            .title_alignment(Alignment::Left)
             .border_type(BorderType::Rounded);
 
         let text = Paragraph::new(text.to_string())
@@ -287,6 +287,20 @@ impl Tui<Rect> for BackendTuiRs {
 
         self.queue_render.push(Box::new(closure));
 
+    }
+
+    fn render_divider_with_text(&mut self, text: &str, area: Rect) {
+        let block = Block::default()
+            .borders(Borders::TOP)
+            .title(text.to_string())
+            .title_alignment(Alignment::Left)
+            .border_type(BorderType::Rounded);
+
+        let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
+            f.render_widget(block.clone(), area)
+        };
+
+        self.queue_render.push(Box::new(closure));
     }
 }
 

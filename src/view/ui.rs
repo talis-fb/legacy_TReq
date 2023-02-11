@@ -19,7 +19,8 @@ use tui::{
 
 use crate::view::drawers;
 
-use super::components::views::request::RequestView;
+use super::components::views::{request::RequestView, logs::LogView};
+use super::components::views::response::ResponseView;
 use super::components::Component;
 use super::components::TabList::Tabslist;
 use super::renderer::tui_rs::BackendTuiRs;
@@ -82,6 +83,21 @@ impl UI {
             )
             .split(fff.size());
 
+        let sizes_layout = data_store.config.view.lock().unwrap();
+        let (left, right) = sizes_layout.get_dimension_percentage();
+
+        let content_layout = Layout::default()
+            .direction(Direction::Horizontal)
+            .margin(0)
+            .constraints(
+                [
+                    Constraint::Percentage(left as u16),
+                    Constraint::Percentage(right as u16),
+                ]
+                .as_ref(),
+            )
+            .split(full_screen_layout[1]);
+
         let tabb = Tabslist {
             area: full_screen_layout[0],
             tabs: data_store
@@ -93,12 +109,24 @@ impl UI {
         };
 
         let req_edit = RequestView {
-            area: full_screen_layout[1],
+            area: content_layout[0],
+            store: data_store,
+        };
+
+        let res_edit = ResponseView {
+            area: content_layout[1],
+            store: data_store,
+        };
+
+        let log_view = LogView {
+            area: full_screen_layout[2],
             store: data_store,
         };
 
         tabb.render(&mut self.backend);
         req_edit.render(&mut self.backend);
+        res_edit.render(&mut self.backend);
+        log_view.render(&mut self.backend);
 
         self.backend.draw_all();
 
