@@ -1,6 +1,7 @@
 use super::Component;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
+use crate::view::style::Texts;
 use tui::layout::Rect;
 
 pub struct TabBlockText<'a> {
@@ -30,6 +31,9 @@ impl Component for TabBlockText<'_> {
             }
         }
 
-        f.render_text_in_block(&title, current_content, self.area);
+        let title = Texts::from_str(&title);
+        let current_content = Texts::from_str(current_content);
+
+        f.render_text_in_block(title, current_content, self.area);
     }
 }

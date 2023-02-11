@@ -1,6 +1,7 @@
 use super::Component;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
+use crate::view::style::Texts;
 use tui::layout::Rect;
 
 pub struct Tabslist {
@@ -11,7 +12,7 @@ pub struct Tabslist {
 impl Component for Tabslist {
     type Backend = BackendTuiRs;
     fn render(&self, f: &mut Self::Backend) {
-        let tabs_str = self.tabs.iter().map(|f| f.as_str()).collect();
+        let tabs_str = self.tabs.iter().map(|f| Texts::from_str(f)).collect();
         f.render_tablist(tabs_str, self.current, self.area)
     }
 }

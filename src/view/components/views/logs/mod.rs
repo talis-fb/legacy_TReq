@@ -1,6 +1,7 @@
 use crate::base::logs::Log;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
+use crate::view::style::Texts;
 use crate::{base::stores::MainStore, view::components::Component};
 use tui::layout::{Constraint, Direction, Layout, Rect};
 
@@ -27,7 +28,7 @@ impl Component for LogView<'_> {
         let mut content = title.clone();
         content.push_str(detail.as_ref().unwrap_or(&String::new()).as_str());
 
-        f.render_divider_with_text("Logs", layout[0]);
-        f.render_text(&content, layout[1]);
+        f.render_divider_with_text(Texts::from_str("Logs"), layout[0]);
+        f.render_text(Texts::from_str(content.as_str()), layout[1]);
     }
 }

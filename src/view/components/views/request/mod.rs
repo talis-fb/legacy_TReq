@@ -1,8 +1,8 @@
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
+use crate::view::style::Texts;
 use crate::{base::stores::MainStore, view::components::Component};
 use tui::layout::{Constraint, Direction, Layout, Rect};
-
 
 pub mod request_edition_view;
 
@@ -24,7 +24,7 @@ impl Component for RequestView<'_> {
             .split(self.area);
 
         // All block area
-        f.render_block_with_title_center("Request", self.area);
+        f.render_block_with_title_center(Texts::from_str("Request"), self.area);
 
         // Url Block
         let url_layout = Layout::default()
@@ -37,8 +37,8 @@ impl Component for RequestView<'_> {
         // TODO: Color in this block of METHODS
         //
 
-        f.render_text_with_bg(&request.method.to_string(), url_layout[0]);
-        f.render_text_in_block("URL", &request.url, url_layout[1]);
+        f.render_text_with_bg(Texts::from_str(request.method.to_string().as_str()), url_layout[0]);
+        f.render_text_in_block(Texts::from_str("URL"), Texts::from_str(&request.url), url_layout[1]);
 
         // Edition Block
         let edition_layout = request_layout[1];

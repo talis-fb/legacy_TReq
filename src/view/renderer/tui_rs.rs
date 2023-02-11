@@ -1,6 +1,7 @@
 use super::{Backend, Tui};
 use crate::base::doc::handler::DocReaderHandler;
 use crate::config::configurations::view::ViewConfig;
+use crate::view::style::Texts;
 use tui::layout::{Constraint, Direction, Layout};
 use tui::widgets::{Clear, Widget, Wrap};
 use tui::{backend::CrosstermBackend, layout::Rect};
@@ -77,7 +78,7 @@ impl BackendTuiRs {
 }
 
 impl Tui<Rect> for BackendTuiRs {
-    fn render_tablist(&mut self, tabs: Vec<&str>, current: usize, area: Rect) {
+    fn render_tablist(&mut self, tabs: Vec<Texts>, current: usize, area: Rect) {
         let tabs_spans = tabs
             .into_iter()
             .map(|s| Spans::from(vec![Span::from(s.to_string())]))
@@ -110,7 +111,7 @@ impl Tui<Rect> for BackendTuiRs {
         self.queue_render.push(Box::new(closure));
     }
 
-    fn render_block_with_title_left(&mut self, title: &str, area: Rect) {
+    fn render_block_with_title_left(&mut self, title: Texts, area: Rect) {
         let body_block = Block::default()
             .borders(Borders::ALL)
             .title(title.to_string())
@@ -128,7 +129,7 @@ impl Tui<Rect> for BackendTuiRs {
         self.queue_render.push(Box::new(closure));
     }
 
-    fn render_block_with_title_center(&mut self, title: &str, area: Rect) {
+    fn render_block_with_title_center(&mut self, title: Texts, area: Rect) {
         let body_block = Block::default()
             .borders(Borders::ALL)
             .title(title.to_string())
@@ -148,7 +149,7 @@ impl Tui<Rect> for BackendTuiRs {
         self.queue_render.push(Box::new(closure));
     }
 
-    fn render_block_with_tab(&mut self, tabs: Vec<&str>, current: usize, area: Rect) {
+    fn render_block_with_tab(&mut self, tabs: Vec<Texts>, current: usize, area: Rect) {
         let tabs_spans: Vec<Span> = tabs
             .into_iter()
             .enumerate()
@@ -231,7 +232,7 @@ impl Tui<Rect> for BackendTuiRs {
         // self.queue_render.push(Box::new(closure2));
     }
 
-    fn render_text<'a>(&mut self, text: &str, area: Rect) {
+    fn render_text<'a>(&mut self, text: Texts, area: Rect) {
         let text = Paragraph::new(text.to_string()).alignment(Alignment::Left);
 
         // self.terminal.draw(|f| f.render_widget(text, area));
@@ -245,7 +246,7 @@ impl Tui<Rect> for BackendTuiRs {
         self.queue_render.push(Box::new(closure));
     }
 
-    fn render_text_in_block<'a>(&mut self, block_title: &str, text: &str, area: Rect) {
+    fn render_text_in_block<'a>(&mut self, block_title: Texts, text: Texts, area: Rect) {
         let block = Block::default()
             .borders(Borders::ALL)
             .title(block_title.to_string())
@@ -270,7 +271,7 @@ impl Tui<Rect> for BackendTuiRs {
     }
 
     // TODO: Add Custom Style
-    fn render_text_with_bg<'a>(&mut self, text: &str, area: Rect) {
+    fn render_text_with_bg<'a>(&mut self, text: Texts, area: Rect) {
         let block = Paragraph::new(text.to_string())
             .style(Style::default().bg(Color::Blue).fg(Color::Black))
             .alignment(Alignment::Center);
@@ -289,7 +290,7 @@ impl Tui<Rect> for BackendTuiRs {
 
     }
 
-    fn render_divider_with_text(&mut self, text: &str, area: Rect) {
+    fn render_divider_with_text(&mut self, text: Texts, area: Rect) {
         let block = Block::default()
             .borders(Borders::TOP)
             .title(text.to_string())
