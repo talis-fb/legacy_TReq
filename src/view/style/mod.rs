@@ -1,7 +1,7 @@
 use tui::style::Color as ColorTuiRs;
 use tui::style::Style as StyleTuiRs;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Color {
     Red,
     Blue,
@@ -38,33 +38,26 @@ impl Color {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Property {
     Marked,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Style {
     pub color: Color,
     pub property: Option<Property>,
 }
-// impl Style {
-//     fn to_tuirs(&self) -> StyleTuiRs {
-//         StyleTuiRs::default().fg(color)
-//     }
-// }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Text<'a> {
     pub body: &'a str,
     pub style: Option<Style>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Texts<'a> {
     pub body: Vec<Text<'a>>,
-    // pub body: &'a [Text<'a>],
-    // pub stored_vec: Option<Vec<Text<'a>>> // Only necessary when
 }
 
 impl ToString for Texts<'_> {
@@ -82,30 +75,4 @@ impl<'a> Texts<'a> {
             }],
         }
     }
-
-    // pub fn from(value: String) -> Self {
-    //     Self::from_str(value.as_str())
-    // }
-    //
-    // pub fn from(value: &String) -> Self {
-    //     Self::from_str(value.as_str())
-    // }
 }
-
-// impl From<&str> for Texts<'_> {
-//     fn from(s: &str) -> Self {
-//         Self::from_str(s)
-//     }
-// }
-
-// impl From<String> for Texts<'_> {
-//     fn from(value: String) -> Self {
-//         Self::from_str(value.as_str())
-//     }
-// }
-//
-// impl From<&String> for Texts<'_> {
-//     fn from(value: &String) -> Self {
-//         Self::from_str(value.as_str())
-//     }
-// }
