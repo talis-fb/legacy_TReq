@@ -203,7 +203,8 @@ impl Tui<Rect> for BackendTuiRs {
     }
 
     fn render_text<'a>(&mut self, text: Texts, area: Rect) {
-        let text = Paragraph::new(text.to_string()).alignment(Alignment::Left);
+        let content = BackendTuiRs::style_span(text);
+        let text = Paragraph::new(content).alignment(Alignment::Left);
 
         let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
             f.render_widget(text.clone(), area)
