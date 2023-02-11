@@ -1,6 +1,7 @@
+use crate::base::web::request::METHODS;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
-use crate::view::style::{Texts, Color};
+use crate::view::style::{Color, Texts};
 use crate::{base::stores::MainStore, view::components::Component};
 use tui::layout::{Constraint, Direction, Layout, Rect};
 
@@ -33,13 +34,26 @@ impl Component for RequestView<'_> {
             .constraints([Constraint::Length(7), Constraint::Min(1)].as_ref())
             .split(request_layout[0]);
 
-        //
-        // TODO: Color in this block of METHODS
-        //
+        let color_button_method = match request.method {
+            METHODS::GET => Color::Blue,
+            METHODS::POST => Color::Green,
+            METHODS::PUT => Color::White,
+            METHODS::PATCH => Color::Cyan,
+            METHODS::DELETE => Color::Red,
+            METHODS::HEAD => Color::Yellow,
+        };
 
-        f.render_text_with_bg(Texts::from_str(request.method.to_string().as_str()), Color::Yellow, url_layout[0]);
+        f.render_text_with_bg(
+            Texts::from_str(request.method.to_string().as_str()),
+            color_button_method,
+            url_layout[0],
+        );
 
-        f.render_text_in_block(Texts::from_str("URL"), Texts::from_str(&request.url), url_layout[1]);
+        f.render_text_in_block(
+            Texts::from_str("URL"),
+            Texts::from_str(&request.url),
+            url_layout[1],
+        );
 
         // Edition Block
         let edition_layout = request_layout[1];
