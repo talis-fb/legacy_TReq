@@ -1,14 +1,14 @@
+use crate::base::states::names::StatesNames;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
-use crate::view::style::{Texts, Color};
+use crate::view::style::{Color, Texts};
 use crate::{base::stores::MainStore, view::components::Component};
 use tui::layout::{Constraint, Direction, Layout, Rect};
 
+use self::response_content_view::{ResposeEditionView, StatesResEditionView};
 
-use self::response_content_view::{StatesResEditionView, ResposeEditionView};
-
-pub mod response_status_view;
 pub mod response_content_view;
+pub mod response_status_view;
 
 pub struct ResponseView<'a> {
     pub area: Rect,
@@ -29,12 +29,27 @@ impl Component for ResponseView<'_> {
         // All block area
         f.render_block_with_title_center(Texts::from_str("Response"), self.area);
 
-        //
-        // TODO: Color for this below
-        //
         // Status Block
-        f.render_text_with_bg(Texts::from_str("STATUS"), Color::Red, response_layout[0]);
-
+        let color_button_status = match response.status {
+            0 => Color::Gray,
+            77 => Color::Red, // A STATUS CODE INTERNAL TO INTERNAL ERROR
+            100..=199 => Color::Gray,
+            200..=299 => Color::Green,
+            300..=399 => Color::Yellow,
+            400..=499 => Color::Magenta,
+            500..=599 => Color::Red,
+            _ => Color::Cyan,
+        };
+        let text_button_status: String = match response.status {
+            0 => String::from("Hit ENTER to submit"),
+            77 => String::from("Error"), // A STATUS CODE INTERNAL TO INTERNAL ERROR
+            _ => response.status.to_string(),
+        };
+        f.render_text_with_bg(
+            Texts::from_str(&text_button_status),
+            color_button_status,
+            response_layout[0],
+        );
 
         // Edition Block
         let edition_layout = response_layout[1];
@@ -43,7 +58,10 @@ impl Component for ResponseView<'_> {
             area: edition_layout,
             body: &response.body,
             headers: &headers_content,
-            opened: StatesResEditionView::BodyOpened
+            opened: match self.store.current_state {
+                StatesNames::ResponseHeader => StatesResEditionView::HeadersOpened,
+                _ => StatesResEditionView::BodyOpened,
+            },
         };
 
         edition_block.render(f);

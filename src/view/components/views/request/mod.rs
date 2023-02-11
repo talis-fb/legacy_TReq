@@ -1,3 +1,4 @@
+use crate::base::states::names::StatesNames;
 use crate::base::web::request::METHODS;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
@@ -38,7 +39,7 @@ impl Component for RequestView<'_> {
             METHODS::GET => Color::Blue,
             METHODS::POST => Color::Green,
             METHODS::PUT => Color::White,
-            METHODS::PATCH => Color::Cyan,
+            METHODS::PATCH => Color::Magenta,
             METHODS::DELETE => Color::Red,
             METHODS::HEAD => Color::Yellow,
         };
@@ -62,7 +63,10 @@ impl Component for RequestView<'_> {
             area: edition_layout,
             body: &request.body,
             headers: &headers_content,
-            opened: StatesReqEditionView::BodyOpened,
+            opened: match self.store.current_state {
+                StatesNames::RequestHeaders => StatesReqEditionView::HeadersOpened,
+                _ => StatesReqEditionView::BodyOpened,
+            },
         };
 
         edition_block.render(f);

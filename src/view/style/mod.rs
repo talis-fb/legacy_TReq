@@ -13,6 +13,7 @@ pub enum Color {
     Brown,
     Cyan,
     Pink,
+    Magenta,
     Rgb(i32, i32, i32),
 }
 
@@ -27,7 +28,7 @@ impl Color {
             Color::White => ColorTuiRs::White,
             Color::Gray => ColorTuiRs::Gray,
             Color::Cyan => ColorTuiRs::Cyan,
-
+            Color::Magenta => ColorTuiRs::Magenta,
             Color::Brown => ColorTuiRs::White,
             Color::Orange => ColorTuiRs::White,
             Color::Pink => ColorTuiRs::White,
