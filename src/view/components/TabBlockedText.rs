@@ -3,13 +3,13 @@ use super::Component;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
 use crate::view::style::{Color, Style, Text, Texts};
-use tui::layout::{Rect, Layout};
+use tui::layout::{Layout, Rect};
 
 pub struct TabBlockText<'a> {
     pub area: Rect,
     pub texts: Vec<(&'a str, &'a str)>,
     pub current: usize,
-    pub marked: bool
+    pub marked: bool,
 }
 impl Component for TabBlockText<'_> {
     type Backend = BackendTuiRs;
@@ -54,9 +54,9 @@ impl Component for TabBlockText<'_> {
 
         let component = BlockText {
             area: self.area,
-            title, 
+            title,
             content: current_content,
-            marked: self.marked
+            marked: self.marked,
         };
 
         component.render(f);

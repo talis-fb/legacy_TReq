@@ -2,13 +2,13 @@ use super::Component;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
 use crate::view::style::Texts;
-use tui::layout::{Rect, Layout, Constraint};
+use tui::layout::{Constraint, Layout, Rect};
 
 pub struct BlockText<'a> {
     pub area: Rect,
     pub title: Texts<'a>,
     pub content: Texts<'a>,
-    pub marked: bool
+    pub marked: bool,
 }
 impl Component for BlockText<'_> {
     type Backend = BackendTuiRs;
@@ -32,4 +32,3 @@ impl Component for BlockText<'_> {
         f.render_text_raw(&self.content.to_string(), content_text_layout[0]);
     }
 }
-

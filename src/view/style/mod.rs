@@ -3,7 +3,7 @@ use tui::style::Style as StyleTuiRs;
 
 pub enum Size {
     Percentage(u16),
-    Fixed(u16)
+    Fixed(u16),
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]

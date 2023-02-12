@@ -1,7 +1,7 @@
 use super::Component;
-use crate::view::{renderer::tui_rs::BackendTuiRs, style::Size};
 use crate::view::renderer::Tui;
 use crate::view::style::Texts;
+use crate::view::{renderer::tui_rs::BackendTuiRs, style::Size};
 use tui::layout::{Constraint, Layout, Rect};
 
 pub struct InputTextBlock<'a> {
@@ -14,7 +14,7 @@ impl Component for InputTextBlock<'_> {
         f.render_clear_area(self.area);
         f.render_block_with_title_left(
             Texts::from_str("[ESC] - QUIT     [ENTER] - FINISH"),
-            self.area
+            self.area,
         );
 
         let layout_content = Layout::default()

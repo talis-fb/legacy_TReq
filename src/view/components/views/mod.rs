@@ -1,4 +1,4 @@
-pub mod tabs_request;
+pub mod logs;
 pub mod request;
 pub mod response;
-pub mod logs;
+pub mod tabs_request;

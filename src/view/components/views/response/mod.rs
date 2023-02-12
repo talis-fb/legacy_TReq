@@ -64,8 +64,8 @@ impl Component for ResponseView<'_> {
             },
             marked: match self.store.current_state {
                 StatesNames::ResponseBody | StatesNames::ResponseHeader => true,
-                _ => false
-            }
+                _ => false,
+            },
         };
 
         edition_block.render(f);

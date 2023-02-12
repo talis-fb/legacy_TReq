@@ -14,19 +14,16 @@ pub struct RequestEditionView<'a> {
     pub body: &'a str,
     pub headers: &'a str,
     pub opened: StatesReqEditionView,
-    pub marked: bool
+    pub marked: bool,
 }
 impl Component for RequestEditionView<'_> {
     type Backend = BackendTuiRs;
     fn render(&self, f: &mut Self::Backend) {
         let mut block = TabBlockText {
             area: self.area,
-            texts: vec![
-                ("Body", self.body),
-                ("Headers", self.headers),
-            ],
+            texts: vec![("Body", self.body), ("Headers", self.headers)],
             current: 0,
-            marked: self.marked
+            marked: self.marked,
         };
 
         match self.opened {

@@ -1,7 +1,7 @@
+use crate::{base::doc::handler::DocReaderHandler, view::components::Component};
 use tui::layout::Rect;
-use crate::{view::components::Component, base::doc::handler::DocReaderHandler};
 
-use super::style::{Texts, Color};
+use super::style::{Color, Texts};
 
 pub mod tui_rs;
 
@@ -30,7 +30,7 @@ pub trait Tui<T> {
     fn render_clear_area(&mut self, area: T);
 }
 
-// TODO 
+// TODO
 pub trait Backend: Tui<Rect> {
     fn draw(&mut self, view: &dyn Component<Backend = Self>) -> ()
     where

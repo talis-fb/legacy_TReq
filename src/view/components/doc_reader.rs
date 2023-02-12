@@ -1,8 +1,8 @@
 use super::Component;
 use crate::base::doc::handler::DocReaderHandler;
-use crate::view::{renderer::tui_rs::BackendTuiRs, style::Size};
 use crate::view::renderer::Tui;
 use crate::view::style::Texts;
+use crate::view::{renderer::tui_rs::BackendTuiRs, style::Size};
 use tui::layout::{Constraint, Layout, Rect};
 
 pub struct DocReader<'a> {

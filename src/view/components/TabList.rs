@@ -8,7 +8,7 @@ pub struct Tabslist {
     pub area: Rect,
     pub tabs: Vec<String>,
     pub current: usize,
-    pub marked: bool
+    pub marked: bool,
 }
 impl Component for Tabslist {
     type Backend = BackendTuiRs;
@@ -20,6 +20,5 @@ impl Component for Tabslist {
         } else {
             f.render_tablist(tabs_str, self.current, self.area)
         }
-
     }
 }
