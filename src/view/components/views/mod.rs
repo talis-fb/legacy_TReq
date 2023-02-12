@@ -1,3 +1,4 @@
+pub mod app;
 pub mod logs;
 pub mod request;
 pub mod response;
