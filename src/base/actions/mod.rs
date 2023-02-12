@@ -54,7 +54,7 @@ pub enum Actions {
     MethodEdit,
     ReloadBody,
 
-    // 
+    //
     GrowHorizontalUiRight,
     GrowHorizontalUiLeft,
 }

@@ -41,8 +41,6 @@ pub struct App {
     pub client_web: Option<Arc<WebClient<ReqwestClientRepository>>>,
 }
 
-
-
 impl App {
     // Builders -------- ---------------------
     pub fn set_data_store(&mut self, data_store: MainStore) {
@@ -139,9 +137,7 @@ impl App {
         let renderer = self.renderer.as_ref().unwrap().clone();
 
         tokio::task::spawn(async move {
-            let new_response = client
-                .submit((*request).clone())
-                .await;
+            let new_response = client.submit((*request).clone()).await;
 
             let mut data = response_data_store.lock().unwrap();
 
