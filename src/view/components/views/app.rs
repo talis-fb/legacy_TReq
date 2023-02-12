@@ -1,17 +1,15 @@
 use crate::app::InputMode;
-use crate::base::states::names::StatesNames;
-use crate::base::web::request::METHODS;
-use crate::view::components::block_text::BlockText;
+
 use crate::view::components::doc_reader::DocReader;
 use crate::view::components::input_block::InputTextBlock;
 use crate::view::renderer::tui_rs::BackendTuiRs;
-use crate::view::renderer::Tui;
-use crate::view::style::{Color, Size, Texts};
+
+use crate::view::style::Size;
 use crate::{base::stores::MainStore, view::components::Component};
 use tui::layout::{Constraint, Direction, Layout, Rect};
 
 use super::logs::LogView;
-use super::request::request_edition_view::{RequestEditionView, StatesReqEditionView};
+
 use super::request::RequestView;
 use super::response::ResponseView;
 use super::tabs_request::TabRequestView;

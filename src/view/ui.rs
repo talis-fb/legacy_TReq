@@ -1,4 +1,4 @@
-use crate::{app::InputMode, base::stores::MainStore, config::configurations::view::ViewConfig};
+use crate::{base::stores::MainStore, config::configurations::view::ViewConfig};
 
 use crossterm::{
     event::DisableMouseCapture,
@@ -6,24 +6,12 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use std::io;
-use tui::{
-    backend::CrosstermBackend,
-    layout::{Constraint, Direction, Layout},
-    Terminal,
-};
+use tui::{backend::CrosstermBackend, Terminal};
 
-use super::components::views::{app::AppView, response::ResponseView};
+use super::components::views::app::AppView;
 use super::components::Component;
 
 use super::renderer::tui_rs::BackendTuiRs;
-use super::{
-    components::{
-        doc_reader::DocReader,
-        input_block::InputTextBlock,
-        views::{logs::LogView, request::RequestView, tabs_request::TabRequestView},
-    },
-    style::Size,
-};
 
 pub struct UI {
     backend: BackendTuiRs,
