@@ -1,4 +1,4 @@
-use super::BlockText::BlockText;
+use super::block_text::BlockText;
 use super::Component;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 

@@ -1,4 +1,4 @@
-use crate::{base::doc::handler::DocReaderHandler, view::components::Component};
+use crate::view::components::Component;
 use tui::layout::Rect;
 
 use super::style::{Color, Texts};
@@ -12,8 +12,6 @@ pub trait Tui<T> {
 
     fn render_block_with_title_left_marked(&mut self, title: Texts, area: T);
     fn render_block_with_title_center_marked(&mut self, title: Texts, area: T);
-
-    fn render_help_window<'a>(&mut self, doc_view: &'a DocReaderHandler, area: T);
 
     fn render_text<'a>(&mut self, text: Texts, area: T);
     fn render_text_raw<'a>(&mut self, text: &str, area: T);

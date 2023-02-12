@@ -1,5 +1,4 @@
 use super::{Backend, Tui};
-use crate::base::doc::handler::DocReaderHandler;
 use crate::config::configurations::view::ViewConfig;
 use crate::view::style::{Color, Size, Texts};
 use tui::layout::{Constraint, Direction, Layout};
@@ -272,36 +271,6 @@ impl Tui<Rect> for BackendTuiRs {
         };
 
         self.queue_render.push(Box::new(closure));
-    }
-
-    fn render_help_window<'a>(&mut self, doc_handler: &'a DocReaderHandler, area: Rect) {
-        // let mut content = doc_handler.get_doc_spans();
-        //
-        // let position = doc_handler.position.clone();
-        //
-        // if position >= content.len() {
-        //     content.clear();
-        // } else {
-        //     let (_, content) = content.split_at(position);
-        // }
-        //
-        // let popup_block = Block::default()
-        //     .title("Navigate -> [UP] and [DOWN] / Press any other key to close")
-        //     .borders(Borders::ALL)
-        //     .border_style(Style::default().fg(Color::Yellow.to_tuirs()))
-        //     .title_alignment(Alignment::Center);
-        //
-        // let popup_text = Paragraph::new(content)
-        //     .alignment(Alignment::Left)
-        //     .wrap(Wrap { trim: true });
-        //
-        // let popup_area = BackendTuiRs::centered_rect(60, 75, area);
-        //
-        // let closure1 = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
-        //     f.render_widget(Clear, popup_area)
-        // };
-        //
-        // self.queue_render.push(Box::new(closure1));
     }
 
     fn render_text<'a>(&mut self, text: Texts, area: Rect) {

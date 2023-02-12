@@ -1,6 +1,6 @@
 use crate::base::states::names::StatesNames;
 use crate::base::web::request::METHODS;
-use crate::view::components::BlockText::BlockText;
+use crate::view::components::block_text::BlockText;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
 use crate::view::style::{Color, Texts};

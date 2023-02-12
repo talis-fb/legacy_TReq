@@ -12,9 +12,9 @@ pub trait StatedComponents<State> {
 // ------------------------------------------------
 // Components Implementations
 // ------------------------------------------------
-pub mod BlockText;
-pub mod TabBlockedText;
-pub mod TabList;
+pub mod block_text;
+pub mod tab_blocked_text;
+pub mod tab_list;
 pub mod doc_reader;
 pub mod input_block;
 pub mod views;
