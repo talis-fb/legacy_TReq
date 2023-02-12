@@ -45,7 +45,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Configurations and Setup of necessary folders
     ConfigManager::setup_env().expect("Error creating folders .local/share/treq. If error persist create it with mkdir $HOME/.local/share/treq");
     let config_manager = ConfigManager::init();
-    let already_opened = config_manager.saved_requests.lock().unwrap().exist_already_some_file();
+    let already_opened = config_manager
+        .saved_requests
+        .lock()
+        .unwrap()
+        .exist_already_some_file();
 
     // Init of Data Stores
     let mut data_store = MainStore::init(config_manager);

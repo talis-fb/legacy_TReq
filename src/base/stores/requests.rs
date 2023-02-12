@@ -70,7 +70,7 @@ impl RequestStore {
         };
 
         let mut save_files = self.save_files.lock().unwrap();
-        if let Some(_) = save_files.exist(&uuid) {
+        if save_files.exist(&uuid).is_some() {
             save_files.remove(&uuid)?;
         }
 
@@ -135,7 +135,7 @@ impl RequestStore {
 
     pub fn save_current_request(&mut self) -> Result<(), String> {
         let (uuid, req) = self.requests.get(self.current_ind).unwrap();
-        self.save_files.lock().unwrap().set(uuid, &req)?;
+        self.save_files.lock().unwrap().set(uuid, req)?;
 
         // Now mark it as saved
         let req = self.get_request_mut();

@@ -74,7 +74,7 @@ impl ConfigurationEditable<UUID, RequestFile, Request> for SaveFiles {
     }
 }
 impl SaveFiles {
-    pub fn remove(&mut self, key: &UUID) -> Result<(), String> { 
+    pub fn remove(&mut self, key: &UUID) -> Result<(), String> {
         let file_in_map = self.map.get_mut(key).unwrap();
         file_in_map.remove()
     }
@@ -87,4 +87,3 @@ impl SaveFiles {
         !self.get_map().is_empty()
     }
 }
-
