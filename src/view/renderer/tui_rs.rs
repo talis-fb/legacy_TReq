@@ -20,11 +20,11 @@ pub struct BackendTuiRs {
     pub configs: ViewConfig,
 
     // TODO: make it private
-    pub queue_render: Vec<Box<dyn FnMut(&mut Frame<CrosstermBackend<std::io::Stdout>>) -> ()>>,
+    pub queue_render: Vec<Box<dyn FnMut(&mut Frame<CrosstermBackend<std::io::Stdout>>)>>,
 }
 
 impl BackendTuiRs {
-    pub fn draw_all(&mut self) -> () {
+    pub fn draw_all(&mut self) {
         let queue = &mut self.queue_render;
 
         self.terminal
@@ -318,10 +318,7 @@ impl Tui<Rect> for BackendTuiRs {
     }
 
     fn render_rows_texts<'a>(&mut self, text: Vec<Texts>, area: Rect) {
-        let content: Vec<Spans> = text
-            .into_iter()
-            .map(|t| BackendTuiRs::style_span(t))
-            .collect();
+        let content: Vec<Spans> = text.into_iter().map(BackendTuiRs::style_span).collect();
 
         let text = Paragraph::new(content)
             .alignment(Alignment::Left)

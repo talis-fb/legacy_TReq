@@ -1,9 +1,9 @@
 use super::BlockText::BlockText;
 use super::Component;
 use crate::view::renderer::tui_rs::BackendTuiRs;
-use crate::view::renderer::Tui;
+
 use crate::view::style::{Color, Style, Text, Texts};
-use tui::layout::{Layout, Rect};
+use tui::layout::Rect;
 
 pub struct TabBlockText<'a> {
     pub area: Rect,

@@ -32,7 +32,7 @@ pub trait Tui<T> {
 
 // TODO
 pub trait Backend: Tui<Rect> {
-    fn draw(&mut self, view: &dyn Component<Backend = Self>) -> ()
+    fn draw(&mut self, view: &dyn Component<Backend = Self>)
     where
         Self: Sized,
     {

@@ -1,4 +1,4 @@
-use crate::base::logs::{Log, LogType};
+use crate::base::logs::LogType;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
 use crate::view::style::{Color, Style, Text, Texts};
@@ -43,7 +43,7 @@ impl Component for LogView<'_> {
                     }),
                 },
                 Text {
-                    body: &detail,
+                    body: detail,
                     style: None,
                 },
             ],

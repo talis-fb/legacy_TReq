@@ -21,7 +21,7 @@ impl Component for TabRequestView<'_> {
                     let mut name = f.name.clone();
 
                     if f.has_changed {
-                        name.push_str("*")
+                        name.push('*')
                     }
 
                     name

@@ -1,7 +1,4 @@
-use crate::{
-    app::InputMode, base::states::names::StatesNames, base::stores::MainStore,
-    config::configurations::view::ViewConfig,
-};
+use crate::{app::InputMode, base::stores::MainStore, config::configurations::view::ViewConfig};
 
 use crossterm::{
     event::DisableMouseCapture,
@@ -11,24 +8,19 @@ use crossterm::{
 use std::io;
 use tui::{
     backend::CrosstermBackend,
-    layout::{Alignment, Constraint, Direction, Layout},
-    style::{Color, Style},
-    widgets::{Block, BorderType, Borders},
+    layout::{Constraint, Direction, Layout},
     Terminal,
 };
 
-use crate::view::drawers;
-
 use super::components::views::response::ResponseView;
 use super::components::Component;
-use super::components::TabList::Tabslist;
+
 use super::renderer::tui_rs::BackendTuiRs;
 use super::{
     components::{
         doc_reader::DocReader,
         input_block::InputTextBlock,
         views::{logs::LogView, request::RequestView, tabs_request::TabRequestView},
-        BlockText::BlockText,
     },
     style::Size,
 };

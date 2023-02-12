@@ -1,7 +1,7 @@
 use super::Component;
+use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
 use crate::view::style::Texts;
-use crate::view::{renderer::tui_rs::BackendTuiRs, style::Size};
 use tui::layout::{Constraint, Layout, Rect};
 
 pub struct InputTextBlock<'a> {
@@ -21,6 +21,6 @@ impl Component for InputTextBlock<'_> {
             .margin(1)
             .constraints([Constraint::Percentage(100)])
             .split(self.area)[0];
-        f.render_text_raw(&self.text.to_string(), layout_content);
+        f.render_text_raw(self.text, layout_content);
     }
 }

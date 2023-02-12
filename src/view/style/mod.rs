@@ -1,5 +1,4 @@
 use tui::style::Color as ColorTuiRs;
-use tui::style::Style as StyleTuiRs;
 
 pub enum Size {
     Percentage(u16),

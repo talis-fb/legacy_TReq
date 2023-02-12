@@ -80,11 +80,11 @@ impl DocView {
                     .iter()
                     .map(|(content, style)| match style {
                         Some(op) => Text {
-                            body: &content,
+                            body: content,
                             style: Some(op.to_style()),
                         },
                         None => Text {
-                            body: &content,
+                            body: content,
                             style: None,
                         },
                     })
