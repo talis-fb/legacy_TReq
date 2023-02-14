@@ -14,6 +14,8 @@ use super::request::RequestView;
 use super::response::ResponseView;
 use super::tabs_request::TabRequestView;
 
+use crate::view::components::welcome_doc::WelcomeDoc;
+
 pub struct AppView<'a> {
     pub area: Rect,
     pub store: &'a MainStore,
@@ -68,6 +70,10 @@ impl Component for AppView<'_> {
             store,
         };
 
+        let welcome_doc_view = WelcomeDoc {
+            area: content_layout[1],
+        };
+
         let log_view = LogView {
             area: full_screen_layout[2],
             store,
@@ -96,8 +102,15 @@ impl Component for AppView<'_> {
 
         tablist_requests_view.render(f);
         request_view.render(f);
-        response_view.render(f);
         log_view.render(f);
+
+        let status = store.get_response().lock().unwrap().status ;
+        let has_been = status != 0;
+        if has_been {
+            response_view.render(f);
+        } else {
+            welcome_doc_view.render(f);
+        }
 
         if let Some(component) = popup_component {
             component.render(f);

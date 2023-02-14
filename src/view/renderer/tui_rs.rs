@@ -310,6 +310,16 @@ impl Tui<Rect> for BackendTuiRs {
         self.queue_render.push(Box::new(closure));
     }
 
+    fn render_text_raw_align_center<'a>(&mut self, text: &str, area: Rect) {
+        let text = Paragraph::new(text.to_string()).alignment(Alignment::Center);
+
+        let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
+            f.render_widget(text.clone(), area)
+        };
+
+        self.queue_render.push(Box::new(closure));
+    }
+
     // TODO: Add Custom Style
     fn render_text_with_bg<'a>(&mut self, text: Texts, color: Color, area: Rect) {
         let block = Paragraph::new(text.to_string())

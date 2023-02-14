@@ -3,7 +3,7 @@ use std::collections::HashMap;
 #[derive(Default, Clone, Debug)]
 pub struct Response {
     pub status: i32,
-    pub response_time: i32,
+    pub response_time: u32,
     pub headers: HashMap<String, String>,
     pub body: String,
 }
