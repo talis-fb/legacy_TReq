@@ -1,5 +1,6 @@
 use crate::app::InputMode;
 
+use crate::base::states::names::StatesNames;
 use crate::view::components::doc_reader::DocReader;
 use crate::view::components::input_block::InputTextBlock;
 use crate::view::renderer::tui_rs::BackendTuiRs;
@@ -70,8 +71,10 @@ impl Component for AppView<'_> {
             store,
         };
 
+        // TODO: It should not use the same state of Response, only its area
         let welcome_doc_view = WelcomeDoc {
             area: content_layout[1],
+            marked: store.current_state == StatesNames::ResponseBody || store.current_state == StatesNames::ResponseHeader,
         };
 
         let log_view = LogView {

@@ -6,6 +6,7 @@ use tui::layout::{Constraint, Layout, Rect};
 
 pub struct WelcomeDoc {
     pub area: Rect,
+    pub marked: bool,
 }
 impl Component for WelcomeDoc {
     type Backend = BackendTuiRs;
@@ -79,7 +80,12 @@ impl Component for WelcomeDoc {
         ];
 
         f.render_clear_area(self.area);
-        f.render_block_with_title_center(Texts::from_str("Welcome"), self.area);
+
+        if self.marked {
+            f.render_block_with_title_center_marked(Texts::from_str("Welcome"), self.area);
+        } else {
+            f.render_block_with_title_center(Texts::from_str("Welcome"), self.area);
+        }
 
         let content_area = Layout::default()
             .margin(1)
