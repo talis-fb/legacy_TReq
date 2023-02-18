@@ -2,29 +2,10 @@ use crate::base::actions::Actions;
 use crossterm::event::KeyCode;
 use std::collections::HashMap;
 
-#[derive(PartialEq, Eq, Debug, Clone)]
-pub struct Actionable {
-    pub action: Actions,
+use super::utils::{create_keymap, create_keymap_char, create_sub_keymap_char};
+use super::KeyMap;
 
-    // This is used only if the key has other commands if other keys is pressed
-    // if this box is NOT None, then the command above is ignored
-    pub sub_action: Option<KeyMap>,
-}
-
-pub type KeyMap = HashMap<KeyCode, Actionable>;
-
-
-//
-// What to do...
-// * When go to input/docs/vim mode it should change Keymap in InputHandler
-// and ONLY this
-//
-// The new keymap should overwrite evething to only actions specials of that mode
-//
-// The app will receive all them in the same way. The only change will be in InputHandler
-// with Keymap used. With this, it will send Actions in the same way to App
-
-pub fn default_keymap_factory() -> KeyMap {
+pub fn keymap_factory() -> KeyMap {
     HashMap::from([
         create_keymap_char('?', Actions::AskForHelp),
         create_keymap_char('q', Actions::Quit),
@@ -56,34 +37,4 @@ pub fn default_keymap_factory() -> KeyMap {
             ]),
         ),
     ])
-}
-
-fn create_keymap_char(key: char, action: Actions) -> (KeyCode, Actionable) {
-    (
-        KeyCode::Char(key),
-        Actionable {
-            action,
-            sub_action: None,
-        },
-    )
-}
-
-fn create_sub_keymap_char(key: char, subcommands: KeyMap) -> (KeyCode, Actionable) {
-    (
-        KeyCode::Char(key),
-        Actionable {
-            action: Actions::Null,
-            sub_action: Some(subcommands),
-        },
-    )
-}
-
-fn create_keymap(key_code: KeyCode, action: Actions) -> (KeyCode, Actionable) {
-    (
-        key_code,
-        Actionable {
-            action,
-            sub_action: None,
-        },
-    )
 }

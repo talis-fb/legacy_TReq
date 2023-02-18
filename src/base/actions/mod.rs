@@ -57,4 +57,18 @@ pub enum Actions {
     //
     GrowHorizontalUiRight,
     GrowHorizontalUiLeft,
+
+    // INPUT Mode --------------------
+    TypingChar(char),
+    TypingErase,
+    TypingBreakLine,
+    TypingClearAll,
+    TypingClose,
+    TypingCancel,
+    TypingUp,
+    TypingDown,
+    TypingLeft,
+    TypingRight,
+    TypingBegingLine,
+    TypingEndLine,
 }

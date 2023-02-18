@@ -22,7 +22,7 @@ use app::{App, InputMode};
 mod utils;
 
 mod input;
-use input::keymaps::default_keymap_factory;
+use input::keymaps;
 use input::listener::KeyboardListerner;
 
 mod base;
@@ -63,7 +63,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let (action_queue_sender, action_queue_receiver): (Sender<Actions>, Receiver<Actions>) =
         mpsc::channel();
     let has_clicked_before = Arc::new(AsyncBool::init(true));
-    let commands = default_keymap_factory();
+    let commands = keymaps::normal_mode::keymap_factory();
     let keymap = KeyboardListerner::init(commands);
     let mut input_handler = InputHandler::init(
         keymap,
