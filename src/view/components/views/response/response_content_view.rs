@@ -2,7 +2,9 @@ use crate::view::components::tab_blocked_text::TabBlockText;
 use crate::view::components::Component;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use tui::layout::Rect;
+use serde::{Deserialize, Serialize};
 
+#[derive(Deserialize, Serialize)]
 pub enum StatesResEditionView {
     BodyOpened,
     HeadersOpened,

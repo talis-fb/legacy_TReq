@@ -1,3 +1,4 @@
+use serde::{Serialize, Deserialize};
 use tui::style::Color as ColorTuiRs;
 
 pub enum Size {
@@ -5,7 +6,7 @@ pub enum Size {
     Fixed(u16),
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Color {
     Red,
     Blue,
