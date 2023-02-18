@@ -13,183 +13,77 @@ pub struct Actionable {
 
 pub type KeyMap = HashMap<KeyCode, Actionable>;
 
+
+//
+// What to do...
+// * When go to input/docs/vim mode it should change Keymap in InputHandler
+// and ONLY this
+//
+// The new keymap should overwrite evething to only actions specials of that mode
+//
+// The app will receive all them in the same way. The only change will be in InputHandler
+// with Keymap used. With this, it will send Actions in the same way to App
+
 pub fn default_keymap_factory() -> KeyMap {
     HashMap::from([
-        (
-            KeyCode::Char('?'),
-            Actionable {
-                action: Actions::AskForHelp,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Enter,
-            Actionable {
-                action: Actions::Submit,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Char('q'),
-            Actionable {
-                action: Actions::Quit,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Char('e'),
-            Actionable {
-                action: Actions::Edit,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Char('d'),
-            Actionable {
-                action: Actions::Delete,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Tab,
-            Actionable {
-                action: Actions::Switch,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::BackTab,
-            Actionable {
-                action: Actions::InverseSwitch,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Char('j'),
-            Actionable {
-                action: Actions::Down,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Down,
-            Actionable {
-                action: Actions::Down,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Char('k'),
-            Actionable {
-                action: Actions::Up,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Up,
-            Actionable {
-                action: Actions::Up,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Char('l'),
-            Actionable {
-                action: Actions::Right,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Right,
-            Actionable {
-                action: Actions::Right,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Char('h'),
-            Actionable {
-                action: Actions::Left,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Left,
-            Actionable {
-                action: Actions::Left,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Char('g'),
-            Actionable {
-                action: Actions::Null,
-                sub_action: Some(HashMap::from([
-                    (
-                        KeyCode::Char('g'),
-                        Actionable {
-                            action: Actions::GoToTabList,
-                            sub_action: None,
-                        },
-                    ),
-                    (
-                        KeyCode::Char('t'),
-                        Actionable {
-                            action: Actions::GoToNextTab,
-                            sub_action: None,
-                        },
-                    ),
-                    (
-                        KeyCode::Char('T'),
-                        Actionable {
-                            action: Actions::GoToPreviousTab,
-                            sub_action: None,
-                        },
-                    ),
-                    (
-                        KeyCode::Char('l'),
-                        Actionable {
-                            action: Actions::GrowHorizontalUiRight,
-                            sub_action: None,
-                        },
-                    ),
-                    (
-                        KeyCode::Char('h'),
-                        Actionable {
-                            action: Actions::GrowHorizontalUiLeft,
-                            sub_action: None,
-                        },
-                    ),
-                ])),
-            },
-        ),
-        (
-            KeyCode::Char('G'),
-            Actionable {
-                action: Actions::GoToLogs,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Char('n'),
-            Actionable {
-                action: Actions::New,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Char('s'),
-            Actionable {
-                action: Actions::Save,
-                sub_action: None,
-            },
-        ),
-        (
-            KeyCode::Char('r'),
-            Actionable {
-                action: Actions::ReloadBody,
-                sub_action: None,
-            },
+        create_keymap_char('?', Actions::AskForHelp),
+        create_keymap_char('q', Actions::Quit),
+        create_keymap_char('e', Actions::Edit),
+        create_keymap_char('d', Actions::Delete),
+        create_keymap(KeyCode::Enter, Actions::Submit),
+        create_keymap(KeyCode::Tab, Actions::Switch),
+        create_keymap(KeyCode::BackTab, Actions::InverseSwitch),
+        create_keymap_char('j', Actions::Down),
+        create_keymap_char('k', Actions::Up),
+        create_keymap_char('l', Actions::Right),
+        create_keymap_char('h', Actions::Left),
+        create_keymap(KeyCode::Up, Actions::Up),
+        create_keymap(KeyCode::Down, Actions::Down),
+        create_keymap(KeyCode::Left, Actions::Left),
+        create_keymap(KeyCode::Right, Actions::Right),
+        create_keymap_char('n', Actions::New),
+        create_keymap_char('r', Actions::ReloadBody),
+        create_keymap_char('s', Actions::Save),
+        create_keymap_char('G', Actions::GoToLogs),
+        create_sub_keymap_char(
+            'g',
+            HashMap::from([
+                create_keymap_char('g', Actions::GoToTabList),
+                create_keymap_char('t', Actions::GoToNextTab),
+                create_keymap_char('T', Actions::GoToPreviousTab),
+                create_keymap_char('l', Actions::GrowHorizontalUiLeft),
+                create_keymap_char('h', Actions::GrowHorizontalUiRight),
+            ]),
         ),
     ])
+}
+
+fn create_keymap_char(key: char, action: Actions) -> (KeyCode, Actionable) {
+    (
+        KeyCode::Char(key),
+        Actionable {
+            action,
+            sub_action: None,
+        },
+    )
+}
+
+fn create_sub_keymap_char(key: char, subcommands: KeyMap) -> (KeyCode, Actionable) {
+    (
+        KeyCode::Char(key),
+        Actionable {
+            action: Actions::Null,
+            sub_action: Some(subcommands),
+        },
+    )
+}
+
+fn create_keymap(key_code: KeyCode, action: Actions) -> (KeyCode, Actionable) {
+    (
+        key_code,
+        Actionable {
+            action,
+            sub_action: None,
+        },
+    )
 }

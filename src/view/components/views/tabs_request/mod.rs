@@ -18,7 +18,6 @@ pub struct TabRequestView<'a> {
 
 impl TabRequestView<'_> {
     pub fn prepare_render<'b>(states: &mut ViewStates, store: &'b MainStore) {
-        // states.insert(state_key("Seila"), "Opa".to_string());
         // Does nothing for while
     }
 }

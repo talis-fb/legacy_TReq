@@ -6,7 +6,7 @@ pub struct StateManager {
     default_state: Box<dyn State>,
 
     // Always on
-    // TODO: if some keys conflit with current_state, the global one needs to be ignored
+    // If some keys conflit with current_state, the global one needs to be ignored
     global_state: Box<dyn State>,
 }
 impl StateManager {

@@ -16,7 +16,7 @@ pub struct LogView<'a> {
 
 impl LogView<'_> {
     pub fn prepare_render<'b>(states: &mut ViewStates, store: &'b MainStore) {
-        // states.insert("", v)
+        // Does nothing for while
     }
 }
 

@@ -7,6 +7,8 @@ pub struct ActionsManager {
 }
 impl ActionsManager {
     pub fn get_command_of_action(&self, action: Actions, states: &StateManager) -> Option<Command> {
-        Some(*states.get_command_map().get(&action)?)
+        let commands_map = states.get_command_map();
+        let command = commands_map.get(&action)?;
+        Some(*command)
     }
 }
