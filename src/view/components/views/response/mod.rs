@@ -1,4 +1,7 @@
+use std::collections::HashMap;
+
 use crate::base::states::names::StatesNames;
+use crate::view::ViewStates;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
 use crate::view::style::{Color, Texts};
@@ -13,7 +16,15 @@ pub mod response_status_view;
 pub struct ResponseView<'a> {
     pub area: Rect,
     pub store: &'a MainStore,
+    pub states: &'a ViewStates,
 }
+
+impl ResponseView<'_> {
+    pub fn prepare_render<'b>(states: &mut ViewStates, store: &'b MainStore) {
+        // states.insert("", v)
+    }
+}
+
 impl Component for ResponseView<'_> {
     type Backend = BackendTuiRs;
     fn render(&self, f: &mut Self::Backend) {

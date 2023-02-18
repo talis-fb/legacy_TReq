@@ -1,13 +1,28 @@
 use crate::base::states::names::StatesNames;
 use crate::view::components::tab_list::Tabslist;
 use crate::view::renderer::tui_rs::BackendTuiRs;
+use crate::view::ViewStates;
 use crate::{base::stores::MainStore, view::components::Component};
 use tui::layout::Rect;
+
+static KEY_STATE: &str = "request_view__";
+fn state_key(key: &str) -> String {
+    KEY_STATE.to_string() + key
+}
 
 pub struct TabRequestView<'a> {
     pub area: Rect,
     pub store: &'a MainStore,
+    pub states: &'a ViewStates,
 }
+
+impl TabRequestView<'_> {
+    pub fn prepare_render<'b>(states: &mut ViewStates, store: &'b MainStore) {
+        // states.insert(state_key("Seila"), "Opa".to_string());
+        // Does nothing for while
+    }
+}
+
 impl Component for TabRequestView<'_> {
     type Backend = BackendTuiRs;
     fn render(&self, f: &mut Self::Backend) {

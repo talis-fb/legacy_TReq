@@ -1,6 +1,7 @@
 use crate::app::InputMode;
 
 use crate::base::states::names::StatesNames;
+use crate::view::ViewStates;
 use crate::view::components::doc_reader::DocReader;
 use crate::view::components::input_block::InputTextBlock;
 use crate::view::renderer::tui_rs::BackendTuiRs;
@@ -20,7 +21,18 @@ use crate::view::components::welcome_doc::WelcomeDoc;
 pub struct AppView<'a> {
     pub area: Rect,
     pub store: &'a MainStore,
+    pub states: &'a ViewStates,
 }
+
+impl AppView<'_> {
+    pub fn prepare_render<'b>(states: &mut ViewStates, store: &'b MainStore) {
+        TabRequestView::prepare_render(states, store);
+        LogView::prepare_render(states, store);
+        RequestView::prepare_render(states, store);
+        ResponseView::prepare_render(states, store);
+    }
+}
+
 impl Component for AppView<'_> {
     type Backend = BackendTuiRs;
     fn render(&self, f: &mut Self::Backend) {
@@ -59,27 +71,32 @@ impl Component for AppView<'_> {
         let tablist_requests_view = TabRequestView {
             area: full_screen_layout[0],
             store,
+            states: self.states,
         };
 
         let request_view = RequestView {
             area: content_layout[0],
             store,
+            states: self.states,
         };
 
         let response_view = ResponseView {
             area: content_layout[1],
             store,
+            states: self.states,
         };
 
         // TODO: It should not use the same state of Response, only its area
         let welcome_doc_view = WelcomeDoc {
             area: content_layout[1],
-            marked: store.current_state == StatesNames::ResponseBody || store.current_state == StatesNames::ResponseHeader,
+            marked: store.current_state == StatesNames::ResponseBody
+                || store.current_state == StatesNames::ResponseHeader,
         };
 
         let log_view = LogView {
             area: full_screen_layout[2],
             store,
+            states: self.states,
         };
 
         let popup_component: Option<Box<dyn Component<Backend = BackendTuiRs>>> =
@@ -107,7 +124,7 @@ impl Component for AppView<'_> {
         request_view.render(f);
         log_view.render(f);
 
-        let status = store.get_response().lock().unwrap().status ;
+        let status = store.get_response().lock().unwrap().status;
         let has_been = status != 0;
         if has_been {
             response_view.render(f);

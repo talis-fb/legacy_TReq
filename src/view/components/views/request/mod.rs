@@ -1,5 +1,8 @@
+use std::collections::HashMap;
+
 use crate::base::states::names::StatesNames;
 use crate::base::web::request::METHODS;
+use crate::view::ViewStates;
 use crate::view::components::block_text::BlockText;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
@@ -14,7 +17,15 @@ use super::request::request_edition_view::{RequestEditionView, StatesReqEditionV
 pub struct RequestView<'a> {
     pub area: Rect,
     pub store: &'a MainStore,
+    pub states: &'a ViewStates,
 }
+
+impl RequestView<'_> {
+    pub fn prepare_render<'b>(states: &mut ViewStates, store: &'b MainStore) {
+        // states.insert("", v)
+    }
+}
+
 impl Component for RequestView<'_> {
     type Backend = BackendTuiRs;
     fn render(&self, f: &mut Self::Backend) {
