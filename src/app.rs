@@ -104,8 +104,8 @@ impl App {
         self.get_data_store_mut().input_buffer.value = buffer;
     }
     pub fn exec_input_buffer_command(&mut self) -> Result<(), String> {
-        let command_fn = self.get_data_store_mut().input_buffer.command;
-        command_fn(self)
+        let command_fn = self.get_data_store_mut().input_buffer.command.clone();
+        command_fn.execute(self)
     }
 
     // Manage States ---------------------------

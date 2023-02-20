@@ -72,7 +72,7 @@ impl InputHandler {
 
     pub fn sync_handler_typing(&self, buffer: &mut InputKeyboardBuffer) -> (String, bool) {
         let mut is_finished = false;
-        let mut new_buffer = buffer.clone();
+        let new_buffer = buffer;
 
         if let Event::Key(key) = event::read().unwrap() {
             match key.code {
@@ -93,7 +93,7 @@ impl InputHandler {
             }
         }
 
-        (new_buffer.value, is_finished)
+        (new_buffer.value.clone(), is_finished)
     }
 
     pub fn sync_open_vim(&mut self, buffer: String, uuid: &UUID) -> (String, bool) {
