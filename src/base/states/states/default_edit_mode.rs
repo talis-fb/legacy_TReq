@@ -21,14 +21,12 @@ impl State for DefaultEditMode {
             (Actions::Down, Commands::go_to_tab_section()),
             (Actions::Right, Commands::go_to_response_body_section()),
             (Actions::Left, Commands::go_to_request_body_section()),
-            // Jumps
-            // (Actions::TypingChar(()), Commands::go_to_next_tab()),
         ]);
 
         keymap_factory().values().for_each(|f| {
             let action = f.action;
-            if let Actions::TypingChar(c) = action {
-                maps.insert(action, Commands::go_to_tab_section());
+            if let Actions::TypingChar(ch) = action {
+                maps.insert(action, Commands::type_char_edit_mode(ch));
             };
         });
 

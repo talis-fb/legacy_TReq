@@ -63,8 +63,16 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let (action_queue_sender, action_queue_receiver): (Sender<Actions>, Receiver<Actions>) =
         mpsc::channel();
     let has_clicked_before = Arc::new(AsyncBool::init(true));
+
+    // Keymaps...
+    // Normal Mode
     let commands = keymaps::normal_mode::keymap_factory();
     let keymap = KeyboardListerner::init(commands);
+
+    // Input Mode
+    let commands_input_mode = keymaps::input_mode::keymap_factory();
+    let keymap_input_mode = KeyboardListerner::init(commands_input_mode);
+
     let mut input_handler = InputHandler::init(
         keymap,
         data_store.config.editor.clone(),

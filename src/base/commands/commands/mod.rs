@@ -6,3 +6,4 @@ pub mod submit;
 pub mod tabs;
 pub mod ui;
 pub mod utils;
+pub mod edit_mode;

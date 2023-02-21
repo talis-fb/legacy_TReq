@@ -153,9 +153,9 @@ impl Commands {
                     }
                 }
 
-                app.set_vim_mode_with_command(
+                app.set_input_mode_with_command(
                     Rc::new(Box::new(_S {})),
-                    app.get_data_store().get_request().body.clone(),
+                    app.get_data_store().get_request().url.clone(),
                 );
                 Ok(())
             }

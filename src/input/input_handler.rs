@@ -28,6 +28,11 @@ impl InputHandler {
         }
     }
 
+    pub fn set_keymap(&mut self, keyboard_listener: KeyboardListerner) {
+        let mut listener = self.listener.lock().unwrap();
+        *listener = keyboard_listener;
+    }
+
     pub fn async_handler(
         &self,
         queue: Sender<Actions>,
