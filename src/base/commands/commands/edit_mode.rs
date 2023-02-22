@@ -3,6 +3,7 @@ use std::rc::Rc;
 use crate::app::InputMode;
 use crate::base::commands::CommandTrait;
 use crate::base::doc::DocsFactory;
+use crate::base::states::states::{DefaultState, State};
 use crate::commands::{Command, Commands};
 use crate::App;
 
@@ -47,8 +48,18 @@ impl Commands {
         Rc::new(Box::new(S {}))
     }
 
-    pub fn close_edit_mode() -> Command {
-        todo!()
+    pub fn process_edit_mode() -> Command {
+        struct S;
+
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                app.exec_input_buffer_command()?;
+                Commands::close_edit_mode().execute(app)?;
+                Ok(())
+            }
+        }
+
+        Rc::new(Box::new(S {}))
     }
 
     pub fn cancel_edit_mode() -> Command {
@@ -57,6 +68,24 @@ impl Commands {
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
                 app.get_input_buffer_mut().reset_to_backup();
+
+                Commands::close_edit_mode().execute(app)?;
+
+                Ok(())
+            }
+        }
+
+        Rc::new(Box::new(S {}))
+    }
+
+    pub fn close_edit_mode() -> Command {
+        struct S;
+
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                app.clear_log();
+                app.set_mode(InputMode::Normal);
+                app.set_new_state(DefaultState::init());
                 Ok(())
             }
         }

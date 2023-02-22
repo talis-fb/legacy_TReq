@@ -122,5 +122,7 @@ pub fn keymap_factory() -> KeyMap {
         create_keymap(KeyCode::End, Actions::TypingEndLine),
         create_keymap(KeyCode::Enter, Actions::TypingClose),
         create_keymap(KeyCode::Esc, Actions::TypingCancel),
+        create_keymap(KeyCode::Backspace, Actions::TypingErase),
+        create_keymap(KeyCode::Delete, Actions::TypingErase),
     ])
 }

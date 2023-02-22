@@ -58,6 +58,7 @@ impl InputHandler {
             when_finish.set(true);
         })
     }
+
     pub fn sync_handler_doc_reading(&self, index_to_start: i32) -> (usize, bool) {
         let mut new_index = index_to_start;
         if let Event::Key(key) = event::read().unwrap() {
@@ -73,32 +74,6 @@ impl InputHandler {
         }
 
         ((new_index as usize), false)
-    }
-
-    pub fn sync_handler_typing(&self, buffer: &mut InputKeyboardBuffer) -> (String, bool) {
-        let mut is_finished = false;
-        let new_buffer = buffer;
-
-        if let Event::Key(key) = event::read().unwrap() {
-            match key.code {
-                KeyCode::Enter => {
-                    is_finished = true;
-                }
-                KeyCode::Backspace => {
-                    new_buffer.value.pop();
-                }
-                KeyCode::Char(i) => {
-                    new_buffer.value.push(i);
-                }
-                KeyCode::Esc => {
-                    new_buffer.reset_to_backup();
-                    is_finished = true;
-                }
-                _ => {}
-            }
-        }
-
-        (new_buffer.value.clone(), is_finished)
     }
 
     pub fn sync_open_vim(&mut self, buffer: String, uuid: &UUID) -> (String, bool) {

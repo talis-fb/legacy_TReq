@@ -12,7 +12,7 @@ use std::error::Error;
 use std::sync::Arc;
 
 use base::states::manager::StateManager;
-use base::states::states::{DefaultState, State};
+use base::states::states::{DefaultState, State, DefaultEditMode};
 
 use std::sync::mpsc::{self, Receiver, Sender};
 
@@ -74,7 +74,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let keymap_input_mode = KeyboardListerner::init(commands_input_mode);
 
     let mut input_handler = InputHandler::init(
-        keymap,
+        keymap.clone(),
         data_store.config.editor.clone(),
         data_store.config.edition_files_handler.clone(),
     );
@@ -132,19 +132,40 @@ async fn main() -> Result<(), Box<dyn Error>> {
             }
 
             InputMode::Insert => {
-                let (new_buffer_value, is_finished) =
-                    input_handler.sync_handler_typing(app.get_input_buffer_mut());
+                input_handler.set_keymap(keymap_input_mode.clone());
+                app.set_new_state(DefaultEditMode::init());
 
-                app.set_input_buffer_value(new_buffer_value);
 
-                if is_finished {
-                    app.clear_log();
-                    app.exec_input_buffer_command()?;
-                    app.set_mode(InputMode::Normal);
+                if has_clicked_before.get() {
+                    let task = input_handler
+                        .async_handler(action_queue_sender.clone(), has_clicked_before.clone());
+
+                    async_tasks.push(task);
+                    has_clicked_before.set(false);
+                }
+
+                // Listen queue of user's events to execute --------------------
+                match action_queue_receiver.recv() {
+                    Ok(action_to_exec) => {
+                        // println!("ACTIONNNNNNNN, {:?}", action_to_exec);
+                        let command = app
+                            .get_command_of_action(action_to_exec)
+                            .unwrap_or(Commands::do_nothing());
+
+                        let command_result = CommandHandler::execute(&mut app, command);
+
+                        if let Err(e) = command_result {
+                            app.get_data_store_mut()
+                                .set_log_error(String::from("COMMAND ERROR"), e.to_string())
+                        }
+                    }
+                    Err(_) => {}
                 }
             }
 
             InputMode::Normal => {
+                input_handler.set_keymap(keymap.clone());
+
                 // Init listener of user input if previous one had done --------
                 if has_clicked_before.get() {
                     let task = input_handler
