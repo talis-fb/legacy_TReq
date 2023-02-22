@@ -85,7 +85,8 @@ impl Commands {
             fn execute(&self, app: &mut App) -> Result<(), String> {
                 app.clear_log();
                 app.set_mode(InputMode::Normal);
-                app.set_new_state(DefaultState::init());
+                app.reset_to_last_state();
+
                 Ok(())
             }
         }

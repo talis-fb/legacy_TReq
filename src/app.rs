@@ -118,6 +118,12 @@ impl App {
         Some(())
     }
 
+    pub fn reset_to_last_state(&mut self) -> Option<()> {
+        let state = self.state_manager.as_mut()?.reset_to_last_state();
+        self.get_data_store_mut().current_state = state;
+        Some(())
+    }
+
     // Commands ---------------------
     pub fn get_command_of_action(&mut self, action: Actions) -> Option<Command> {
         let state_manager = self.state_manager.as_ref()?;

@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use super::{
     names::StatesNames,
-    states::{CommandsMap, DefaultState, State, StatesMap},
+    states::{CommandsMap, State, StatesMap},
 };
 
 pub struct StateManager {
@@ -16,7 +16,7 @@ pub struct StateManager {
     // If some keys conflit with current_state, the global one needs to be ignored
     global_state: Rc<Box<dyn State>>,
 
-    last_state: Option<Rc<Box<dyn State>>>,
+    history_states: Vec<StatesNames>,
 }
 impl StateManager {
     pub fn init(default_state: impl State + 'static, global_state: impl State + 'static) -> Self {
@@ -24,7 +24,7 @@ impl StateManager {
             default_state: Rc::new(Box::new(default_state)),
             global_state: Rc::new(Box::new(global_state)),
             current_state: None,
-            last_state: None,
+            history_states: vec![],
 
             states_map: StatesMap::init(),
         }
@@ -35,24 +35,25 @@ impl StateManager {
     }
 
     pub fn set_state(&mut self, new_state: impl State + 'static) {
-        self.last_state = Some(
-            self.current_state
-                .as_ref()
-                .unwrap_or(&self.default_state)
-                .clone(),
-        );
-
-        self.current_state = Some(Rc::new(Box::new(new_state)));
+        self.set_state_name(new_state.get_state_name())
     }
 
     pub fn set_state_name(&mut self, new_state: StatesNames) {
-        self.last_state = Some(
-            self.current_state
-                .as_ref()
-                .unwrap_or(&self.default_state)
-                .clone(),
-        );
-        self.current_state = self.states_map.get(new_state);
+        let current_state_name = self
+            .current_state
+            .as_ref()
+            .unwrap_or(&self.default_state)
+            .get_state_name();
+
+        let last_state_name = self.history_states.last();
+
+        if last_state_name.is_none() || *last_state_name.unwrap() != current_state_name {
+            self.history_states.push(current_state_name);
+        }
+
+        let new_state = self.states_map.get(new_state);
+
+        self.current_state = Some(new_state.unwrap());
     }
 
     pub fn set_state_default(&mut self) {
@@ -67,5 +68,25 @@ impl StateManager {
         global_map.extend(main_map);
 
         global_map
+    }
+
+    pub fn reset_to_last_state(&mut self) -> StatesNames {
+        let current_state = self
+            .current_state
+            .as_ref()
+            .unwrap_or(&self.default_state)
+            .get_state_name();
+
+        let last_state = self
+            .history_states
+            .iter()
+            .rev()
+            .find(|state| **state != current_state)
+            .unwrap();
+
+        let state = *last_state;
+
+        self.set_state_name(state);
+        state
     }
 }
