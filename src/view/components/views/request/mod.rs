@@ -33,6 +33,9 @@ pub struct RequestView<'a> {
 
 impl RequestView<'_> {
     pub fn prepare_render<'b>(states: &mut ViewStates, store: &'b MainStore) {
+        let state_json = states.entry(KEY_STATE.to_string()).or_default();
+        let last_state: Result<State, serde_json::Error> = serde_json::from_str(state_json);
+
         let req = store.get_request();
         let state = State {
             method: req.method,
@@ -51,7 +54,14 @@ impl RequestView<'_> {
             url_block_focus: store.current_state == StatesNames::Url,
             opened: match store.current_state {
                 StatesNames::RequestHeaders => StatesReqEditionView::HeadersOpened,
-                _ => StatesReqEditionView::BodyOpened,
+                StatesNames::RequestBody => StatesReqEditionView::BodyOpened,
+                _ => {
+                    if let Ok(s) = last_state  {
+                        s.opened
+                    } else {
+                        StatesReqEditionView::BodyOpened
+                    }
+                },
             },
         };
 
