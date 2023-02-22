@@ -24,6 +24,7 @@ pub fn keymap_factory() -> KeyMap {
         create_keymap(KeyCode::Right, Actions::Right),
         create_keymap_char('n', Actions::New),
         create_keymap_char('r', Actions::ReloadBody),
+        create_keymap_char('u', Actions::Undo),
         create_keymap_char('s', Actions::Save),
         create_keymap_char('G', Actions::GoToLogs),
         create_sub_keymap_char(

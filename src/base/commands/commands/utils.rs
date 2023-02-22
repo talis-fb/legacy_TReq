@@ -28,6 +28,18 @@ impl Commands {
         Rc::new(Box::new(S {}))
     }
 
+    pub fn undo_state() -> Command {
+        struct S;
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                app.reset_to_last_state();
+                Ok(())
+            }
+        }
+
+        Rc::new(Box::new(S {}))
+    }
+
     pub fn show_help() -> Command {
         struct S;
         impl CommandTrait for S {
