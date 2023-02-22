@@ -119,10 +119,10 @@ impl App {
     }
 
     // Commands ---------------------
-    pub fn get_command_of_action(&self, action: Actions) -> Option<Command> {
+    pub fn get_command_of_action(&mut self, action: Actions) -> Option<Command> {
         let state_manager = self.state_manager.as_ref()?;
         self.action_manager
-            .as_ref()?
+            .as_mut()?
             .get_command_of_action(action, state_manager)
     }
 

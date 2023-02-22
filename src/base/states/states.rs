@@ -2,6 +2,7 @@ use super::names::StatesNames;
 use crate::actions::Actions;
 use crate::commands::Command;
 use std::collections::HashMap;
+use std::rc::Rc;
 
 // Interfaces
 pub type CommandsMap = HashMap<Actions, Command>;
@@ -12,6 +13,41 @@ pub trait State {
     fn init() -> Self
     where
         Self: Sized;
+}
+
+pub struct StatesMap {
+    states: HashMap<StatesNames, Rc<Box<dyn State>>>,
+}
+impl StatesMap {
+    pub fn init() -> Self {
+        let all_states: [Rc<Box<dyn State>>; 11] = [
+            Rc::new(Box::new(LogsState::init())),
+            Rc::new(Box::new(RequestActiveState::init())),
+            Rc::new(Box::new(RequestHeaderActiveState::init())),
+            Rc::new(Box::new(RequestUrlActiveState::init())),
+            Rc::new(Box::new(ResponseBodyActiveState::init())),
+            Rc::new(Box::new(ResponseHeadersState::init())),
+            Rc::new(Box::new(TabActiveState::init())),
+            Rc::new(Box::new(DefaultState::init())),
+            Rc::new(Box::new(EmptyState::init())),
+            Rc::new(Box::new(DefaultEditMode::init())),
+            Rc::new(Box::new(DefaultHelpMode::init())),
+        ];
+
+        let states: HashMap<StatesNames, Rc<Box<dyn State>>> = all_states
+            .into_iter()
+            .map(|value| {
+                let key = value.get_state_name();
+                (key, value)
+            })
+            .collect();
+
+        Self { states }
+    }
+
+    pub fn get(&self, state: StatesNames) -> Option<Rc<Box<dyn State>>> {
+        Some(self.states.get(&state)?.clone())
+    }
 }
 
 // List of all States ------------------

@@ -1,20 +1,32 @@
-use super::states::{CommandsMap, State};
+use std::rc::Rc;
+
+use super::{
+    names::StatesNames,
+    states::{CommandsMap, DefaultState, State, StatesMap},
+};
 
 pub struct StateManager {
+    states_map: StatesMap,
+
     // States
-    current_state: Option<Box<dyn State>>,
-    default_state: Box<dyn State>,
+    current_state: Option<Rc<Box<dyn State>>>,
+    default_state: Rc<Box<dyn State>>,
 
     // Always on
     // If some keys conflit with current_state, the global one needs to be ignored
-    global_state: Box<dyn State>,
+    global_state: Rc<Box<dyn State>>,
+
+    last_state: Option<Rc<Box<dyn State>>>,
 }
 impl StateManager {
     pub fn init(default_state: impl State + 'static, global_state: impl State + 'static) -> Self {
         Self {
-            default_state: Box::new(default_state),
-            global_state: Box::new(global_state),
+            default_state: Rc::new(Box::new(default_state)),
+            global_state: Rc::new(Box::new(global_state)),
             current_state: None,
+            last_state: None,
+
+            states_map: StatesMap::init(),
         }
     }
 
@@ -23,7 +35,24 @@ impl StateManager {
     }
 
     pub fn set_state(&mut self, new_state: impl State + 'static) {
-        self.current_state = Some(Box::new(new_state));
+        self.last_state = Some(
+            self.current_state
+                .as_ref()
+                .unwrap_or(&self.default_state)
+                .clone(),
+        );
+
+        self.current_state = Some(Rc::new(Box::new(new_state)));
+    }
+
+    pub fn set_state_name(&mut self, new_state: StatesNames) {
+        self.last_state = Some(
+            self.current_state
+                .as_ref()
+                .unwrap_or(&self.default_state)
+                .clone(),
+        );
+        self.current_state = self.states_map.get(new_state);
     }
 
     pub fn set_state_default(&mut self) {

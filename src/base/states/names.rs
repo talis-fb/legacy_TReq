@@ -2,6 +2,7 @@
 pub enum StatesNames {
     Default,
     DefaultEditMode,
+    DefaultHelpMode,
     TabList,
     Url,
     RequestHeaders,

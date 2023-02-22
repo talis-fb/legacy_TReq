@@ -9,7 +9,7 @@ pub struct DefaultHelpMode {
 }
 impl State for DefaultHelpMode {
     fn get_state_name(&self) -> StatesNames {
-        StatesNames::DefaultEditMode
+        StatesNames::DefaultHelpMode
     }
     fn get_map(&self) -> &CommandsMap {
         &self.maps
