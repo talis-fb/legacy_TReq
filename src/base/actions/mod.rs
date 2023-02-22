@@ -71,4 +71,7 @@ pub enum Actions {
     TypingRight,
     TypingBegingLine,
     TypingEndLine,
+
+    // HELP Mode --------------------
+    DocExit,
 }

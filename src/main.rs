@@ -12,7 +12,7 @@ use std::error::Error;
 use std::sync::Arc;
 
 use base::states::manager::StateManager;
-use base::states::states::{DefaultState, State, DefaultEditMode};
+use base::states::states::{DefaultState, State, DefaultEditMode, DefaultHelpMode};
 
 use std::sync::mpsc::{self, Receiver, Sender};
 
@@ -73,6 +73,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let commands_input_mode = keymaps::input_mode::keymap_factory();
     let keymap_input_mode = KeyboardListerner::init(commands_input_mode);
 
+    // Help Mode
+    let commands_input_mode = keymaps::docs_mode::keymap_factory();
+    let keymap_doc_mode = KeyboardListerner::init(commands_input_mode);
+
     let mut input_handler = InputHandler::init(
         keymap.clone(),
         data_store.config.editor.clone(),
@@ -103,14 +107,33 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
         match app.get_mode() {
             InputMode::Help => {
-                let doc_reader = app.get_data_store_mut().doc_reader.as_mut().unwrap();
-                let (i, is_finished) =
-                    input_handler.sync_handler_doc_reading(doc_reader.get_position() as i32);
+                input_handler.set_keymap(keymap_doc_mode.clone());
+                app.set_new_state(DefaultHelpMode::init());
 
-                doc_reader.position = i;
 
-                if is_finished {
-                    app.set_mode(InputMode::Normal);
+                if has_clicked_before.get() {
+                    let task = input_handler
+                        .async_handler(action_queue_sender.clone(), has_clicked_before.clone());
+
+                    async_tasks.push(task);
+                    has_clicked_before.set(false);
+                }
+
+                // Listen queue of user's events to execute --------------------
+                match action_queue_receiver.recv() {
+                    Ok(action_to_exec) => {
+                        let command = app
+                            .get_command_of_action(action_to_exec)
+                            .unwrap_or(Commands::do_nothing());
+
+                        let command_result = CommandHandler::execute(&mut app, command);
+
+                        if let Err(e) = command_result {
+                            app.get_data_store_mut()
+                                .set_log_error(String::from("COMMAND ERROR"), e.to_string())
+                        }
+                    }
+                    Err(_) => {}
                 }
             }
 
