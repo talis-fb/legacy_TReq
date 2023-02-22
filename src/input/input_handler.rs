@@ -40,6 +40,7 @@ impl InputHandler {
     ) -> tokio::task::JoinHandle<()> {
         let listener = self.listener.clone();
 
+        // TODO: Close this task when application shutdown
         tokio::task::spawn(async move {
             let mut keymap = listener.lock().unwrap();
 
@@ -52,7 +53,8 @@ impl InputHandler {
 
             let res = queue.send(action);
             if let Err(e) = res {
-                println!("Erro at run command: {:?}", e);
+                println!("Erro at run command: ...");
+                println!("{}", e);
             }
 
             when_finish.set(true);

@@ -12,7 +12,7 @@ use std::error::Error;
 use std::sync::Arc;
 
 use base::states::manager::StateManager;
-use base::states::states::{DefaultState, State, DefaultEditMode, DefaultHelpMode};
+use base::states::states::{DefaultEditMode, DefaultHelpMode, DefaultState, State};
 
 use std::sync::mpsc::{self, Receiver, Sender};
 
@@ -39,7 +39,7 @@ use utils::custom_types::async_bool::AsyncBool;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let state_manager = StateManager::init(DefaultState::init(), DefaultState::init());
-    let action_manager = ActionsManager {};
+    let action_manager = ActionsManager::init();
     let command_handler = CommandHandler {};
 
     // Configurations and Setup of necessary folders
@@ -106,37 +106,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
         view.render(app.get_data_store());
 
         match app.get_mode() {
-            InputMode::Help => {
-                input_handler.set_keymap(keymap_doc_mode.clone());
-                app.set_new_state(DefaultHelpMode::init());
-
-
-                if has_clicked_before.get() {
-                    let task = input_handler
-                        .async_handler(action_queue_sender.clone(), has_clicked_before.clone());
-
-                    async_tasks.push(task);
-                    has_clicked_before.set(false);
-                }
-
-                // Listen queue of user's events to execute --------------------
-                match action_queue_receiver.recv() {
-                    Ok(action_to_exec) => {
-                        let command = app
-                            .get_command_of_action(action_to_exec)
-                            .unwrap_or(Commands::do_nothing());
-
-                        let command_result = CommandHandler::execute(&mut app, command);
-
-                        if let Err(e) = command_result {
-                            app.get_data_store_mut()
-                                .set_log_error(String::from("COMMAND ERROR"), e.to_string())
-                        }
-                    }
-                    Err(_) => {}
-                }
-            }
-
             InputMode::Vim => {
                 view.close();
 
@@ -152,69 +121,48 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     app.exec_input_buffer_command()?;
                     app.set_mode(InputMode::Normal);
                 }
+
+                continue;
+            }
+
+            InputMode::Help => {
+                input_handler.set_keymap(keymap_doc_mode.clone());
+                app.set_new_state(DefaultHelpMode::init());
             }
 
             InputMode::Insert => {
                 input_handler.set_keymap(keymap_input_mode.clone());
                 app.set_new_state(DefaultEditMode::init());
-
-
-                if has_clicked_before.get() {
-                    let task = input_handler
-                        .async_handler(action_queue_sender.clone(), has_clicked_before.clone());
-
-                    async_tasks.push(task);
-                    has_clicked_before.set(false);
-                }
-
-                // Listen queue of user's events to execute --------------------
-                match action_queue_receiver.recv() {
-                    Ok(action_to_exec) => {
-                        // println!("ACTIONNNNNNNN, {:?}", action_to_exec);
-                        let command = app
-                            .get_command_of_action(action_to_exec)
-                            .unwrap_or(Commands::do_nothing());
-
-                        let command_result = CommandHandler::execute(&mut app, command);
-
-                        if let Err(e) = command_result {
-                            app.get_data_store_mut()
-                                .set_log_error(String::from("COMMAND ERROR"), e.to_string())
-                        }
-                    }
-                    Err(_) => {}
-                }
             }
 
             InputMode::Normal => {
                 input_handler.set_keymap(keymap.clone());
+            }
+        }
 
-                // Init listener of user input if previous one had done --------
-                if has_clicked_before.get() {
-                    let task = input_handler
-                        .async_handler(action_queue_sender.clone(), has_clicked_before.clone());
+        if has_clicked_before.get() {
+            let task = input_handler
+                .async_handler(action_queue_sender.clone(), has_clicked_before.clone());
 
-                    async_tasks.push(task);
-                    has_clicked_before.set(false);
-                }
+            async_tasks.push(task);
+            has_clicked_before.set(false);
+        }
 
-                // Listen queue of user's events to execute --------------------
-                match action_queue_receiver.recv() {
-                    Ok(action_to_exec) => {
-                        let command = app
-                            .get_command_of_action(action_to_exec)
-                            .unwrap_or(Commands::do_nothing());
+        // Listen queue of user's events to execute --------------------
+        match action_queue_receiver.recv() {
+            Ok(action_to_exec) => {
+                let command = app
+                    .get_command_of_action(action_to_exec)
+                    .unwrap_or(Commands::do_nothing());
 
-                        let command_result = CommandHandler::execute(&mut app, command);
+                let command_result = CommandHandler::execute(&mut app, command);
 
-                        if let Err(e) = command_result {
-                            app.get_data_store_mut()
-                                .set_log_error(String::from("COMMAND ERROR"), e.to_string())
-                        }
-                    }
-                    Err(_) => {}
+                if let Err(e) = command_result {
+                    app.get_data_store_mut()
+                        .set_log_error(String::from("COMMAND ERROR"), e.to_string())
                 }
             }
+            Err(_) => {}
         }
     }
 
