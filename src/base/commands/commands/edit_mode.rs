@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use std::rc::Rc;
 
 use crate::app::InputMode;
@@ -26,7 +27,7 @@ impl Commands {
             }
         }
 
-        Rc::new(Box::new(S { char: c }))
+        Arc::new(Box::new(S { char: c }))
     }
 
     pub fn erase_last_char_edit_mode() -> Command {
@@ -45,7 +46,7 @@ impl Commands {
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
 
     pub fn process_edit_mode() -> Command {
@@ -59,7 +60,7 @@ impl Commands {
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
 
     pub fn cancel_edit_mode() -> Command {
@@ -75,7 +76,7 @@ impl Commands {
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
 
     pub fn close_edit_mode() -> Command {
@@ -91,6 +92,6 @@ impl Commands {
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
 }

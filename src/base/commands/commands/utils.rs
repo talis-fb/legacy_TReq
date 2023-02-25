@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use std::rc::Rc;
 
 use crate::app::InputMode;
@@ -14,7 +15,7 @@ impl Commands {
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
 
     pub fn err() -> Command {
@@ -25,7 +26,7 @@ impl Commands {
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
 
     pub fn undo_state() -> Command {
@@ -37,7 +38,7 @@ impl Commands {
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
 
     pub fn show_help() -> Command {
@@ -50,7 +51,7 @@ impl Commands {
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
 
     pub fn quit() -> Command {
@@ -62,6 +63,6 @@ impl Commands {
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
 }

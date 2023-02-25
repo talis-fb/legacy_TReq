@@ -3,6 +3,7 @@ use crate::base::web::request::METHODS;
 use crate::commands::{Command, Commands};
 use crate::App;
 use std::collections::HashMap;
+use std::sync::Arc;
 use std::rc::Rc;
 
 impl Commands {
@@ -25,7 +26,7 @@ impl Commands {
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
     pub fn switch_request_options() -> Command {
         struct S;
@@ -35,7 +36,7 @@ impl Commands {
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
     pub fn edit_request_body_vim() -> Command {
         struct S;
@@ -56,14 +57,14 @@ impl Commands {
                 }
 
                 app.set_vim_mode_with_command(
-                    Rc::new(Box::new(_S {})),
+                    Arc::new(Box::new(_S {})),
                     app.get_data_store().get_request().body.clone(),
                 );
                 Ok(())
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
 
     pub fn edit_request_headers_vim() -> Command {
@@ -100,12 +101,12 @@ impl Commands {
                     }
                 }
 
-                app.set_vim_mode_with_command(Rc::new(Box::new(_S {})), initial_headers_as_str);
+                app.set_vim_mode_with_command(Arc::new(Box::new(_S {})), initial_headers_as_str);
                 Ok(())
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
     pub fn switch_request_method() -> Command {
         struct S;
@@ -133,7 +134,7 @@ impl Commands {
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
     pub fn edit_request_url() -> Command {
         struct S;
@@ -154,14 +155,14 @@ impl Commands {
                 }
 
                 app.set_input_mode_with_command(
-                    Rc::new(Box::new(_S {})),
+                    Arc::new(Box::new(_S {})),
                     app.get_data_store().get_request().url.clone(),
                 );
                 Ok(())
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
     pub fn restart_body_of_file() -> Command {
         struct S;
@@ -182,6 +183,6 @@ impl Commands {
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
 }

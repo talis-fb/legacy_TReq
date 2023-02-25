@@ -40,7 +40,7 @@ use utils::custom_types::async_bool::AsyncBool;
 async fn main() -> Result<(), Box<dyn Error>> {
     let state_manager = StateManager::init(DefaultState::init(), DefaultState::init());
     let action_manager = ActionsManager::init();
-    let command_handler = CommandHandler {};
+    let mut command_handler = CommandHandler::init();
 
     // Configurations and Setup of necessary folders
     ConfigManager::setup_env().expect("Error creating folders .local/share/treq. If error persist create it with mkdir $HOME/.local/share/treq");
@@ -90,13 +90,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut app = App::default();
     app.set_state_manager(state_manager);
     app.set_action_manager(action_manager);
-    app.set_command_handler(command_handler);
     app.set_web_client(web_client);
     app.set_data_store(data_store);
     app.set_renderer(action_queue_sender.clone());
 
     if !already_opened {
-        CommandHandler::execute(&mut app, Commands::open_welcome_screen());
+        // CommandHandler::execute(&mut app, Commands::open_welcome_screen());
+        // CommandHandler::execute(&mut app, Commands::open_welcome_screen());
+        command_handler.add(Commands::open_welcome_screen());
+        command_handler.run(&mut app);
     }
 
     // Store jobs running in tokio::spawn to abort them in the end

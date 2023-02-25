@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use std::rc::Rc;
 
 use crate::base::commands::CommandTrait;
@@ -20,12 +21,12 @@ impl Commands {
                     }
                 }
 
-                app.set_vim_mode_with_command(Rc::new(Box::new(_S {})), response.body);
+                app.set_vim_mode_with_command(Arc::new(Box::new(_S {})), response.body);
 
                 Ok(())
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
 }

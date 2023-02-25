@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use std::rc::Rc;
 
 use crate::base::commands::CommandTrait;
@@ -19,7 +20,7 @@ impl Commands {
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
 
     pub fn grow_left_ui() -> Command {
@@ -36,6 +37,6 @@ impl Commands {
             }
         }
 
-        Rc::new(Box::new(S {}))
+        Arc::new(Box::new(S {}))
     }
 }
