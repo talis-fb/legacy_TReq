@@ -157,15 +157,21 @@ impl Tui<Rect> for BackendTuiRs {
             .map(|s| Spans::from(vec![Span::from(s.to_string())]))
             .collect();
 
-        let tabs = Tabs::new(tabs_spans)
-            .block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .border_type(BorderType::Rounded)
-                    .title("Tabs"),
-            )
-            .select(current)
+        let body_block = Block::default()
+            .borders(Borders::ALL)
+            .title("Tabs")
+            .title_alignment(Alignment::Left)
             .style(Style::default().fg(ColorTuiRs::LightYellow))
+            .border_type(BorderType::Rounded);
+
+        let area_tab = Layout::default()
+            .margin(1)
+            .constraints([ Constraint::Percentage(100) ])
+            .split(area);
+
+        let tabs = Tabs::new(tabs_spans)
+            .style(Style::default().fg(Color::White.to_tuirs()))
+            .select(current)
             .highlight_style(
                 Style::default()
                     .add_modifier(Modifier::BOLD)
@@ -174,7 +180,8 @@ impl Tui<Rect> for BackendTuiRs {
             );
 
         let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
-            f.render_widget(tabs.clone(), area)
+            f.render_widget(body_block.clone(), area);
+            f.render_widget(tabs.clone(), area_tab[0])
         };
 
         self.queue_render.push(Box::new(closure));

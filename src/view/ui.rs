@@ -3,13 +3,16 @@ use crate::{base::stores::MainStore, config::configurations::view::ViewConfig};
 use crossterm::{
     event::DisableMouseCapture,
     execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+    terminal::{
+        disable_raw_mode, enable_raw_mode, Clear, ClearType, EnterAlternateScreen,
+        LeaveAlternateScreen,
+    },
 };
 use std::{collections::HashMap, io};
 use tui::{backend::CrosstermBackend, Terminal};
 
-use super::{components::views::app::AppView, ViewStates};
 use super::components::Component;
+use super::{components::views::app::AppView, ViewStates};
 
 use super::renderer::tui_rs::BackendTuiRs;
 
@@ -63,8 +66,6 @@ impl UI {
         };
 
         app_view.render(&mut self.backend);
-
-
 
         self.backend.draw_all();
     }
