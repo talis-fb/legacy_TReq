@@ -1,6 +1,9 @@
 use crossterm::event::{self, Event, KeyCode};
 use std::rc::Rc;
-use std::sync::{mpsc::Sender, Arc, Mutex};
+use std::sync::{
+    mpsc::{self, Receiver, Sender},
+    Arc, Mutex,
+};
 
 use crate::base::os::file_edition_handler::FileEditionHandler;
 use crate::config::configurations::external_editor::ExternalEditor;
@@ -33,6 +36,44 @@ impl InputHandler {
         *listener = keyboard_listener;
     }
 
+    pub fn async_handler_loop(
+        &self,
+        queue: Sender<Actions>,
+    ) -> (tokio::task::JoinHandle<()>, Sender<()>) {
+        let listener = self.listener.clone();
+
+        let (finished_sender, finished_listener): (Sender<()>, Receiver<()>) = mpsc::channel();
+
+        // TODO: Close this task when application shutdown
+        let task = tokio::task::spawn(async move {
+
+            let action_default = Actions::Null;
+
+            // log::info!("-b READ");
+
+            while let Err(_) = finished_listener.try_recv()  {
+                if let Event::Key(key) = event::read().unwrap() {
+                    // log::info!("-m READ");
+
+                    let mut keymap = listener.lock().unwrap();
+                    let action = keymap.get_command(key.code).unwrap_or(action_default);
+
+                    let res = queue.send(action);
+                    // log::info!("-send READ");
+
+                    if let Err(e) = res {
+                        println!("Erro at run command: ...");
+                        println!("{}", e);
+                    }
+                }
+            }
+
+            // log::info!("ACABOUUUUUUUUUUU READ");
+        });
+
+        (task, finished_sender)
+    }
+
     pub fn async_handler(
         &self,
         queue: Sender<Actions>,
@@ -42,7 +83,6 @@ impl InputHandler {
 
         // TODO: Close this task when application shutdown
         tokio::task::spawn(async move {
-
             let action_default = Actions::Null;
             let mut action = action_default;
 

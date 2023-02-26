@@ -41,7 +41,6 @@ use utils::custom_types::async_bool::AsyncBool;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-
     logger::init_logger();
 
     let state_manager = StateManager::init(DefaultState::init(), DefaultState::init());
@@ -102,11 +101,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     if !already_opened {
         command_handler.add(Commands::open_welcome_screen());
-        command_handler.run(&mut app);
+        command_handler.run(&mut app).unwrap();
     }
 
-    // Store jobs running in tokio::spawn to abort them in the end
-    let mut async_tasks = vec![];
+    let mut handle_keymap = input_handler.async_handler_loop(action_queue_sender.clone());
 
     while !app.is_finished {
         view.render(app.get_data_store());
@@ -114,6 +112,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
         match app.get_mode() {
             InputMode::Vim => {
+                handle_keymap.1.send(()).unwrap();
+                handle_keymap.0.abort();
+
                 view.close();
 
                 let (new_buffer, is_finished) = input_handler.sync_open_vim(
@@ -127,6 +128,16 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     app.clear_log();
                     app.exec_input_buffer_command()?;
                     app.set_mode(InputMode::Normal);
+                    handle_keymap = input_handler.async_handler_loop(action_queue_sender.clone());
+
+                    // Even closing UI, event::read() returns some events
+                    // after opened Editor
+                    // This ignores all these events to don't execute nothing
+                    while let Ok(_) = action_queue_receiver.try_recv() {
+                        // Do nothing, only consumes the queue
+                        log::info!("Clear queue");
+                    }
+
                 }
 
                 continue;
@@ -147,21 +158,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             }
         }
 
-        // log::info!("Antes do has_clicked");
-        if has_clicked_before.get() {
-
-            // log::info!("Dentro do has_clicked");
-            let task = input_handler
-                .async_handler(action_queue_sender.clone(), has_clicked_before.clone());
-
-            async_tasks.push(task);
-            has_clicked_before.set(false);
-            // log::info!("Fim do has_clicked");
-        }
-
         // Listen queue of user's events to execute --------------------
-        // println!("AAA");
-        // std::thread::sleep(std::time::Duration::from_millis(700));
         log::info!("Wainting action....");
         match action_queue_receiver.recv() {
             Ok(action_to_exec) => {
@@ -184,9 +181,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
                         .set_log_error(String::from("COMMAND ERROR"), e.to_string())
                 }
             }
-            Err(_) => {
-                println!("ERUUUUUUUUUUUUUUUUUUUUUU");
+            Err(err) => {
                 log::error!("Action ERROR");
+                log::error!("{}", err);
                 std::thread::sleep(std::time::Duration::from_millis(5000));
             }
         }
@@ -196,9 +193,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     view.close();
 
-    for task in async_tasks {
-        task.abort();
-    }
+    // for task in async_tasks {
+    //     task.abort();
+    // }
+
+    handle_keymap.1.send(()).unwrap();
 
     Ok(())
 }
