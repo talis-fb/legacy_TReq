@@ -42,12 +42,12 @@ impl InputHandler {
 
         // TODO: Close this task when application shutdown
         tokio::task::spawn(async move {
-            let mut keymap = listener.lock().unwrap();
 
             let action_default = Actions::Null;
             let mut action = action_default;
 
             if let Event::Key(key) = event::read().unwrap() {
+                let mut keymap = listener.lock().unwrap();
                 action = keymap.get_command(key.code).unwrap_or(action_default);
             }
 

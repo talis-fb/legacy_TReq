@@ -95,8 +95,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.set_renderer(action_queue_sender.clone());
 
     if !already_opened {
-        // CommandHandler::execute(&mut app, Commands::open_welcome_screen());
-        // CommandHandler::execute(&mut app, Commands::open_welcome_screen());
         command_handler.add(Commands::open_welcome_screen());
         command_handler.run(&mut app);
     }
@@ -157,7 +155,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     .get_command_of_action(action_to_exec)
                     .unwrap_or(Commands::do_nothing());
 
-                let command_result = CommandHandler::execute(&mut app, command);
+                // Add Command to queue
+                command_handler.add(command);
+
+                // exec it
+                let command_result = command_handler.run(&mut app);
 
                 if let Err(e) = command_result {
                     app.get_data_store_mut()
