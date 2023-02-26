@@ -74,51 +74,7 @@ impl InputHandler {
         (task, finished_sender)
     }
 
-    pub fn async_handler(
-        &self,
-        queue: Sender<Actions>,
-        when_finish: Arc<AsyncBool>,
-    ) -> tokio::task::JoinHandle<()> {
-        let listener = self.listener.clone();
-
-        // TODO: Close this task when application shutdown
-        tokio::task::spawn(async move {
-            let action_default = Actions::Null;
-            let mut action = action_default;
-
-            if let Event::Key(key) = event::read().unwrap() {
-                let mut keymap = listener.lock().unwrap();
-                action = keymap.get_command(key.code).unwrap_or(action_default);
-            }
-
-            let res = queue.send(action);
-            if let Err(e) = res {
-                println!("Erro at run command: ...");
-                println!("{}", e);
-            }
-
-            when_finish.set(true);
-        })
-    }
-
-    pub fn sync_handler_doc_reading(&self, index_to_start: i32) -> (usize, bool) {
-        let mut new_index = index_to_start;
-        if let Event::Key(key) = event::read().unwrap() {
-            new_index = match key.code {
-                KeyCode::Char('k') | KeyCode::Up => index_to_start - 1,
-                KeyCode::Char('j') | KeyCode::Down => index_to_start + 1,
-                _ => return (0, true),
-            }
-        }
-
-        if new_index < 0 {
-            new_index = 0
-        }
-
-        ((new_index as usize), false)
-    }
-
-    pub fn sync_open_vim(&mut self, buffer: String, uuid: &UUID) -> (String, bool) {
+    pub fn sync_open_vim(&mut self, buffer: String, uuid: &UUID) -> String  {
         self.files
             .lock()
             .unwrap()
@@ -138,6 +94,6 @@ impl InputHandler {
 
         let content = std::fs::read_to_string(file_path).unwrap();
 
-        (content, true)
+        content
     }
 }

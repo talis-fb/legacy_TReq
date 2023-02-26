@@ -30,21 +30,15 @@ impl CommandHandler {
     }
 
     pub fn add(&mut self, command: Command) {
-        log::info!("Added command");
-
+        log::info!("Added command to queue");
         self.sender_commands.send(command).unwrap();
     }
 
     pub fn run(&mut self, app: &mut App) -> Result<(), String> {
-        log::info!("Init runned");
-
-        let mut i = 0;
+        log::info!("Start to run a commad");
         while let Ok(command_to_exec) = self.listener_commands.try_recv() {
             command_to_exec.execute(app).unwrap();
-
-            log::info!("command {}", i);
-            i += 1;
-
+            log::info!("    Command ran");
         }
         Ok(())
     }

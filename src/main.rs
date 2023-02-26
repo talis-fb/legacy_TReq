@@ -35,7 +35,6 @@ mod config;
 
 mod logger;
 
-
 use input::input_handler::InputHandler;
 use utils::custom_types::async_bool::AsyncBool;
 
@@ -104,40 +103,40 @@ async fn main() -> Result<(), Box<dyn Error>> {
         command_handler.run(&mut app).unwrap();
     }
 
-    let mut handle_keymap = input_handler.async_handler_loop(action_queue_sender.clone());
+    let handle_keymap = input_handler.async_handler_loop(action_queue_sender.clone());
+    let (mut task_input_listener, mut finish_sender_input_listener) = handle_keymap;
 
     while !app.is_finished {
         view.render(app.get_data_store());
-        log::info!("\n\n ---- begin -----");
 
         match app.get_mode() {
             InputMode::Vim => {
-                handle_keymap.1.send(()).unwrap();
-                handle_keymap.0.abort();
-
+                // Closes UI and Input listener
+                finish_sender_input_listener.send(()).unwrap();
+                task_input_listener.abort();
                 view.close();
 
-                let (new_buffer, is_finished) = input_handler.sync_open_vim(
+                // Get result and save in app
+                let buffer = input_handler.sync_open_vim(
                     app.get_input_buffer_value(),
                     app.get_data_store().get_request_uuid(),
                 );
-                app.set_input_buffer_value(new_buffer);
+                app.set_input_buffer_value(buffer);
 
-                if is_finished {
-                    view = UI::init();
-                    app.clear_log();
-                    app.exec_input_buffer_command()?;
-                    app.set_mode(InputMode::Normal);
-                    handle_keymap = input_handler.async_handler_loop(action_queue_sender.clone());
+                // Restart and set Buffer
+                view = UI::init();
+                app.clear_log();
+                app.exec_input_buffer_command()?;
+                app.set_mode(InputMode::Normal);
+                let handle_keymap = input_handler.async_handler_loop(action_queue_sender.clone());
+                (task_input_listener, finish_sender_input_listener) = handle_keymap;
 
-                    // Even closing UI, event::read() returns some events
-                    // after opened Editor
-                    // This ignores all these events to don't execute nothing
-                    while let Ok(_) = action_queue_receiver.try_recv() {
-                        // Do nothing, only consumes the queue
-                        log::info!("Clear queue");
-                    }
-
+                // Even closing UI, event::read() returns some events
+                // after opened Editor
+                // This ignores all these events to don't execute nothing
+                while let Ok(_) = action_queue_receiver.try_recv() {
+                    // Do nothing, only consumes the queue
+                    log::info!("Clear queue");
                 }
 
                 continue;
@@ -162,8 +161,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
         log::info!("Wainting action....");
         match action_queue_receiver.recv() {
             Ok(action_to_exec) => {
-
-
                 log::info!("Action {:?}", action_to_exec);
 
                 let command = app
@@ -187,17 +184,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 std::thread::sleep(std::time::Duration::from_millis(5000));
             }
         }
-
-            log::info!(" ---- end -----");
     }
 
     view.close();
 
-    // for task in async_tasks {
-    //     task.abort();
-    // }
-
-    handle_keymap.1.send(()).unwrap();
+    finish_sender_input_listener.send(()).unwrap();
 
     Ok(())
 }
