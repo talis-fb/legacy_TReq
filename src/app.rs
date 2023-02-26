@@ -137,12 +137,16 @@ impl App {
         let renderer = self.renderer.as_ref().unwrap().clone();
 
         tokio::task::spawn(async move {
+            log::info!(" ** INIT SUBMIT");
             let new_response = client.submit((*request).clone()).await;
 
             let mut data = response_data_store.lock().unwrap();
 
             *data = new_response.unwrap_or_else(Response::default_internal_error);
+
+            // ERROR HERE
             renderer.send(Actions::Null).unwrap();
+            log::info!(" ** END SUBMIT");
         });
     }
 

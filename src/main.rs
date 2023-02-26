@@ -33,11 +33,17 @@ use view::ui::UI;
 
 mod config;
 
+mod logger;
+
+
 use input::input_handler::InputHandler;
 use utils::custom_types::async_bool::AsyncBool;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+
+    logger::init_logger();
+
     let state_manager = StateManager::init(DefaultState::init(), DefaultState::init());
     let action_manager = ActionsManager::init();
     let mut command_handler = CommandHandler::init();
@@ -104,6 +110,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     while !app.is_finished {
         view.render(app.get_data_store());
+        log::info!("\n\n ---- begin -----");
 
         match app.get_mode() {
             InputMode::Vim => {
@@ -140,17 +147,28 @@ async fn main() -> Result<(), Box<dyn Error>> {
             }
         }
 
+        // log::info!("Antes do has_clicked");
         if has_clicked_before.get() {
+
+            // log::info!("Dentro do has_clicked");
             let task = input_handler
                 .async_handler(action_queue_sender.clone(), has_clicked_before.clone());
 
             async_tasks.push(task);
             has_clicked_before.set(false);
+            // log::info!("Fim do has_clicked");
         }
 
         // Listen queue of user's events to execute --------------------
+        // println!("AAA");
+        // std::thread::sleep(std::time::Duration::from_millis(700));
+        log::info!("Wainting action....");
         match action_queue_receiver.recv() {
             Ok(action_to_exec) => {
+
+
+                log::info!("Action {:?}", action_to_exec);
+
                 let command = app
                     .get_command_of_action(action_to_exec)
                     .unwrap_or(Commands::do_nothing());
@@ -166,8 +184,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
                         .set_log_error(String::from("COMMAND ERROR"), e.to_string())
                 }
             }
-            Err(_) => {}
+            Err(_) => {
+                println!("ERUUUUUUUUUUUUUUUUUUUUUU");
+                log::error!("Action ERROR");
+                std::thread::sleep(std::time::Duration::from_millis(5000));
+            }
         }
+
+            log::info!(" ---- end -----");
     }
 
     view.close();
