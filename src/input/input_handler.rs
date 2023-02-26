@@ -1,16 +1,16 @@
-use crossterm::event::{self, Event, KeyCode};
+use crossterm::event::{self, Event};
 use std::rc::Rc;
 use std::sync::{
     mpsc::{self, Receiver, Sender},
     Arc, Mutex,
 };
 
+use crate::base::actions::Actions;
 use crate::base::os::file_edition_handler::FileEditionHandler;
 use crate::config::configurations::external_editor::ExternalEditor;
 use crate::utils::custom_types::uuid::UUID;
-use crate::{base::actions::Actions, utils::custom_types::async_bool::AsyncBool};
 
-use super::{buffer::InputKeyboardBuffer, listener::KeyboardListerner};
+use super::listener::KeyboardListerner;
 use std::process::{Command as OSCommand, Stdio};
 
 pub struct InputHandler {
@@ -46,12 +46,11 @@ impl InputHandler {
 
         // TODO: Close this task when application shutdown
         let task = tokio::task::spawn(async move {
-
             let action_default = Actions::Null;
 
             // log::info!("-b READ");
 
-            while let Err(_) = finished_listener.try_recv()  {
+            while finished_listener.try_recv().is_err() {
                 if let Event::Key(key) = event::read().unwrap() {
                     // log::info!("-m READ");
 
@@ -74,7 +73,7 @@ impl InputHandler {
         (task, finished_sender)
     }
 
-    pub fn sync_open_vim(&mut self, buffer: String, uuid: &UUID) -> String  {
+    pub fn sync_open_vim(&mut self, buffer: String, uuid: &UUID) -> String {
         self.files
             .lock()
             .unwrap()
@@ -92,8 +91,6 @@ impl InputHandler {
 
         let status = child.wait().expect("failed to wait on child");
 
-        let content = std::fs::read_to_string(file_path).unwrap();
-
-        content
+        std::fs::read_to_string(file_path).unwrap()
     }
 }

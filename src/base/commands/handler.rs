@@ -1,7 +1,7 @@
-use std::{sync::{
+use std::sync::{
     mpsc::{self, Receiver, Sender},
-    Arc, Mutex,
-}, time::Duration};
+    Arc,
+};
 
 use crate::app::App;
 

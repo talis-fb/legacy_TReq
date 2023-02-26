@@ -1,5 +1,4 @@
 use std::sync::Arc;
-use std::rc::Rc;
 
 use crate::base::commands::CommandTrait;
 use crate::base::web::request::Request;
@@ -64,7 +63,7 @@ impl Commands {
 
                 app.set_input_mode_with_command(
                     Arc::new(Box::new(_S {})),
-                    app.get_data_store().get_request().name.clone()
+                    app.get_data_store().get_request().name.clone(),
                 );
                 Ok(())
             }

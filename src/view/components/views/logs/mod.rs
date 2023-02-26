@@ -1,8 +1,8 @@
 use crate::base::logs::LogType;
-use crate::view::ViewStates;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
 use crate::view::style::{Color, Style, Text, Texts};
+use crate::view::ViewStates;
 use crate::{base::stores::MainStore, view::components::Component};
 use tui::layout::{Constraint, Direction, Layout, Rect};
 

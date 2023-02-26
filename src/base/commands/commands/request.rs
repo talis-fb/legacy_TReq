@@ -4,7 +4,6 @@ use crate::commands::{Command, Commands};
 use crate::App;
 use std::collections::HashMap;
 use std::sync::Arc;
-use std::rc::Rc;
 
 impl Commands {
     pub fn save_request() -> Command {

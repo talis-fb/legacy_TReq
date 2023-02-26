@@ -3,10 +3,7 @@ use crate::{base::stores::MainStore, config::configurations::view::ViewConfig};
 use crossterm::{
     event::DisableMouseCapture,
     execute,
-    terminal::{
-        disable_raw_mode, enable_raw_mode, Clear, ClearType, EnterAlternateScreen,
-        LeaveAlternateScreen,
-    },
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use std::{collections::HashMap, io};
 use tui::{backend::CrosstermBackend, Terminal};

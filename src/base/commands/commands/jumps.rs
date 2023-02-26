@@ -3,7 +3,6 @@ use crate::base::states::states::{self, State};
 use crate::commands::{Command, Commands};
 use crate::App;
 use std::sync::Arc;
-use std::rc::Rc;
 
 impl Commands {
     pub fn go_to_tab_section() -> Command {

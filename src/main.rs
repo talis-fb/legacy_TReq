@@ -134,7 +134,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 // Even closing UI, event::read() returns some events
                 // after opened Editor
                 // This ignores all these events to don't execute nothing
-                while let Ok(_) = action_queue_receiver.try_recv() {
+                while action_queue_receiver.try_recv().is_ok() {
                     // Do nothing, only consumes the queue
                     log::info!("Clear queue");
                 }

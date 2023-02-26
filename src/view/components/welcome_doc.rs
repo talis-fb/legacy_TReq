@@ -56,7 +56,9 @@ impl Component for WelcomeDoc {
             Texts::from_vec_text(vec![
                 Text::from_str("Focus on URL section and press the key "),
                 Text::from_str_styled("[e]", Style::from_color(Color::Blue)),
-                Text::from_str(", a little pop up to set up text will appear. Set the URL and press "),
+                Text::from_str(
+                    ", a little pop up to set up text will appear. Set the URL and press ",
+                ),
                 Text::from_str_styled("[ENTER]", Style::from_color(Color::Blue)),
                 Text::from_str(" to confirm."),
             ]),

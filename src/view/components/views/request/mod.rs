@@ -56,12 +56,12 @@ impl RequestView<'_> {
                 StatesNames::RequestHeaders => StatesReqEditionView::HeadersOpened,
                 StatesNames::RequestBody => StatesReqEditionView::BodyOpened,
                 _ => {
-                    if let Ok(s) = last_state  {
+                    if let Ok(s) = last_state {
                         s.opened
                     } else {
                         StatesReqEditionView::BodyOpened
                     }
-                },
+                }
             },
         };
 
@@ -76,7 +76,7 @@ impl Component for RequestView<'_> {
     type Backend = BackendTuiRs;
     fn render(&self, f: &mut Self::Backend) {
         let request = self.store.get_request();
-        let state: State = serde_json::from_str(&self.states.get(KEY_STATE).unwrap()).unwrap();
+        let state: State = serde_json::from_str(self.states.get(KEY_STATE).unwrap()).unwrap();
 
         let request_layout = Layout::default()
             .direction(Direction::Vertical)

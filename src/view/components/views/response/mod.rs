@@ -74,7 +74,7 @@ impl Component for ResponseView<'_> {
         let response_arc = self.store.get_response();
         let response = response_arc.lock().unwrap();
 
-        let state: State = serde_json::from_str(&self.states.get(KEY_STATE).unwrap()).unwrap();
+        let state: State = serde_json::from_str(self.states.get(KEY_STATE).unwrap()).unwrap();
 
         let response_layout = Layout::default()
             .direction(Direction::Vertical)

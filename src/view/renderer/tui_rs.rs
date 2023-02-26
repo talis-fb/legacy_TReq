@@ -166,7 +166,7 @@ impl Tui<Rect> for BackendTuiRs {
 
         let area_tab = Layout::default()
             .margin(1)
-            .constraints([ Constraint::Percentage(100) ])
+            .constraints([Constraint::Percentage(100)])
             .split(area);
 
         let tabs = Tabs::new(tabs_spans)

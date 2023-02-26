@@ -1,10 +1,8 @@
 use std::sync::Arc;
-use std::rc::Rc;
 
 use crate::app::InputMode;
 use crate::base::commands::CommandTrait;
-use crate::base::doc::DocsFactory;
-use crate::base::states::states::{DefaultState, State};
+
 use crate::commands::{Command, Commands};
 use crate::App;
 

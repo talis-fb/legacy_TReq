@@ -1,5 +1,4 @@
 use std::sync::Arc;
-use std::rc::Rc;
 
 use crate::app::InputMode;
 use crate::base::commands::CommandTrait;

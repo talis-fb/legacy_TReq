@@ -1,10 +1,10 @@
 use crate::app::InputMode;
 
 use crate::base::states::names::StatesNames;
-use crate::view::ViewStates;
 use crate::view::components::doc_reader::DocReader;
 use crate::view::components::input_block::InputTextBlock;
 use crate::view::renderer::tui_rs::BackendTuiRs;
+use crate::view::ViewStates;
 
 use crate::view::style::Size;
 use crate::{base::stores::MainStore, view::components::Component};
