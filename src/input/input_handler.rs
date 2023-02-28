@@ -4,6 +4,7 @@ use std::sync::{
     mpsc::{self, Receiver, Sender},
     Arc, Mutex,
 };
+use std::time::Duration;
 
 use crate::base::actions::Actions;
 use crate::base::os::file_edition_handler::FileEditionHandler;
@@ -51,18 +52,20 @@ impl InputHandler {
             // log::info!("-b READ");
 
             while finished_listener.try_recv().is_err() {
-                if let Event::Key(key) = event::read().unwrap() {
-                    // log::info!("-m READ");
+                if event::poll(Duration::from_millis(100)).unwrap() {
+                    if let Event::Key(key) = event::read().unwrap() {
+                        // log::info!("-m READ");
 
-                    let mut keymap = listener.lock().unwrap();
-                    let action = keymap.get_command(key.code).unwrap_or(action_default);
+                        let mut keymap = listener.lock().unwrap();
+                        let action = keymap.get_command(key.code).unwrap_or(action_default);
 
-                    let res = queue.send(action);
-                    // log::info!("-send READ");
+                        let res = queue.send(action);
+                        // log::info!("-send READ");
 
-                    if let Err(e) = res {
-                        println!("Erro at run command: ...");
-                        println!("{}", e);
+                        if let Err(e) = res {
+                            println!("Erro at run command: ...");
+                            println!("{}", e);
+                        }
                     }
                 }
             }
