@@ -5,7 +5,7 @@ use crate::app::App;
 #[derive(Clone, Copy)]
 pub enum CommandType {
     Sync,
-    Async
+    Async,
 }
 
 pub trait CommandTrait {
@@ -14,7 +14,6 @@ pub trait CommandTrait {
     fn type_running(&self) -> CommandType {
         CommandType::Sync
     }
-
 
     // --- ONLY TO ASYNC Commands ---
     fn get_id(&self) -> String {
@@ -27,7 +26,6 @@ pub trait CommandTrait {
         false
     }
 }
-
 
 // It needs to be a Box, a Struct which implements 'CommandTrait'
 // but, it need to be cloned, to do so... it needs to be a Rc
