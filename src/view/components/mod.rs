@@ -19,3 +19,4 @@ pub mod tab_blocked_text;
 pub mod tab_list;
 pub mod views;
 pub mod welcome_doc;
+pub mod counter_response_time;

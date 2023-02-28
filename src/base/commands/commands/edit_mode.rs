@@ -14,7 +14,7 @@ impl Commands {
 
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                let result = app.get_data_store_mut().save_request();
+                // let result = app.get_data_store_mut().save_request();
 
                 let mut buffer = app.get_input_buffer_value();
                 buffer.push(self.char);
@@ -33,7 +33,7 @@ impl Commands {
 
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                let result = app.get_data_store_mut().save_request();
+                // let result = app.get_data_store_mut().save_request();
 
                 let mut buffer = app.get_input_buffer_value();
                 buffer.pop();

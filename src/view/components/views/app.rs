@@ -1,6 +1,8 @@
 use crate::app::InputMode;
 
 use crate::base::states::names::StatesNames;
+use crate::base::web::response::ResponseStage;
+use crate::view::components::counter_response_time::{self, CounterResponseTime};
 use crate::view::components::doc_reader::DocReader;
 use crate::view::components::input_block::InputTextBlock;
 use crate::view::renderer::tui_rs::BackendTuiRs;
@@ -93,6 +95,13 @@ impl Component for AppView<'_> {
                 || store.current_state == StatesNames::ResponseHeader,
         };
 
+        let counter_response_time_view = CounterResponseTime {
+            area: content_layout[1],
+            marked: store.current_state == StatesNames::ResponseBody
+                || store.current_state == StatesNames::ResponseHeader,
+            time: 0.0,
+        };
+
         let log_view = LogView {
             area: full_screen_layout[2],
             store,
@@ -124,13 +133,46 @@ impl Component for AppView<'_> {
         request_view.render(f);
         log_view.render(f);
 
-        let status = store.get_response().lock().unwrap().status;
-        let has_been = status != 0;
-        if has_been {
-            response_view.render(f);
-        } else {
-            welcome_doc_view.render(f);
+        let mut response_stage: Option<ResponseStage> = None;
+        let mut response_time: f64 = 0.0;
+        let mut response_status: i32 = 0;
+
+        {
+            let response_ref = store.get_response();
+            let response = response_ref.lock().unwrap();
+            response_status = response.status;
+            response_stage = Some(response.stage);
+            response_time = response.response_time;
         }
+        match response_stage.unwrap() {
+            ResponseStage::Empty => {
+                let welcome_doc_view = WelcomeDoc {
+                    area: content_layout[1],
+                    marked: store.current_state == StatesNames::ResponseBody
+                        || store.current_state == StatesNames::ResponseHeader,
+                };
+                welcome_doc_view.render(f)
+            }
+            ResponseStage::Waiting => {
+                let counter_response_time_view = CounterResponseTime {
+                    area: content_layout[1],
+                    marked: store.current_state == StatesNames::ResponseBody
+                        || store.current_state == StatesNames::ResponseHeader,
+                    time: response_time,
+                };
+                counter_response_time_view.render(f)
+            }
+            _ => response_view.render(f),
+        }
+
+        log::info!("FOIIIIIIII fim");
+        // let stage = response.stage;
+        // let has_been = status != 0;
+        // if has_been {
+        //     response_view.render(f);
+        // } else {
+        //     welcome_doc_view.render(f);
+        // }
 
         if let Some(component) = popup_component {
             component.render(f);

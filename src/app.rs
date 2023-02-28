@@ -22,7 +22,7 @@ pub enum InputMode {
 #[derive(Default)]
 pub struct App {
     pub is_finished: bool,
-    renderer: Option<Sender<Actions>>,
+    pub renderer: Option<Sender<Actions>>,
 
     // Datas
     pub data_store: Option<MainStore>,

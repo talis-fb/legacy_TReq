@@ -45,22 +45,16 @@ impl InputHandler {
 
         let (finished_sender, finished_listener): (Sender<()>, Receiver<()>) = mpsc::channel();
 
-        // TODO: Close this task when application shutdown
         let task = tokio::task::spawn(async move {
             let action_default = Actions::Null;
-
-            // log::info!("-b READ");
 
             while finished_listener.try_recv().is_err() {
                 if event::poll(Duration::from_millis(100)).unwrap() {
                     if let Event::Key(key) = event::read().unwrap() {
-                        // log::info!("-m READ");
-
                         let mut keymap = listener.lock().unwrap();
                         let action = keymap.get_command(key.code).unwrap_or(action_default);
 
                         let res = queue.send(action);
-                        // log::info!("-send READ");
 
                         if let Err(e) = res {
                             println!("Erro at run command: ...");
@@ -69,8 +63,6 @@ impl InputHandler {
                     }
                 }
             }
-
-            // log::info!("ACABOUUUUUUUUUUU READ");
         });
 
         (task, finished_sender)
