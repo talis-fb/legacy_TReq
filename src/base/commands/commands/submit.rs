@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-use tokio::sync::mpsc::{self, Sender};
+use tokio::sync::mpsc::{self};
 use tokio::task::JoinHandle;
 
 use crate::base::actions::Actions;
@@ -32,7 +32,7 @@ impl Commands {
                 let response_data_store = app.data_store.as_ref().unwrap().get_response();
 
                 let mut response = response_data_store.lock().unwrap();
-                (*response).stage = ResponseStage::Cancelled;
+                response.stage = ResponseStage::Cancelled;
 
                 Ok(())
             }
@@ -65,7 +65,7 @@ impl Commands {
                 let task = tokio::task::spawn(async move {
                     {
                         let mut data = response_data_store.lock().unwrap();
-                        (*data).stage = ResponseStage::Waiting;
+                        data.stage = ResponseStage::Waiting;
                     }
 
                     let start_time_request = Instant::now();
@@ -83,7 +83,7 @@ impl Commands {
 
                                         {
                                             let mut data = response.lock().unwrap();
-                                            (*data).response_time = elapsed_time.as_secs_f64();
+                                            data.response_time = elapsed_time.as_secs_f64();
                                         }
 
                                         renderer.send(Actions::Null).unwrap();

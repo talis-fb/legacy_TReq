@@ -52,7 +52,7 @@ impl CommandHandler {
                     {
                         let running_jobs = running_jobs_arc.lock().unwrap();
                         if running_jobs.get(&key).is_some() {
-                            return Err(String::from(key + " is already runnig"));
+                            return Err(key + " is already runnig");
                         }
                     }
 
