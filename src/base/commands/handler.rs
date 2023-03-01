@@ -65,18 +65,19 @@ impl CommandHandler {
                         running_jobs.insert(key.clone(), close);
                     }
 
+                    // Init task waits job close OR close_event happens
                     tokio::task::spawn({
                         let key = key.clone();
-                        let task_job = command_to_exec.take_task().unwrap();
+                        let mut task_job = command_to_exec.take_task().unwrap();
                         let sender_commands = self.sender_commands.clone();
                         let running_jobs_arc = self.running_jobs.clone();
                         async move {
                             tokio::select! {
                                 val = close_listener.recv() => {
-                                    log::info!("    x ASYNC Job CLOSED");
+                                    task_job.abort();
+                                    task_job.await;
                                 }
-                                val = task_job => {
-                                    log::info!("    [ok] ASYNC Job Runned");
+                                val = &mut task_job => {
                                     if let Ok(command_final) = val {
                                         log::info!("    [ok2] Command of ASYNC Job Send");
                                         sender_commands.send(command_final).unwrap();
@@ -89,6 +90,24 @@ impl CommandHandler {
                             running_jobs.remove(&key);
                         }
                     });
+                }
+                CommandType::CancelAsync => {
+                    let key_running_job = command_to_exec.get_id();
+                    let map = self.running_jobs.lock().unwrap();
+                    let running_job = map.get(&key_running_job);
+                    match running_job {
+                        Some(job_cancel_send) => {
+                            tokio::task::spawn({
+                                let sender = job_cancel_send.clone();
+                                async move {
+                                    sender.send(()).await.unwrap();
+                                }
+                            });
+                        }
+                        None => {
+                            return Err(" There is not command to cancel".to_string());
+                        }
+                    }
                 }
             }
         }

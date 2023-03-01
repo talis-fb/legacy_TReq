@@ -6,6 +6,8 @@ use crate::app::App;
 pub enum CommandType {
     Sync,
     Async,
+
+    CancelAsync,
 }
 
 pub trait CommandTrait {
