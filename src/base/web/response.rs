@@ -8,6 +8,7 @@ pub enum ResponseStage {
     Waiting,
     Finished,
 
+    Cancelled,
     InternalError,
 }
 

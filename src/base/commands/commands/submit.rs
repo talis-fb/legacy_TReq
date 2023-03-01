@@ -27,6 +27,13 @@ impl Commands {
         struct S;
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
+                let client = app.client_web.as_ref().unwrap().clone();
+                let request = app.data_store.as_ref().unwrap().get_request();
+                let response_data_store = app.data_store.as_ref().unwrap().get_response();
+
+                let mut response = response_data_store.lock().unwrap();
+                (*response).stage = ResponseStage::Cancelled;
+
                 Ok(())
             }
             fn type_running(&self) -> CommandType {

@@ -1,6 +1,6 @@
 use super::Component;
 use crate::view::renderer::Tui;
-use crate::view::style::{Color, Style, Texts, Size};
+use crate::view::style::{Color, Size, Style, Texts};
 use crate::view::{renderer::tui_rs::BackendTuiRs, style::Text};
 use tui::layout::{Constraint, Layout, Rect};
 
@@ -22,13 +22,23 @@ impl Component for CounterResponseTime {
             f.render_block_with_title_center(Texts::from_str("Requesting..."), self.area);
         }
 
-        let area = Layout::default()
+        let area_total = Layout::default()
             .margin(1)
             .constraints([Constraint::Percentage(100)])
             .split(self.area);
 
-        let content_area = BackendTuiRs::create_absolute_centered_area(Size::Percentage(100), Size::Fixed(1), area[0]);
+        let centered_area = BackendTuiRs::create_absolute_centered_area(
+            Size::Percentage(100),
+            Size::Fixed(2),
+            area_total[0],
+        );
 
-        f.render_text_raw_align_center(&time_string, content_area);
+        let content_area = Layout::default().constraints([
+            Constraint::Length(1),
+            Constraint::Length(1),
+        ]).split(centered_area);
+
+        f.render_text_raw_align_center(&time_string, content_area[0]);
+        f.render_text_raw_align_center("Press [ESC] to cancel", content_area[1]);
     }
 }

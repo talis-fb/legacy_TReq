@@ -103,6 +103,8 @@ impl CommandHandler {
                                     sender.send(()).await.unwrap();
                                 }
                             });
+
+                            command_to_exec.execute(app).unwrap();
                         }
                         None => {
                             return Err(" There is not command to cancel".to_string());
