@@ -14,6 +14,7 @@ pub enum Actions {
     Switch,
     InverseSwitch,
     Submit,
+    CancelSubmit,
     Undo,
     New,
     Delete,

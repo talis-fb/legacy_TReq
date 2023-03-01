@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-use tokio::sync::mpsc;
+use tokio::sync::mpsc::{self, Sender};
 use tokio::task::JoinHandle;
 
 use crate::base::actions::Actions;
@@ -23,6 +23,22 @@ impl Commands {
         Arc::new(Box::new(S {}))
     }
 
+    pub fn cancel_async_submit() -> Command {
+        struct S;
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                Ok(())
+            }
+            fn type_running(&self) -> CommandType {
+                CommandType::CancelAsync
+            }
+            fn get_id(&self) -> String {
+                String::from("Submit")
+            }
+        }
+
+        Arc::new(Box::new(S {}))
+    }
     pub fn async_submit() -> Command {
         struct S {
             task_running: Arc<Mutex<Option<JoinHandle<Command>>>>,
@@ -54,23 +70,23 @@ impl Commands {
                         async move {
                             let mut interval = tokio::time::interval(Duration::from_millis(100));
                             loop {
-                                log::info!("Iniciado counter");
-                                interval.tick().await;
-                                let elapsed_time = start_time_request.elapsed();
+                                tokio::select! {
+                                    _ = interval.tick() => {
+                                        let elapsed_time = start_time_request.elapsed();
 
-                                {
-                                    let mut data = response.lock().unwrap();
-                                    (*data).response_time = elapsed_time.as_secs_f64();
-                                }
+                                        {
+                                            let mut data = response.lock().unwrap();
+                                            (*data).response_time = elapsed_time.as_secs_f64();
+                                        }
 
-                                renderer.send(Actions::Null).unwrap();
-                                if close_timer_listener.try_recv().is_ok() {
-                                    log::info!("[BREAK] COUNTER DEVIDAMETNE ENCERRADO");
-                                    break;
+                                        renderer.send(Actions::Null).unwrap();
+                                        log::info!("{} counter", elapsed_time.as_millis());
+                                    }
+                                    _ = close_timer_listener.recv() => {
+                                        break;
+                                    }
                                 }
-                                log::info!("{} counter", elapsed_time.as_millis());
                             }
-                            log::info!("## End counter");
                         }
                     });
 
@@ -80,8 +96,6 @@ impl Commands {
                     close_timer.send(()).await.unwrap();
                     counter_time_task.await.unwrap();
 
-                    log::info!("COUNTER DEVIDAMETNE ENCERRADO");
-
                     {
                         let mut data = response_data_store.lock().unwrap();
                         *data = new_response.unwrap_or_else(Response::default_internal_error);
@@ -89,8 +103,6 @@ impl Commands {
 
                     // for re-render
                     renderer.send(Actions::Null).unwrap();
-
-                    log::info!(" ** END SUBMIT");
 
                     Commands::do_nothing()
                 });

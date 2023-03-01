@@ -12,6 +12,7 @@ pub fn keymap_factory() -> KeyMap {
         create_keymap_char('e', Actions::Edit),
         create_keymap_char('d', Actions::Delete),
         create_keymap(KeyCode::Enter, Actions::Submit),
+        create_keymap(KeyCode::Esc, Actions::CancelSubmit),
         create_keymap(KeyCode::Tab, Actions::Switch),
         create_keymap(KeyCode::BackTab, Actions::InverseSwitch),
         create_keymap_char('j', Actions::Down),
