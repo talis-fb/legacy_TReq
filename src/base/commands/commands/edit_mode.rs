@@ -2,17 +2,44 @@ use std::sync::Arc;
 
 use crate::app::InputMode;
 use crate::base::commands::CommandTrait;
-use crate::base::doc::DocsFactory;
+
 use crate::commands::{Command, Commands};
 use crate::App;
 
 impl Commands {
-    pub fn open_help_screen() -> Command {
-        struct S;
+    pub fn type_char_edit_mode(c: char) -> Command {
+        struct S {
+            char: char,
+        }
+
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                app.get_data_store_mut().doc_reader = Some(DocsFactory::help_reader());
-                app.set_mode(InputMode::Help);
+                // let result = app.get_data_store_mut().save_request();
+
+                let mut buffer = app.get_input_buffer_value();
+                buffer.push(self.char);
+
+                app.set_input_buffer_value(buffer);
+
+                Ok(())
+            }
+        }
+
+        Arc::new(Box::new(S { char: c }))
+    }
+
+    pub fn erase_last_char_edit_mode() -> Command {
+        struct S;
+
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                // let result = app.get_data_store_mut().save_request();
+
+                let mut buffer = app.get_input_buffer_value();
+                buffer.pop();
+
+                app.set_input_buffer_value(buffer);
+
                 Ok(())
             }
         }
@@ -20,12 +47,13 @@ impl Commands {
         Arc::new(Box::new(S {}))
     }
 
-    pub fn open_welcome_screen() -> Command {
+    pub fn process_edit_mode() -> Command {
         struct S;
+
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                app.get_data_store_mut().doc_reader = Some(DocsFactory::welcome_reader());
-                app.set_mode(InputMode::Help);
+                app.exec_input_buffer_command()?;
+                Commands::close_edit_mode().execute(app)?;
                 Ok(())
             }
         }
@@ -33,23 +61,15 @@ impl Commands {
         Arc::new(Box::new(S {}))
     }
 
-    pub fn doc_up() -> Command {
+    pub fn cancel_edit_mode() -> Command {
         struct S;
+
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                let position = app
-                    .get_data_store_mut()
-                    .doc_reader
-                    .as_mut()
-                    .unwrap()
-                    .position;
-                if position >= 1 {
-                    app.get_data_store_mut()
-                        .doc_reader
-                        .as_mut()
-                        .unwrap()
-                        .position -= 1;
-                }
+                app.get_input_buffer_mut().reset_to_backup();
+
+                Commands::close_edit_mode().execute(app)?;
+
                 Ok(())
             }
         }
@@ -57,27 +77,15 @@ impl Commands {
         Arc::new(Box::new(S {}))
     }
 
-    pub fn doc_down() -> Command {
+    pub fn close_edit_mode() -> Command {
         struct S;
+
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                app.get_data_store_mut()
-                    .doc_reader
-                    .as_mut()
-                    .unwrap()
-                    .position += 1;
-                Ok(())
-            }
-        }
-
-        Arc::new(Box::new(S {}))
-    }
-
-    pub fn doc_exit() -> Command {
-        struct S;
-        impl CommandTrait for S {
-            fn execute(&self, app: &mut App) -> Result<(), String> {
+                app.clear_log();
                 app.set_mode(InputMode::Normal);
+                app.reset_to_last_state();
+
                 Ok(())
             }
         }

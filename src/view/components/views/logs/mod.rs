@@ -2,6 +2,7 @@ use crate::base::logs::LogType;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
 use crate::view::style::{Color, Style, Text, Texts};
+use crate::view::ViewStates;
 use crate::{base::stores::MainStore, view::components::Component};
 use tui::layout::{Constraint, Direction, Layout, Rect};
 
@@ -10,7 +11,15 @@ pub mod log_view;
 pub struct LogView<'a> {
     pub area: Rect,
     pub store: &'a MainStore,
+    pub states: &'a ViewStates,
 }
+
+impl LogView<'_> {
+    pub fn prepare_render<'b>(states: &mut ViewStates, store: &'b MainStore) {
+        // Does nothing for while
+    }
+}
+
 impl Component for LogView<'_> {
     type Backend = BackendTuiRs;
     fn render(&self, f: &mut Self::Backend) {

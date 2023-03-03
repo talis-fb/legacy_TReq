@@ -19,7 +19,6 @@ use std::sync::Mutex;
 
 use super::logs::Log;
 
-#[derive(Clone)]
 pub struct MainStore {
     // Web
     requests: RequestStore,

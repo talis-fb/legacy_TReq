@@ -1,5 +1,5 @@
 use crate::base::actions::{manager::ActionsManager, Actions};
-use crate::base::commands::{handler::CommandHandler, Command};
+use crate::base::commands::Command;
 use crate::base::states::manager::StateManager;
 use crate::base::states::states::State;
 use crate::base::stores::MainStore;
@@ -22,7 +22,7 @@ pub enum InputMode {
 #[derive(Default)]
 pub struct App {
     pub is_finished: bool,
-    renderer: Option<Sender<Actions>>,
+    pub renderer: Option<Sender<Actions>>,
 
     // Datas
     pub data_store: Option<MainStore>,
@@ -34,15 +34,12 @@ pub struct App {
     // Actions
     pub action_manager: Option<ActionsManager>,
 
-    // Commands
-    pub command_handler: Option<CommandHandler>,
-
     // Web Client
     pub client_web: Option<Arc<WebClient<ReqwestClientRepository>>>,
 }
 
 impl App {
-    // Builders -------- ---------------------
+    // Builders ------------------------------
     pub fn set_data_store(&mut self, data_store: MainStore) {
         self.data_store = Some(data_store)
     }
@@ -54,9 +51,6 @@ impl App {
     }
     pub fn set_action_manager(&mut self, action_manager: ActionsManager) {
         self.action_manager = Some(action_manager)
-    }
-    pub fn set_command_handler(&mut self, command_handler: CommandHandler) {
-        self.command_handler = Some(command_handler)
     }
     pub fn set_web_client(&mut self, client: WebClient<ReqwestClientRepository>) {
         self.client_web = Some(Arc::new(client))
@@ -104,8 +98,8 @@ impl App {
         self.get_data_store_mut().input_buffer.value = buffer;
     }
     pub fn exec_input_buffer_command(&mut self) -> Result<(), String> {
-        let command_fn = self.get_data_store_mut().input_buffer.command;
-        command_fn(self)
+        let command_fn = self.get_data_store_mut().input_buffer.command.clone();
+        command_fn.execute(self)
     }
 
     // Manage States ---------------------------
@@ -118,32 +112,18 @@ impl App {
         Some(())
     }
 
-    // Commands ---------------------
-    pub fn get_command_of_action(&self, action: Actions) -> Option<Command> {
-        let state_manager = self.state_manager.as_ref()?;
-        self.action_manager
-            .as_ref()?
-            .get_command_of_action(action, state_manager)
+    pub fn reset_to_last_state(&mut self) -> Option<()> {
+        let state = self.state_manager.as_mut()?.reset_to_last_state();
+        self.get_data_store_mut().current_state = state;
+        Some(())
     }
 
-    // Web client ---------------------
-    pub fn dispatch_submit(&self) {
-        let client = self.client_web.as_ref().unwrap().clone();
-        let request = self.data_store.as_ref().unwrap().get_request();
-        let response_data_store = self.data_store.as_ref().unwrap().get_response();
-
-        let data_store = self.get_data_store().clone();
-
-        let renderer = self.renderer.as_ref().unwrap().clone();
-
-        tokio::task::spawn(async move {
-            let new_response = client.submit((*request).clone()).await;
-
-            let mut data = response_data_store.lock().unwrap();
-
-            *data = new_response.unwrap_or_else(Response::default_internal_error);
-            renderer.send(Actions::Null).unwrap();
-        });
+    // Commands ---------------------
+    pub fn get_command_of_action(&mut self, action: Actions) -> Option<Command> {
+        let state_manager = self.state_manager.as_ref()?;
+        self.action_manager
+            .as_mut()?
+            .get_command_of_action(action, state_manager)
     }
 
     // Data store ---------------------

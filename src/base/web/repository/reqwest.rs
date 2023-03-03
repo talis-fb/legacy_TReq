@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use std::{collections::HashMap, str::FromStr};
 
-use crate::base::web::response::Response;
+use crate::base::web::response::{Response, ResponseStage};
 
 use super::HttpClientRepository;
 use reqwest::Client;
@@ -41,8 +41,9 @@ impl ReqwestClientRepository {
         Ok(Response {
             status,
             body,
-            response_time: 1,
+            response_time: 1.0,
             headers,
+            stage: ResponseStage::Finished,
         })
     }
 }

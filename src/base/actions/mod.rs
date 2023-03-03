@@ -14,6 +14,7 @@ pub enum Actions {
     Switch,
     InverseSwitch,
     Submit,
+    CancelSubmit,
     Undo,
     New,
     Delete,
@@ -57,4 +58,21 @@ pub enum Actions {
     //
     GrowHorizontalUiRight,
     GrowHorizontalUiLeft,
+
+    // INPUT Mode --------------------
+    TypingChar(char),
+    TypingErase,
+    TypingBreakLine,
+    TypingClearAll,
+    TypingClose,
+    TypingCancel,
+    TypingUp,
+    TypingDown,
+    TypingLeft,
+    TypingRight,
+    TypingBegingLine,
+    TypingEndLine,
+
+    // HELP Mode --------------------
+    DocExit,
 }

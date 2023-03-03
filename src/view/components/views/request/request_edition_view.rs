@@ -1,8 +1,10 @@
 use crate::view::components::tab_blocked_text::TabBlockText;
 use crate::view::components::Component;
 use crate::view::renderer::tui_rs::BackendTuiRs;
+use serde::{Deserialize, Serialize};
 use tui::layout::Rect;
 
+#[derive(Deserialize, Serialize)]
 pub enum StatesReqEditionView {
     BodyOpened,
     HeadersOpened,

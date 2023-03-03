@@ -51,11 +51,11 @@ impl KeyboardListerner {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::input::keymaps::{default_keymap_factory, Actionable};
+    use crate::input::keymaps::{normal_mode::keymap_factory, Actionable};
 
     #[test]
     fn should_init_and_be_defined() {
-        let keymap = default_keymap_factory();
+        let keymap = keymap_factory();
 
         // Basics Commands
         assert_eq!(
@@ -69,7 +69,7 @@ mod tests {
 
     #[test]
     fn should_get_command_of_single_keymaps() {
-        let default_keymap = default_keymap_factory();
+        let default_keymap = keymap_factory();
         let mut keymap = KeyboardListerner::init(default_keymap);
 
         let up = keymap.get_command(KeyCode::Char('k'));
@@ -78,7 +78,7 @@ mod tests {
 
     #[test]
     fn should_get_command_of_compound_keymaps() {
-        let default_keymap = default_keymap_factory();
+        let default_keymap = keymap_factory();
         let mut keymap = KeyboardListerner::init(default_keymap);
 
         let g = keymap.get_command(KeyCode::Char('g'));
@@ -94,7 +94,7 @@ mod tests {
 
     #[test]
     fn should_reset_keymap_when_a_undefined_key_is_pressed() {
-        let default_keymap = default_keymap_factory();
+        let default_keymap = keymap_factory();
         let mut keymap = KeyboardListerner::init(default_keymap);
 
         let g = keymap.get_command(KeyCode::Char('g'));
