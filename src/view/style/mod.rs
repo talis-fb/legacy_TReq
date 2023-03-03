@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use tui::style::Color as ColorTuiRs;
 
 pub enum Size {
@@ -5,7 +6,7 @@ pub enum Size {
     Fixed(u16),
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Color {
     Red,
     Blue,
@@ -52,11 +53,31 @@ pub struct Style {
     pub color: Color,
     pub property: Option<Property>,
 }
+impl Style {
+    pub fn from_color(color: Color) -> Self {
+        Self {
+            color,
+            property: None,
+        }
+    }
+}
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Text<'a> {
     pub body: &'a str,
     pub style: Option<Style>,
+}
+impl<'a> Text<'a> {
+    pub fn from_str(body: &'a str) -> Self {
+        Self { body, style: None }
+    }
+
+    pub fn from_str_styled(body: &'a str, style: Style) -> Self {
+        Self {
+            body,
+            style: Some(style),
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -78,5 +99,9 @@ impl<'a> Texts<'a> {
                 style: None,
             }],
         }
+    }
+
+    pub fn from_vec_text(body: Vec<Text<'a>>) -> Self {
+        Self { body }
     }
 }

@@ -1,15 +1,23 @@
+use std::sync::Arc;
+
+use crate::base::commands::CommandTrait;
 use crate::commands::{Command, Commands};
 use crate::App;
 
 impl Commands {
     pub fn edit_response_vim() -> Command {
-        |app: &mut App| {
-            let response = app.get_data_store().get_response().lock().unwrap().clone();
+        struct S;
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                let response = app.get_data_store().get_response().lock().unwrap().clone();
 
-            // It opens Editor with response Data, and does nothing when finished
-            app.set_vim_mode_with_command(|app: &mut App| Ok(()), response.body);
+                // It opens Editor with response Data, and does nothing when finished
+                app.set_vim_mode_with_command(Commands::do_nothing(), response.body);
 
-            Ok(())
+                Ok(())
+            }
         }
+
+        Arc::new(Box::new(S {}))
     }
 }

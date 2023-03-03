@@ -1,13 +1,17 @@
-use crossterm::event::{self, Event, KeyCode};
+use crossterm::event::{self, Event};
 use std::rc::Rc;
-use std::sync::{mpsc::Sender, Arc, Mutex};
+use std::sync::{
+    mpsc::{self, Receiver, Sender},
+    Arc, Mutex,
+};
+use std::time::Duration;
 
+use crate::base::actions::Actions;
 use crate::base::os::file_edition_handler::FileEditionHandler;
 use crate::config::configurations::external_editor::ExternalEditor;
 use crate::utils::custom_types::uuid::UUID;
-use crate::{base::actions::Actions, utils::custom_types::async_bool::AsyncBool};
 
-use super::{buffer::InputKeyboardBuffer, listener::KeyboardListerner};
+use super::listener::KeyboardListerner;
 use std::process::{Command as OSCommand, Stdio};
 
 pub struct InputHandler {
@@ -28,75 +32,43 @@ impl InputHandler {
         }
     }
 
-    pub fn async_handler(
+    pub fn set_keymap(&mut self, keyboard_listener: KeyboardListerner) {
+        let mut listener = self.listener.lock().unwrap();
+        *listener = keyboard_listener;
+    }
+
+    pub fn async_handler_loop(
         &self,
         queue: Sender<Actions>,
-        when_finish: Arc<AsyncBool>,
-    ) -> tokio::task::JoinHandle<()> {
+    ) -> (tokio::task::JoinHandle<()>, Sender<()>) {
         let listener = self.listener.clone();
 
-        tokio::task::spawn(async move {
-            let mut keymap = listener.lock().unwrap();
+        let (finished_sender, finished_listener): (Sender<()>, Receiver<()>) = mpsc::channel();
 
+        let task = tokio::task::spawn(async move {
             let action_default = Actions::Null;
-            let mut action = action_default;
 
-            if let Event::Key(key) = event::read().unwrap() {
-                action = keymap.get_command(key.code).unwrap_or(action_default);
+            while finished_listener.try_recv().is_err() {
+                if event::poll(Duration::from_millis(100)).unwrap() {
+                    if let Event::Key(key) = event::read().unwrap() {
+                        let mut keymap = listener.lock().unwrap();
+                        let action = keymap.get_command(key.code).unwrap_or(action_default);
+
+                        let res = queue.send(action);
+
+                        if let Err(e) = res {
+                            println!("Erro at run command: ...");
+                            println!("{}", e);
+                        }
+                    }
+                }
             }
+        });
 
-            let res = queue.send(action);
-            if let Err(e) = res {
-                println!("Erro at run command: {:?}", e);
-            }
-
-            when_finish.set(true);
-        })
-    }
-    pub fn sync_handler_doc_reading(&self, index_to_start: i32) -> (usize, bool) {
-        let mut new_index = index_to_start;
-        if let Event::Key(key) = event::read().unwrap() {
-            new_index = match key.code {
-                KeyCode::Char('k') | KeyCode::Up => index_to_start - 1,
-                KeyCode::Char('j') | KeyCode::Down => index_to_start + 1,
-                _ => return (0, true),
-            }
-        }
-
-        if new_index < 0 {
-            new_index = 0
-        }
-
-        ((new_index as usize), false)
+        (task, finished_sender)
     }
 
-    pub fn sync_handler_typing(&self, buffer: &mut InputKeyboardBuffer) -> (String, bool) {
-        let mut is_finished = false;
-        let mut new_buffer = buffer.clone();
-
-        if let Event::Key(key) = event::read().unwrap() {
-            match key.code {
-                KeyCode::Enter => {
-                    is_finished = true;
-                }
-                KeyCode::Backspace => {
-                    new_buffer.value.pop();
-                }
-                KeyCode::Char(i) => {
-                    new_buffer.value.push(i);
-                }
-                KeyCode::Esc => {
-                    new_buffer.reset_to_backup();
-                    is_finished = true;
-                }
-                _ => {}
-            }
-        }
-
-        (new_buffer.value, is_finished)
-    }
-
-    pub fn sync_open_vim(&mut self, buffer: String, uuid: &UUID) -> (String, bool) {
+    pub fn sync_open_vim(&mut self, buffer: String, uuid: &UUID) -> String {
         self.files
             .lock()
             .unwrap()
@@ -114,8 +86,6 @@ impl InputHandler {
 
         let status = child.wait().expect("failed to wait on child");
 
-        let content = std::fs::read_to_string(file_path).unwrap();
-
-        (content, true)
+        std::fs::read_to_string(file_path).unwrap()
     }
 }

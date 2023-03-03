@@ -5,16 +5,17 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use std::io;
+use std::{collections::HashMap, io};
 use tui::{backend::CrosstermBackend, Terminal};
 
-use super::components::views::app::AppView;
 use super::components::Component;
+use super::{components::views::app::AppView, ViewStates};
 
 use super::renderer::tui_rs::BackendTuiRs;
 
 pub struct UI {
     backend: BackendTuiRs,
+    view_states: ViewStates,
 }
 
 impl UI {
@@ -26,15 +27,16 @@ impl UI {
         let backend = CrosstermBackend::new(stdout);
         let terminal = Terminal::new(backend).unwrap();
 
-        // TODO:
-        // Receive this from main.rs
         let backend = BackendTuiRs {
             terminal,
             configs: ViewConfig::init(),
             queue_render: vec![],
         };
 
-        UI { backend }
+        UI {
+            backend,
+            view_states: HashMap::new(),
+        }
     }
 
     pub fn close(&mut self) {
@@ -52,9 +54,12 @@ impl UI {
         self.backend.terminal.autoresize().unwrap();
         let screen_area = self.backend.terminal.get_frame().size();
 
+        AppView::prepare_render(&mut self.view_states, data_store);
+
         let app_view = AppView {
             area: screen_area,
             store: data_store,
+            states: &self.view_states,
         };
 
         app_view.render(&mut self.backend);

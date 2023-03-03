@@ -12,7 +12,7 @@ use std::error::Error;
 use std::sync::Arc;
 
 use base::states::manager::StateManager;
-use base::states::states::{DefaultState, State};
+use base::states::states::{DefaultEditMode, DefaultHelpMode, DefaultState, State};
 
 use std::sync::mpsc::{self, Receiver, Sender};
 
@@ -22,7 +22,7 @@ use app::{App, InputMode};
 mod utils;
 
 mod input;
-use input::keymaps::default_keymap_factory;
+use input::keymaps;
 use input::listener::KeyboardListerner;
 
 mod base;
@@ -33,14 +33,18 @@ use view::ui::UI;
 
 mod config;
 
+mod logger;
+
 use input::input_handler::InputHandler;
 use utils::custom_types::async_bool::AsyncBool;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    logger::init_logger();
+
     let state_manager = StateManager::init(DefaultState::init(), DefaultState::init());
-    let action_manager = ActionsManager {};
-    let command_handler = CommandHandler {};
+    let action_manager = ActionsManager::init();
+    let mut command_handler = CommandHandler::init();
 
     // Configurations and Setup of necessary folders
     ConfigManager::setup_env().expect("Error creating folders .local/share/treq. If error persist create it with mkdir $HOME/.local/share/treq");
@@ -63,10 +67,22 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let (action_queue_sender, action_queue_receiver): (Sender<Actions>, Receiver<Actions>) =
         mpsc::channel();
     let has_clicked_before = Arc::new(AsyncBool::init(true));
-    let commands = default_keymap_factory();
+
+    // Keymaps...
+    // Normal Mode
+    let commands = keymaps::normal_mode::keymap_factory();
     let keymap = KeyboardListerner::init(commands);
+
+    // Input Mode
+    let commands_input_mode = keymaps::input_mode::keymap_factory();
+    let keymap_input_mode = KeyboardListerner::init(commands_input_mode);
+
+    // Help Mode
+    let commands_input_mode = keymaps::docs_mode::keymap_factory();
+    let keymap_doc_mode = KeyboardListerner::init(commands_input_mode);
+
     let mut input_handler = InputHandler::init(
-        keymap,
+        keymap.clone(),
         data_store.config.editor.clone(),
         data_store.config.edition_files_handler.clone(),
     );
@@ -78,99 +94,102 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut app = App::default();
     app.set_state_manager(state_manager);
     app.set_action_manager(action_manager);
-    app.set_command_handler(command_handler);
     app.set_web_client(web_client);
     app.set_data_store(data_store);
     app.set_renderer(action_queue_sender.clone());
 
     if !already_opened {
-        CommandHandler::execute(&mut app, Commands::open_welcome_screen());
+        command_handler.add(Commands::open_welcome_screen());
+        command_handler.run(&mut app).unwrap();
     }
 
-    // Store jobs running in tokio::spawn to abort them in the end
-    let mut async_tasks = vec![];
+    let handle_keymap = input_handler.async_handler_loop(action_queue_sender.clone());
+    let (mut task_input_listener, mut finish_sender_input_listener) = handle_keymap;
 
     while !app.is_finished {
         view.render(app.get_data_store());
 
         match app.get_mode() {
-            InputMode::Help => {
-                let doc_reader = app.get_data_store_mut().doc_reader.as_mut().unwrap();
-                let (i, is_finished) =
-                    input_handler.sync_handler_doc_reading(doc_reader.get_position() as i32);
-
-                doc_reader.position = i;
-
-                if is_finished {
-                    app.set_mode(InputMode::Normal);
-                }
-            }
-
             InputMode::Vim => {
+                // Closes UI and Input listener
+                finish_sender_input_listener.send(()).unwrap();
+                task_input_listener.abort();
+                task_input_listener.await.unwrap();
                 view.close();
 
-                let (new_buffer, is_finished) = input_handler.sync_open_vim(
+                // Get result and save in app
+                let buffer = input_handler.sync_open_vim(
                     app.get_input_buffer_value(),
                     app.get_data_store().get_request_uuid(),
                 );
-                app.set_input_buffer_value(new_buffer);
+                app.set_input_buffer_value(buffer);
 
-                if is_finished {
-                    view = UI::init();
-                    app.clear_log();
-                    app.exec_input_buffer_command()?;
-                    app.set_mode(InputMode::Normal);
+                // Restart and set Buffer
+                view = UI::init();
+                app.clear_log();
+                app.exec_input_buffer_command()?;
+                app.set_mode(InputMode::Normal);
+                let handle_keymap = input_handler.async_handler_loop(action_queue_sender.clone());
+                (task_input_listener, finish_sender_input_listener) = handle_keymap;
+
+                // Even closing UI, event::read() returns some events
+                // after opened Editor
+                // This ignores all these events to don't execute nothing
+                while action_queue_receiver.try_recv().is_ok() {
+                    // Do nothing, only consumes the queue
+                    log::info!("Clear queue");
                 }
+
+                continue;
+            }
+
+            InputMode::Help => {
+                input_handler.set_keymap(keymap_doc_mode.clone());
+                app.set_new_state(DefaultHelpMode::init());
             }
 
             InputMode::Insert => {
-                let (new_buffer_value, is_finished) =
-                    input_handler.sync_handler_typing(app.get_input_buffer_mut());
-
-                app.set_input_buffer_value(new_buffer_value);
-
-                if is_finished {
-                    app.clear_log();
-                    app.exec_input_buffer_command()?;
-                    app.set_mode(InputMode::Normal);
-                }
+                input_handler.set_keymap(keymap_input_mode.clone());
+                app.set_new_state(DefaultEditMode::init());
             }
 
             InputMode::Normal => {
-                // Init listener of user input if previous one had done --------
-                if has_clicked_before.get() {
-                    let task = input_handler
-                        .async_handler(action_queue_sender.clone(), has_clicked_before.clone());
+                input_handler.set_keymap(keymap.clone());
+            }
+        }
 
-                    async_tasks.push(task);
-                    has_clicked_before.set(false);
+        // Listen queue of user's events to execute --------------------
+        log::info!("Wainting action....");
+        match action_queue_receiver.recv() {
+            Ok(action_to_exec) => {
+                log::info!("Action {:?}", action_to_exec);
+
+                let command = app
+                    .get_command_of_action(action_to_exec)
+                    .unwrap_or(Commands::do_nothing());
+
+                // Add Command to queue
+                command_handler.add(command);
+
+                // exec it
+                let command_result = command_handler.run(&mut app);
+
+                if let Err(e) = command_result {
+                    app.get_data_store_mut()
+                        .set_log_error(String::from("COMMAND ERROR"), e.to_string())
                 }
-
-                // Listen queue of user's events to execute --------------------
-                match action_queue_receiver.recv() {
-                    Ok(action_to_exec) => {
-                        let command = app
-                            .get_command_of_action(action_to_exec)
-                            .unwrap_or(Commands::do_nothing());
-
-                        let command_result = CommandHandler::execute(&mut app, command);
-
-                        if let Err(e) = command_result {
-                            app.get_data_store_mut()
-                                .set_log_error(String::from("COMMAND ERROR"), e.to_string())
-                        }
-                    }
-                    Err(_) => {}
-                }
+            }
+            Err(err) => {
+                log::error!("Action ERROR");
+                log::error!("{}", err);
+                std::thread::sleep(std::time::Duration::from_millis(5000));
             }
         }
     }
 
     view.close();
 
-    for task in async_tasks {
-        task.abort();
-    }
+    finish_sender_input_listener.send(()).unwrap();
 
     Ok(())
 }

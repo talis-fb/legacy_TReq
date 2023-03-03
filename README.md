@@ -14,7 +14,7 @@
 
 <br />
 
-![](showcase.gif)
+![showcase](https://res.cloudinary.com/dfjn94vg8/image/upload/v1677806905/TReq/showcase2_i1punq.gif)
 
 # Installation
 

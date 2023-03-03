@@ -4,7 +4,6 @@ pub trait InputBuffer {
     fn block_reading(&mut self) -> Result<String, ()>;
 }
 
-#[derive(Clone)]
 pub struct InputKeyboardBuffer {
     pub value_backup: Option<String>,
     pub value: String,

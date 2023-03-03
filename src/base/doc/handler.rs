@@ -20,7 +20,4 @@ impl DocReaderHandler {
     pub fn get_position(&self) -> usize {
         self.position
     }
-    pub fn goto_new_pos(&mut self, pos: usize) {
-        self.position = pos;
-    }
 }
