@@ -39,7 +39,7 @@ pub struct App {
 }
 
 impl App {
-    // Builders -------- ---------------------
+    // Builders ------------------------------
     pub fn set_data_store(&mut self, data_store: MainStore) {
         self.data_store = Some(data_store)
     }
@@ -124,30 +124,6 @@ impl App {
         self.action_manager
             .as_mut()?
             .get_command_of_action(action, state_manager)
-    }
-
-    // Web client ---------------------
-    pub fn dispatch_submit(&self) {
-        let client = self.client_web.as_ref().unwrap().clone();
-        let request = self.data_store.as_ref().unwrap().get_request();
-        let response_data_store = self.data_store.as_ref().unwrap().get_response();
-
-        let data_store = self.get_data_store().clone();
-
-        let renderer = self.renderer.as_ref().unwrap().clone();
-
-        tokio::task::spawn(async move {
-            log::info!(" ** INIT SUBMIT");
-            let new_response = client.submit((*request).clone()).await;
-
-            let mut data = response_data_store.lock().unwrap();
-
-            *data = new_response.unwrap_or_else(Response::default_internal_error);
-
-            // ERROR HERE
-            renderer.send(Actions::Null).unwrap();
-            log::info!(" ** END SUBMIT");
-        });
     }
 
     // Data store ---------------------
