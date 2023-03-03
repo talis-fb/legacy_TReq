@@ -12,15 +12,7 @@ impl Commands {
                 let response = app.get_data_store().get_response().lock().unwrap().clone();
 
                 // It opens Editor with response Data, and does nothing when finished
-
-                struct _S;
-                impl CommandTrait for _S {
-                    fn execute(&self, app: &mut App) -> Result<(), String> {
-                        Ok(())
-                    }
-                }
-
-                app.set_vim_mode_with_command(Arc::new(Box::new(_S {})), response.body);
+                app.set_vim_mode_with_command(Commands::do_nothing(), response.body);
 
                 Ok(())
             }

@@ -114,6 +114,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 // Closes UI and Input listener
                 finish_sender_input_listener.send(()).unwrap();
                 task_input_listener.abort();
+                task_input_listener.await.unwrap();
                 view.close();
 
                 // Get result and save in app
