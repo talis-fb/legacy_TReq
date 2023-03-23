@@ -45,7 +45,7 @@ mod utils {
         (
             KeyCode::Char(key),
             Actionable {
-                action: Actions::Null,
+                action: Actions::SubCommand,
                 sub_action: Some(subcommands),
             },
         )
