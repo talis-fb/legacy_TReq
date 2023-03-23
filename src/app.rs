@@ -5,7 +5,7 @@ use crate::base::states::states::State;
 use crate::base::stores::MainStore;
 use crate::base::web::client::WebClient;
 use crate::base::web::repository::reqwest::ReqwestClientRepository;
-use crate::base::web::response::Response;
+
 use crate::config::configurations::save_files::SaveFiles;
 use crate::input::buffer::InputKeyboardBuffer;
 use std::sync::mpsc::Sender;

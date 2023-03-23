@@ -38,7 +38,7 @@ where
         }?;
 
         let response = ValidatorsHandler::from(&response)
-            .execute_ignoring_errors([Validators::set_pretty_json_response()])?;
+            .execute_ignoring_errors([Validators::set_pretty_json_response()]);
 
         Ok(response)
     }

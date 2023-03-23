@@ -79,8 +79,8 @@ impl SaveFiles {
         file_in_map.remove()
     }
 
-    pub fn exist(&self, key: &UUID) -> Option<()> {
-        self.get_map().get(key).map(|_| ())
+    pub fn exist(&self, key: &UUID) -> bool {
+        self.get_map().get(key).map(|_| ()).is_some()
     }
 
     pub fn exist_already_some_file(&self) -> bool {
