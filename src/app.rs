@@ -11,7 +11,7 @@ use crate::input::buffer::InputKeyboardBuffer;
 use std::sync::mpsc::Sender;
 use std::sync::Arc;
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub enum InputMode {
     Normal,
     Insert,
