@@ -81,9 +81,7 @@ impl App {
 
         data_store.input_buffer.command = callback;
         data_store.set_log_input_mode();
-        self.get_input_buffer_mut()
-            .set_backup(initial_buffer.clone());
-        self.set_input_buffer_value(initial_buffer);
+        self.get_input_buffer_mut().set_value(initial_buffer);
     }
     pub fn set_vim_mode_with_command(&mut self, callback: Command, initial_buffer: String) {
         self.set_mode(InputMode::Vim);

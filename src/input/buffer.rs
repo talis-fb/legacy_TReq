@@ -32,6 +32,13 @@ impl InputKeyboardBuffer {
             self.cursor = pos;
         }
     }
+
+    pub fn set_value(&mut self, value: String) {
+        self.value = value.clone();
+        self.value_backup = Some(value.clone());
+        self.cursor = self.value.chars().count();
+    }
+
     pub fn insert_char(&mut self, ch: char) {
         if self.cursor == self.value.chars().count() {
             self.value.push(ch);
@@ -80,7 +87,7 @@ impl InputKeyboardBuffer {
         }
     }
     pub fn go_to_next_char(&mut self) {
-        if self.cursor == self.value.chars().count() {
+        if self.cursor != self.value.chars().count() {
             self.cursor += 1;
         }
     }

@@ -22,13 +22,6 @@ impl State for DefaultHelpMode {
             (Actions::DocExit, Commands::doc_exit()),
         ]);
 
-        keymap_factory().values().for_each(|f| {
-            let action = f.action;
-            if let Actions::TypingChar(ch) = action {
-                maps.insert(action, Commands::type_char_edit_mode(ch));
-            };
-        });
-
         Self { maps }
     }
 }
