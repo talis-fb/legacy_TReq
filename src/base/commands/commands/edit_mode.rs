@@ -7,20 +7,15 @@ use crate::commands::{Command, Commands};
 use crate::App;
 
 impl Commands {
-    pub fn type_char_edit_mode(c: char) -> Command {
+    pub fn edit_mode_insert_char(c: char) -> Command {
         struct S {
             char: char,
         }
 
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                // let result = app.get_data_store_mut().save_request();
-
-                let mut buffer = app.get_input_buffer_value();
-                buffer.push(self.char);
-
-                app.set_input_buffer_value(buffer);
-
+                let input_buffer = app.get_input_buffer_mut();
+                input_buffer.insert_char(self.char);
                 Ok(())
             }
         }
@@ -28,18 +23,97 @@ impl Commands {
         Arc::new(Box::new(S { char: c }))
     }
 
-    pub fn erase_last_char_edit_mode() -> Command {
+    pub fn edit_mode_delete_prev_char() -> Command {
         struct S;
 
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                // let result = app.get_data_store_mut().save_request();
+                let input_buffer = app.get_input_buffer_mut();
+                input_buffer.delete_prev_char();
+                Ok(())
+            }
+        }
 
-                let mut buffer = app.get_input_buffer_value();
-                buffer.pop();
+        Arc::new(Box::new(S {}))
+    }
 
-                app.set_input_buffer_value(buffer);
+    pub fn edit_mode_delete_next_char() -> Command {
+        struct S;
 
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                let input_buffer = app.get_input_buffer_mut();
+                input_buffer.delete_next_char();
+                Ok(())
+            }
+        }
+
+        Arc::new(Box::new(S {}))
+    }
+
+    pub fn edit_mode_delete_till_end() -> Command {
+        struct S;
+
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                let input_buffer = app.get_input_buffer_mut();
+                input_buffer.delete_till_end();
+                Ok(())
+            }
+        }
+
+        Arc::new(Box::new(S {}))
+    }
+
+    pub fn edit_mode_go_to_prev_char() -> Command {
+        struct S;
+
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                let input_buffer = app.get_input_buffer_mut();
+                input_buffer.go_to_prev_char();
+                Ok(())
+            }
+        }
+
+        Arc::new(Box::new(S {}))
+    }
+
+    pub fn edit_mode_go_to_next_char() -> Command {
+        struct S;
+
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                let input_buffer = app.get_input_buffer_mut();
+                input_buffer.go_to_next_char();
+                Ok(())
+            }
+        }
+
+        Arc::new(Box::new(S {}))
+    }
+
+    pub fn edit_mode_go_to_start() -> Command {
+        struct S;
+
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                let input_buffer = app.get_input_buffer_mut();
+                input_buffer.go_to_start();
+                Ok(())
+            }
+        }
+
+        Arc::new(Box::new(S {}))
+    }
+
+    pub fn edit_mode_go_to_end() -> Command {
+        struct S;
+
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                let input_buffer = app.get_input_buffer_mut();
+                input_buffer.go_to_end();
                 Ok(())
             }
         }

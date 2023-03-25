@@ -41,7 +41,7 @@ impl CommandHandler {
         while let Ok(command_to_exec) = self.listener_commands.try_recv() {
             match command_to_exec.type_running() {
                 CommandType::Sync => {
-                    command_to_exec.execute(app).unwrap();
+                    command_to_exec.execute(app)?;
                 }
                 CommandType::Async => {
                     let key = command_to_exec.get_id();

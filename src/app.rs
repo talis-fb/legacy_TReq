@@ -5,13 +5,13 @@ use crate::base::states::states::State;
 use crate::base::stores::MainStore;
 use crate::base::web::client::WebClient;
 use crate::base::web::repository::reqwest::ReqwestClientRepository;
-use crate::base::web::response::Response;
+
 use crate::config::configurations::save_files::SaveFiles;
 use crate::input::buffer::InputKeyboardBuffer;
 use std::sync::mpsc::Sender;
 use std::sync::Arc;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub enum InputMode {
     Normal,
     Insert,
@@ -38,8 +38,10 @@ pub struct App {
     pub client_web: Option<Arc<WebClient<ReqwestClientRepository>>>,
 }
 
+// ---------------------------------------
+// Only Builders -------------------------
+// ---------------------------------------
 impl App {
-    // Builders ------------------------------
     pub fn set_data_store(&mut self, data_store: MainStore) {
         self.data_store = Some(data_store)
     }
@@ -58,8 +60,12 @@ impl App {
     pub fn set_renderer(&mut self, renderer: Sender<Actions>) {
         self.renderer = Some(renderer)
     }
+}
 
-    // Modes & Input ---------------------------
+// -----------------------------------------
+// Modes & Input ---------------------------
+// -----------------------------------------
+impl App {
     pub fn get_mode(&self) -> InputMode {
         self.get_data_store().mode
     }
@@ -72,9 +78,7 @@ impl App {
 
         data_store.input_buffer.command = callback;
         data_store.set_log_input_mode();
-        self.get_input_buffer_mut()
-            .set_backup(initial_buffer.clone());
-        self.set_input_buffer_value(initial_buffer);
+        self.get_input_buffer_mut().set_value(initial_buffer);
     }
     pub fn set_vim_mode_with_command(&mut self, callback: Command, initial_buffer: String) {
         self.set_mode(InputMode::Vim);
@@ -101,8 +105,12 @@ impl App {
         let command_fn = self.get_data_store_mut().input_buffer.command.clone();
         command_fn.execute(self)
     }
+}
 
-    // Manage States ---------------------------
+// -----------------------------------------
+// Manage States ---------------------------
+// -----------------------------------------
+impl App {
     pub fn get_state(&self) -> Option<&Box<dyn State>> {
         Some(self.state_manager.as_ref()?.get_state())
     }
@@ -117,16 +125,24 @@ impl App {
         self.get_data_store_mut().current_state = state;
         Some(())
     }
+}
 
-    // Commands ---------------------
+// ------------------------------
+// Commands ---------------------
+// ------------------------------
+impl App {
     pub fn get_command_of_action(&mut self, action: Actions) -> Option<Command> {
         let state_manager = self.state_manager.as_ref()?;
         self.action_manager
             .as_mut()?
             .get_command_of_action(action, state_manager)
     }
+}
 
-    // Data store ---------------------
+// --------------------------------
+// Data store ---------------------
+// --------------------------------
+impl App {
     pub fn get_data_store(&self) -> &MainStore {
         self.data_store.as_ref().unwrap()
     }
@@ -134,7 +150,12 @@ impl App {
     pub fn get_data_store_mut(&mut self) -> &mut MainStore {
         self.data_store.as_mut().unwrap()
     }
+}
 
+// --------------------------------
+// Visual -------------------------
+// --------------------------------
+impl App {
     pub fn clear_log(&mut self) {
         self.get_data_store_mut().clear_log()
     }

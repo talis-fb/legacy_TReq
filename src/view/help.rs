@@ -92,6 +92,10 @@ impl DocView {
             })
             .collect()
     }
+
+    pub fn get_number_rows(&self) -> usize {
+        self.content.len()
+    }
 }
 
 #[cfg(test)]

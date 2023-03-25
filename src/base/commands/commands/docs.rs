@@ -37,19 +37,14 @@ impl Commands {
         struct S;
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                let position = app
-                    .get_data_store_mut()
-                    .doc_reader
-                    .as_mut()
-                    .unwrap()
-                    .position;
-                if position >= 1 {
-                    app.get_data_store_mut()
-                        .doc_reader
-                        .as_mut()
-                        .unwrap()
-                        .position -= 1;
+                let doc_reader = app.get_data_store_mut().doc_reader.as_mut();
+
+                if doc_reader.is_none() {
+                    return Err("There is not doc to read".to_string());
                 }
+
+                doc_reader.unwrap().go_to_prev_row();
+
                 Ok(())
             }
         }
@@ -61,11 +56,14 @@ impl Commands {
         struct S;
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                app.get_data_store_mut()
-                    .doc_reader
-                    .as_mut()
-                    .unwrap()
-                    .position += 1;
+                let doc_reader = app.get_data_store_mut().doc_reader.as_mut();
+
+                if doc_reader.is_none() {
+                    return Err("There is not doc to read".to_string());
+                }
+
+                doc_reader.unwrap().go_to_next_row();
+
                 Ok(())
             }
         }

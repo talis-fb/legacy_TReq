@@ -70,7 +70,7 @@ impl RequestStore {
         };
 
         let mut save_files = self.save_files.lock().unwrap();
-        if save_files.exist(&uuid).is_some() {
+        if save_files.exist(&uuid) {
             save_files.remove(&uuid)?;
         }
 

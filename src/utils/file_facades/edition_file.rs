@@ -14,15 +14,17 @@ impl FileFacade for EditionFile {
         Path::new("/tmp").to_path_buf()
     }
 
-    fn from_name(filename: String) -> Self {
+    fn from_name(filename: String) -> Result<Self, String> {
         let temp_file = Builder::new()
             .prefix(&filename)
             .suffix(".json")
             .rand_bytes(10)
             .tempfile()
-            .unwrap();
+            .map_err(|e| e.to_string())?;
+
         let path = temp_file.path().to_path_buf();
-        Self { path }
+
+        Ok(Self { path })
     }
 
     fn setup() -> Result<(), String> {

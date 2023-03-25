@@ -20,14 +20,13 @@ impl<'a, T: Clone> ValidatorsHandler<'a, T> {
         let mut result = self.value.clone();
 
         for validator_fn in itr.into_iter() {
-            let res = validator_fn(&mut result);
-            res?
+            validator_fn(&mut result)?
         }
 
         Ok(result)
     }
 
-    pub fn execute_ignoring_errors<I>(&self, itr: I) -> Result<T, String>
+    pub fn execute_ignoring_errors<I>(&self, itr: I) -> T
     where
         I: IntoIterator<Item = Validator<T>>,
     {
@@ -39,7 +38,7 @@ impl<'a, T: Clone> ValidatorsHandler<'a, T> {
             }
         }
 
-        Ok(result)
+        result
     }
 }
 
@@ -121,16 +120,14 @@ mod tests {
     fn should_execute_multiples_validators_differently_with_ignore_errors() {
         let value = String::from("Mew");
 
-        let t1 = ValidatorsHandler::from(&value)
-            .execute_ignoring_errors([
-                validator_to_append_two(),
-                validator_to_append_space(),
-                validator_to_throw_error(),
-                validator_to_append_mew(),
-                validator_to_append_two(),
-                validator_to_throw_error(),
-            ])
-            .unwrap();
+        let t1 = ValidatorsHandler::from(&value).execute_ignoring_errors([
+            validator_to_append_two(),
+            validator_to_append_space(),
+            validator_to_throw_error(),
+            validator_to_append_mew(),
+            validator_to_append_two(),
+            validator_to_throw_error(),
+        ]);
 
         assert_eq!("Mewtwo mewtwo", t1.as_str());
     }

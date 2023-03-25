@@ -114,10 +114,10 @@ pub fn keymap_factory() -> KeyMap {
         // ---
         // ---
         // ---
-        create_keymap(KeyCode::Up, Actions::TypingUp),
-        create_keymap(KeyCode::Down, Actions::TypingDown),
-        create_keymap(KeyCode::Right, Actions::TypingRight),
-        create_keymap(KeyCode::Left, Actions::TypingLeft),
+        create_keymap(KeyCode::Up, Actions::Up),
+        create_keymap(KeyCode::Down, Actions::Down),
+        create_keymap(KeyCode::Right, Actions::Right),
+        create_keymap(KeyCode::Left, Actions::Left),
         create_keymap(KeyCode::Home, Actions::TypingBegingLine),
         create_keymap(KeyCode::End, Actions::TypingEndLine),
         create_keymap(KeyCode::Enter, Actions::TypingClose),

@@ -18,8 +18,8 @@ impl FileFacade for RequestFile {
         FileUtils::get_data_dir().unwrap().join("requests")
     }
 
-    fn from_name(filename: String) -> Self {
+    fn from_name(filename: String) -> Result<Self, String> {
         let path = Self::get_parent_path().join(filename);
-        Self { path }
+        Ok(Self { path })
     }
 }

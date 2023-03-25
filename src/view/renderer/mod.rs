@@ -16,6 +16,7 @@ pub trait Tui<T> {
     fn render_text<'a>(&mut self, text: Texts, area: T);
     fn render_text_raw<'a>(&mut self, text: &str, area: T);
     fn render_text_raw_align_center<'a>(&mut self, text: &str, area: T);
+    fn render_text_raw_with_cursor_at<'a>(&mut self, text: &str, cursor: usize, area: Rect);
     fn render_rows_texts<'a>(&mut self, text: Vec<Texts>, area: T);
     fn render_text_with_bg<'a>(&mut self, text: Texts, color: Color, area: T);
 

@@ -17,19 +17,19 @@ impl State for DefaultEditMode {
     fn init() -> Self {
         let mut maps = HashMap::from([
             // General Move
-            (Actions::Up, Commands::go_to_tab_section()),
-            (Actions::Down, Commands::go_to_tab_section()),
-            (Actions::Right, Commands::go_to_response_body_section()),
-            (Actions::Left, Commands::go_to_request_body_section()),
+            (Actions::Right, Commands::edit_mode_go_to_next_char()),
+            (Actions::Left, Commands::edit_mode_go_to_prev_char()),
+            (Actions::TypingErase, Commands::edit_mode_delete_prev_char()),
+            (Actions::TypingBegingLine, Commands::edit_mode_go_to_start()),
+            (Actions::TypingEndLine, Commands::edit_mode_go_to_end()),
             (Actions::TypingClose, Commands::process_edit_mode()),
             (Actions::TypingCancel, Commands::cancel_edit_mode()),
-            (Actions::TypingErase, Commands::erase_last_char_edit_mode()),
         ]);
 
         keymap_factory().values().for_each(|f| {
             let action = f.action;
             if let Actions::TypingChar(ch) = action {
-                maps.insert(action, Commands::type_char_edit_mode(ch));
+                maps.insert(action, Commands::edit_mode_insert_char(ch));
             };
         });
 

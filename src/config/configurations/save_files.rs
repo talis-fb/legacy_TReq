@@ -65,7 +65,7 @@ impl ConfigurationEditable<UUID, RequestFile, Request> for SaveFiles {
         if let Some(f) = file_in_map {
             f.save_content(request_str)?;
         } else {
-            let mut new_file = RequestFile::from_name(key.value.clone());
+            let mut new_file = RequestFile::from_name(key.value.clone())?;
             new_file.save_content(request_str)?;
             self.map.insert(key.clone(), new_file);
         }
@@ -79,8 +79,8 @@ impl SaveFiles {
         file_in_map.remove()
     }
 
-    pub fn exist(&self, key: &UUID) -> Option<()> {
-        self.get_map().get(key).map(|_| ())
+    pub fn exist(&self, key: &UUID) -> bool {
+        self.get_map().get(key).map(|_| ()).is_some()
     }
 
     pub fn exist_already_some_file(&self) -> bool {

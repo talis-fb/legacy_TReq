@@ -49,7 +49,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Configurations and Setup of necessary folders
     ConfigManager::setup_env().expect("Error creating folders .local/share/treq. If error persist create it with mkdir $HOME/.local/share/treq");
     let config_manager = ConfigManager::init();
-    let already_opened = config_manager
+    let already_opened_app_once = config_manager
         .saved_requests
         .lock()
         .unwrap()
@@ -82,9 +82,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let keymap_doc_mode = KeyboardListerner::init(commands_input_mode);
 
     let mut input_handler = InputHandler::init(
-        keymap.clone(),
+        keymap,
         data_store.config.editor.clone(),
         data_store.config.edition_files_handler.clone(),
+        action_queue_sender.clone(),
     );
 
     // Init UI
@@ -96,66 +97,62 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.set_action_manager(action_manager);
     app.set_web_client(web_client);
     app.set_data_store(data_store);
-    app.set_renderer(action_queue_sender.clone());
+    app.set_renderer(action_queue_sender);
 
-    if !already_opened {
+    if !already_opened_app_once {
         command_handler.add(Commands::open_welcome_screen());
         command_handler.run(&mut app).unwrap();
     }
-
-    let handle_keymap = input_handler.async_handler_loop(action_queue_sender.clone());
-    let (mut task_input_listener, mut finish_sender_input_listener) = handle_keymap;
 
     while !app.is_finished {
         view.render(app.get_data_store());
 
         match app.get_mode() {
             InputMode::Vim => {
-                // Closes UI and Input listener
-                finish_sender_input_listener.send(()).unwrap();
-                task_input_listener.abort();
-                task_input_listener.await.unwrap();
+                // Closes UI to dont conflit with external APP
                 view.close();
 
-                // Get result and save in app
-                let buffer = input_handler.sync_open_vim(
-                    app.get_input_buffer_value(),
-                    app.get_data_store().get_request_uuid(),
-                );
+                // Update and open it, getting result
+                input_handler.update(InputMode::Vim);
+                let buffer = input_handler
+                    .sync_open_vim(
+                        app.get_input_buffer_value(),
+                        app.get_data_store().get_request_uuid(),
+                    )
+                    .unwrap();
+
+                // Set Buffer and return to Normal Mode
                 app.set_input_buffer_value(buffer);
-
-                // Restart and set Buffer
-                view = UI::init();
-                app.clear_log();
                 app.exec_input_buffer_command()?;
-                app.set_mode(InputMode::Normal);
-                let handle_keymap = input_handler.async_handler_loop(action_queue_sender.clone());
-                (task_input_listener, finish_sender_input_listener) = handle_keymap;
 
-                // Even closing UI, event::read() returns some events
-                // after opened Editor
-                // This ignores all these events to don't execute nothing
+                app.set_mode(InputMode::Normal);
+                input_handler.update(InputMode::Normal);
+
+                // Restart UI, set Buffer and return to Normal Mode
+                view = UI::init();
+                view.render(app.get_data_store());
+
+                // Clear queue if some event was catchig by event:read() in external editor
                 while action_queue_receiver.try_recv().is_ok() {
-                    // Do nothing, only consumes the queue
                     log::info!("Clear queue");
                 }
-
-                continue;
             }
 
+            mode => {
+                input_handler.update(mode);
+            }
+        }
+
+        match app.get_mode() {
             InputMode::Help => {
-                input_handler.set_keymap(keymap_doc_mode.clone());
                 app.set_new_state(DefaultHelpMode::init());
             }
 
             InputMode::Insert => {
-                input_handler.set_keymap(keymap_input_mode.clone());
                 app.set_new_state(DefaultEditMode::init());
             }
 
-            InputMode::Normal => {
-                input_handler.set_keymap(keymap.clone());
-            }
+            _ => {}
         }
 
         // Listen queue of user's events to execute --------------------
@@ -182,14 +179,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
             Err(err) => {
                 log::error!("Action ERROR");
                 log::error!("{}", err);
-                std::thread::sleep(std::time::Duration::from_millis(5000));
             }
         }
     }
 
+    input_handler.close();
     view.close();
-
-    finish_sender_input_listener.send(()).unwrap();
 
     Ok(())
 }
