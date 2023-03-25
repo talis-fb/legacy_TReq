@@ -8,8 +8,9 @@ use crossterm::{
 use std::{collections::HashMap, io};
 use tui::{backend::CrosstermBackend, Terminal};
 
-use super::components::Component;
-use super::{components::views::app::AppView, ViewStates};
+use crate::view::components::Component;
+use crate::view::views::app::AppView;
+use crate::view::views::ViewStates;
 
 use super::renderer::tui_rs::BackendTuiRs;
 

@@ -18,5 +18,4 @@ pub mod doc_reader;
 pub mod input_block;
 pub mod tab_blocked_text;
 pub mod tab_list;
-pub mod views;
 pub mod welcome_doc;

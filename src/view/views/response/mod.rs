@@ -3,7 +3,7 @@ use crate::base::states::names::StatesNames;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
 use crate::view::style::{Color, Texts};
-use crate::view::ViewStates;
+use crate::view::views::ViewStates;
 use crate::{base::stores::MainStore, view::components::Component};
 use serde::{Deserialize, Serialize};
 use tui::layout::{Constraint, Direction, Layout, Rect};

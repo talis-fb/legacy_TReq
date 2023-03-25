@@ -6,7 +6,7 @@ use crate::view::components::counter_response_time::CounterResponseTime;
 use crate::view::components::doc_reader::DocReader;
 use crate::view::components::input_block::InputTextBlock;
 use crate::view::renderer::tui_rs::BackendTuiRs;
-use crate::view::ViewStates;
+use crate::view::views::ViewStates;
 
 use crate::view::style::Size;
 use crate::{base::stores::MainStore, view::components::Component};
@@ -165,15 +165,6 @@ impl Component for AppView<'_> {
             }
             _ => response_view.render(f),
         }
-
-        log::info!("FOIIIIIIII fim");
-        // let stage = response.stage;
-        // let has_been = status != 0;
-        // if has_been {
-        //     response_view.render(f);
-        // } else {
-        //     welcome_doc_view.render(f);
-        // }
 
         if let Some(component) = popup_component {
             component.render(f);
