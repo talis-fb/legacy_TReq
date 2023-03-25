@@ -1,12 +1,14 @@
 use std::sync::Arc;
 
 pub mod requests;
+pub mod environment;
 
 use crate::base::states::names::StatesNames;
 use crate::input::buffer::InputKeyboardBuffer;
 use crate::utils::custom_types::uuid::UUID;
 use crate::{app::InputMode, config::manager::ConfigManager};
 
+use self::environment::EnvironmentStore;
 use self::requests::RequestStore;
 
 use super::{
@@ -39,6 +41,7 @@ pub struct MainStore {
 
     // Config
     pub config: ConfigManager,
+    pub environment: EnvironmentStore,
 }
 
 impl MainStore {
@@ -47,6 +50,7 @@ impl MainStore {
 
         Self {
             requests: RequestStore::init(config.saved_requests.clone()),
+            environment: EnvironmentStore::init(),
             last_response,
             current_state: StatesNames::Default,
             mode: InputMode::Normal,
@@ -136,16 +140,7 @@ impl MainStore {
         self.last_response.clone()
     }
 
-    pub fn get_keys_queue(&self) -> String {
-        "ai".to_string()
-    }
-
     pub fn get_mode(&self) -> InputMode {
         self.mode
-    }
-
-    // doc_reader
-    pub fn set_doc_reader(&mut self, doc_reader: DocReaderHandler) {
-        self.doc_reader = Some(doc_reader)
     }
 }
