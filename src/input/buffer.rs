@@ -38,7 +38,7 @@ impl InputKeyboardBuffer {
 
     pub fn set_value(&mut self, value: String) {
         self.value = value.clone();
-        self.value_backup = Some(value.clone());
+        self.value_backup = Some(value);
         self.cursor = self.value.chars().count();
     }
 
@@ -212,22 +212,18 @@ mod tests {
         assert_eq!(buffer.value, "Hello Worl".to_string());
         assert_eq!(buffer.get_cursor(), 10);
 
-
         // Hel<l>o Worl
         buffer.set_cursor(3);
-
 
         // He<l>o Worl
         buffer.delete_prev_char();
         assert_eq!(buffer.value, "Helo Worl".to_string());
         assert_eq!(buffer.get_cursor(), 2);
 
-
         // He<o> World
         buffer.delete_next_char();
         assert_eq!(buffer.value, "Heo Worl".to_string());
         assert_eq!(buffer.get_cursor(), 2);
-
 
         // He<>
         buffer.delete_till_end();
@@ -240,7 +236,7 @@ mod tests {
         let mut buffer = InputKeyboardBuffer::init();
         buffer.set_value("Hello World".to_string());
 
-        fn is_value_same_initial(buffer: &InputKeyboardBuffer){
+        fn is_value_same_initial(buffer: &InputKeyboardBuffer) {
             assert_eq!(buffer.value, "Hello World".to_string());
         }
 
@@ -248,12 +244,10 @@ mod tests {
         is_value_same_initial(&buffer);
         assert_eq!(buffer.get_cursor(), 11);
 
-
         // Hello Worl<d>
         buffer.go_to_prev_char();
         is_value_same_initial(&buffer);
         assert_eq!(buffer.get_cursor(), 10);
-
 
         // Hello Wo<r>ld
         buffer.go_to_prev_char();
@@ -261,12 +255,10 @@ mod tests {
         is_value_same_initial(&buffer);
         assert_eq!(buffer.get_cursor(), 8);
 
-
         // Hello Wor<l>d
         buffer.go_to_next_char();
         is_value_same_initial(&buffer);
         assert_eq!(buffer.get_cursor(), 9);
-
 
         // Hello World<>
         for _ in 0..100 {
@@ -275,7 +267,6 @@ mod tests {
         is_value_same_initial(&buffer);
         assert_eq!(buffer.get_cursor(), 11);
 
-
         // <H>ello World
         for _ in 0..100 {
             buffer.go_to_prev_char();
@@ -283,12 +274,10 @@ mod tests {
         is_value_same_initial(&buffer);
         assert_eq!(buffer.get_cursor(), 0);
 
-
         // Hello World<>
         buffer.go_to_end();
         is_value_same_initial(&buffer);
         assert_eq!(buffer.get_cursor(), 11);
-
 
         // <H>ello Worl
         buffer.go_to_start();

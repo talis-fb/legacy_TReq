@@ -117,7 +117,7 @@ impl Component for AppView<'_> {
                         screen_area,
                     ),
                     text: &store.input_buffer.value,
-                    cursor: store.input_buffer.get_cursor()
+                    cursor: store.input_buffer.get_cursor(),
                 })),
                 InputMode::Help => Some(Box::new(DocReader {
                     area: BackendTuiRs::create_absolute_centered_area(

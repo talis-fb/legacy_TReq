@@ -321,7 +321,10 @@ impl Tui<Rect> for BackendTuiRs {
         let texts: Vec<Span> = if cursor == text.len() {
             vec![
                 Span::from(text.to_string()),
-                Span::styled(" ", Style::default().fg(ColorTuiRs::Black).bg(ColorTuiRs::White)),
+                Span::styled(
+                    " ",
+                    Style::default().fg(ColorTuiRs::Black).bg(ColorTuiRs::White),
+                ),
             ]
         } else {
             let (back_text, front_text) = text.split_at(cursor);
@@ -329,7 +332,10 @@ impl Tui<Rect> for BackendTuiRs {
 
             vec![
                 Span::from(back_text.to_string()),
-                Span::styled(character_with_cursor.to_string(), Style::default().fg(ColorTuiRs::Black).bg(ColorTuiRs::White)),
+                Span::styled(
+                    character_with_cursor.to_string(),
+                    Style::default().fg(ColorTuiRs::Black).bg(ColorTuiRs::White),
+                ),
                 Span::from(front_text.to_string()),
             ]
         };

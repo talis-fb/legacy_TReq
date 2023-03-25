@@ -19,12 +19,9 @@ impl State for DefaultEditMode {
             // General Move
             (Actions::Right, Commands::edit_mode_go_to_next_char()),
             (Actions::Left, Commands::edit_mode_go_to_prev_char()),
-
             (Actions::TypingErase, Commands::edit_mode_delete_prev_char()),
-
             (Actions::TypingBegingLine, Commands::edit_mode_go_to_start()),
             (Actions::TypingEndLine, Commands::edit_mode_go_to_end()),
-
             (Actions::TypingClose, Commands::process_edit_mode()),
             (Actions::TypingCancel, Commands::cancel_edit_mode()),
         ]);

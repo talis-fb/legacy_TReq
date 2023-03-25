@@ -31,7 +31,6 @@ impl Commands {
                 let input_buffer = app.get_input_buffer_mut();
                 input_buffer.delete_prev_char();
                 Ok(())
-
             }
         }
 
@@ -46,7 +45,6 @@ impl Commands {
                 let input_buffer = app.get_input_buffer_mut();
                 input_buffer.delete_next_char();
                 Ok(())
-
             }
         }
 
@@ -61,7 +59,6 @@ impl Commands {
                 let input_buffer = app.get_input_buffer_mut();
                 input_buffer.delete_till_end();
                 Ok(())
-
             }
         }
 
@@ -76,7 +73,6 @@ impl Commands {
                 let input_buffer = app.get_input_buffer_mut();
                 input_buffer.go_to_prev_char();
                 Ok(())
-
             }
         }
 
@@ -91,13 +87,11 @@ impl Commands {
                 let input_buffer = app.get_input_buffer_mut();
                 input_buffer.go_to_next_char();
                 Ok(())
-
             }
         }
 
         Arc::new(Box::new(S {}))
     }
-
 
     pub fn edit_mode_go_to_start() -> Command {
         struct S;
@@ -107,7 +101,6 @@ impl Commands {
                 let input_buffer = app.get_input_buffer_mut();
                 input_buffer.go_to_start();
                 Ok(())
-
             }
         }
 
@@ -122,7 +115,6 @@ impl Commands {
                 let input_buffer = app.get_input_buffer_mut();
                 input_buffer.go_to_end();
                 Ok(())
-
             }
         }
 

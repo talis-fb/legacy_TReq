@@ -82,7 +82,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let keymap_doc_mode = KeyboardListerner::init(commands_input_mode);
 
     let mut input_handler = InputHandler::init(
-        keymap.clone(),
+        keymap,
         data_store.config.editor.clone(),
         data_store.config.edition_files_handler.clone(),
         action_queue_sender.clone(),
@@ -97,7 +97,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.set_action_manager(action_manager);
     app.set_web_client(web_client);
     app.set_data_store(data_store);
-    app.set_renderer(action_queue_sender.clone());
+    app.set_renderer(action_queue_sender);
 
     if !already_opened_app_once {
         command_handler.add(Commands::open_welcome_screen());
@@ -112,14 +112,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 // Closes UI to dont conflit with external APP
                 view.close();
 
-
                 // Update and open it, getting result
                 input_handler.update(InputMode::Vim);
-                let buffer = input_handler.sync_open_vim(
-                    app.get_input_buffer_value(),
-                    app.get_data_store().get_request_uuid(),
-                ).unwrap();
-
+                let buffer = input_handler
+                    .sync_open_vim(
+                        app.get_input_buffer_value(),
+                        app.get_data_store().get_request_uuid(),
+                    )
+                    .unwrap();
 
                 // Set Buffer and return to Normal Mode
                 app.set_input_buffer_value(buffer);
@@ -127,7 +127,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
                 app.set_mode(InputMode::Normal);
                 input_handler.update(InputMode::Normal);
-
 
                 // Restart UI, set Buffer and return to Normal Mode
                 view = UI::init();
@@ -137,15 +136,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 while action_queue_receiver.try_recv().is_ok() {
                     log::info!("Clear queue");
                 }
-
             }
 
             mode => {
                 input_handler.update(mode);
             }
-
         }
-
 
         match app.get_mode() {
             InputMode::Help => {

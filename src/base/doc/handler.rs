@@ -35,7 +35,7 @@ impl DocReaderHandler {
         if self.position > usize::MIN {
             self.position -= 1;
         }
-     }
+    }
 
     pub fn go_to_start(&mut self) {
         self.position = 0;
@@ -79,7 +79,7 @@ mod tests {
 
         assert_eq!(handler.position, 3);
 
-        for _ in 0..100  {
+        for _ in 0..100 {
             handler.go_to_next_row();
         }
 
@@ -94,7 +94,7 @@ mod tests {
 
         assert_eq!(handler.position, 4);
 
-        for _ in 0..100  {
+        for _ in 0..100 {
             handler.go_to_prev_row();
         }
 
