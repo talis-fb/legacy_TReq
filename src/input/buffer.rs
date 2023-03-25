@@ -22,6 +22,9 @@ impl InputKeyboardBuffer {
     pub fn reset_to_backup(&mut self) {
         self.value = self.value_backup.clone().unwrap_or_default()
     }
+    pub fn get_cursor(&self) -> usize {
+        self.cursor
+    }
 }
 
 // Managing editing inside app

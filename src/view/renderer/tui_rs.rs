@@ -317,6 +317,34 @@ impl Tui<Rect> for BackendTuiRs {
         self.queue_render.push(Box::new(closure));
     }
 
+    fn render_text_raw_with_cursor_at<'a>(&mut self, text: &str, cursor: usize, area: Rect) {
+        let texts: Vec<Span> = if cursor == text.len() {
+            vec![
+                Span::from(text.to_string()),
+                Span::styled(" ", Style::default().fg(ColorTuiRs::Black).bg(ColorTuiRs::White)),
+            ]
+        } else {
+            let (back_text, front_text) = text.split_at(cursor);
+            let (character_with_cursor, front_text) = front_text.split_at(1);
+
+            vec![
+                Span::from(back_text.to_string()),
+                Span::styled(character_with_cursor.to_string(), Style::default().fg(ColorTuiRs::Black).bg(ColorTuiRs::White)),
+                Span::from(front_text.to_string()),
+            ]
+        };
+
+        let spans = Spans::from(texts);
+
+        let text = Paragraph::new(spans).alignment(Alignment::Left);
+
+        let closure = move |f: &mut Frame<CrosstermBackend<std::io::Stdout>>| {
+            f.render_widget(text.clone(), area)
+        };
+
+        self.queue_render.push(Box::new(closure));
+    }
+
     fn render_text_raw_align_center<'a>(&mut self, text: &str, area: Rect) {
         let text = Paragraph::new(text.to_string()).alignment(Alignment::Center);
 
