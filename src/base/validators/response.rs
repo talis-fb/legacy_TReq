@@ -4,12 +4,14 @@ use serde_json::Value;
 
 impl Validators {
     pub fn set_pretty_json_response() -> Validator<Response> {
-        |res: &mut Response| {
+        let f = |res: &mut Response| {
             let json_obj: Value = serde_json::from_str(&res.body).map_err(|e| e.to_string())?;
             let prety_body = serde_json::to_string_pretty(&json_obj).map_err(|e| e.to_string())?;
             res.body = prety_body;
             Ok(())
-        }
+        };
+
+        Box::new(f)
     }
 }
 

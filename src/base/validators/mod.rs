@@ -1,7 +1,7 @@
 pub mod request;
 pub mod response;
 
-pub type Validator<T> = fn(app: &mut T) -> Result<(), String>;
+pub type Validator<T> = Box<dyn FnOnce(&mut T) -> Result<(), String>>;
 
 pub struct Validators;
 
@@ -47,31 +47,36 @@ mod tests {
     use super::*;
 
     fn validator_to_append_mew() -> Validator<String> {
-        |parameter: &mut String| -> Result<(), String> {
+        let f = |parameter: &mut String| -> Result<(), String> {
             parameter.push_str("mew");
             Ok(())
-        }
+        };
+
+        Box::new(f)
     }
 
     fn validator_to_append_two() -> Validator<String> {
-        |parameter: &mut String| -> Result<(), String> {
+        let f = |parameter: &mut String| -> Result<(), String> {
             parameter.push_str("two");
             Ok(())
-        }
+        };
+        Box::new(f)
     }
 
     fn validator_to_append_space() -> Validator<String> {
-        |parameter: &mut String| -> Result<(), String> {
+        let f = |parameter: &mut String| -> Result<(), String> {
             parameter.push(' ');
             Ok(())
-        }
+        };
+        Box::new(f)
     }
 
     fn validator_to_pop_str() -> Validator<String> {
-        |parameter: &mut String| {
+        let f = |parameter: &mut String| {
             parameter.pop();
             Ok(())
-        }
+        };
+        Box::new(f)
     }
 
     #[test]
@@ -113,7 +118,8 @@ mod tests {
 
     // Ignoring errors TEST CASES
     fn validator_to_throw_error() -> Validator<String> {
-        |parameter: &mut String| Err("".to_string())
+        let f = |parameter: &mut String| Err("".to_string());
+        Box::new(f)
     }
 
     #[test]

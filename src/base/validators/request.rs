@@ -1,9 +1,9 @@
 use super::{Validator, Validators};
-use crate::base::web::request::Request;
+use crate::base::{web::request::Request, stores::environment::EnvironmentStore};
 
 impl Validators {
     pub fn url_protocol_request() -> Validator<Request> {
-        |req: &mut Request| {
+        let f = |req: &mut Request| {
             let has_the_protocol_in_begin =
                 regex::Regex::new(r"^((http|https)://)(.+)$").map_err(|e| e.to_string())?;
 
@@ -13,7 +13,17 @@ impl Validators {
             }
 
             Ok(())
-        }
+        };
+
+        Box::new(f)
+    }
+
+    pub fn url_and_body_template_engine<'a>(environment: &'a EnvironmentStore) -> Validator<Request> {
+        let f =  |req: &mut Request| {
+            Ok(())
+        };
+
+        Box::new(f)
     }
 }
 
