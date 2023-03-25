@@ -13,4 +13,8 @@ impl EnvironmentStore {
             session: HashMap::new(),
         }
     }
+
+    pub fn get_map(&self) -> &HashMap<String, String> {
+        &self.global
+    }
 }

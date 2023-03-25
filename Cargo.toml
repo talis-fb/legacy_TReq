@@ -24,6 +24,7 @@ directories = "4.0.1"
 regex = "1.7.1"
 log = "0.4.17"
 log4rs = "1.2.0"
+tera = "1.18.1"
 
 [[bin]]
 name = "treq"

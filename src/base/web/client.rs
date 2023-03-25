@@ -21,8 +21,10 @@ where
     }
 
     pub async fn submit(&self, request: Request) -> Result<Response, String> {
-        let request_to_do =
-            ValidatorsHandler::from(&request).execute([Validators::url_protocol_request()])?;
+        let request_to_do = ValidatorsHandler::from(&request).execute([
+            Validators::url_protocol_request(),
+            Validators::url_and_body_template_engine(),
+        ])?;
 
         let Request {
             url, headers, body, ..

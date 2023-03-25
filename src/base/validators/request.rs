@@ -1,5 +1,7 @@
 use super::{Validator, Validators};
-use crate::base::{web::request::Request, stores::environment::EnvironmentStore};
+use crate::base::{stores::environment::EnvironmentStore, web::request::Request};
+
+use tera::{Context, Tera};
 
 impl Validators {
     pub fn url_protocol_request() -> Validator<Request> {
@@ -18,8 +20,25 @@ impl Validators {
         Box::new(f)
     }
 
-    pub fn url_and_body_template_engine<'a>(environment: &'a EnvironmentStore) -> Validator<Request> {
-        let f =  |req: &mut Request| {
+    pub fn url_and_body_template_engine<'a>() -> Validator<Request> {
+        let mut context = Context::new();
+
+        context.insert("token", "It works!");
+
+        let f = move |req: &mut Request| -> Result<(), String> {
+            let mut tera = Tera::default();
+
+            let url_rendered = tera
+                .render_str(&req.url, &context)
+                .map_err(|e| e.to_string())?;
+
+            let body_rendered = tera
+                .render_str(&req.body, &context)
+                .map_err(|e| e.to_string())?;
+
+            req.url = url_rendered;
+            req.body = body_rendered;
+
             Ok(())
         };
 
