@@ -65,7 +65,7 @@ impl ConfigurationEditable<UUID, RequestFile, Request> for SaveFiles {
         if let Some(f) = file_in_map {
             f.save_content(request_str)?;
         } else {
-            let mut new_file = RequestFile::from_name(key.value.clone());
+            let mut new_file = RequestFile::from_name(key.value.clone())?;
             new_file.save_content(request_str)?;
             self.map.insert(key.clone(), new_file);
         }

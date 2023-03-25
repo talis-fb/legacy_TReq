@@ -9,32 +9,35 @@ pub struct FileEditionHandler {
     files: HashMap<UUID, EditionFile>,
 }
 impl FileEditionHandler {
-    fn create_or_open(&mut self, uuid: &UUID) -> &mut EditionFile {
-        self.files
+    fn create_or_open(&mut self, uuid: &UUID) -> Result<&mut EditionFile, String> {
+        let file = self
+            .files
             .entry(uuid.clone())
-            .or_insert(EditionFile::from_name(uuid.value.clone()))
+            .or_insert(EditionFile::from_name(uuid.value.clone())?);
+
+        Ok(file)
     }
 
     pub fn get_content(&mut self, uuid: &UUID) -> Result<String, String> {
-        let file = self.create_or_open(uuid);
+        let file = self.create_or_open(uuid)?;
         file.get_content()
     }
 
     pub fn save_content(&mut self, uuid: &UUID, content: String) -> Result<(), String> {
-        let file = self.create_or_open(uuid);
+        let file = self.create_or_open(uuid)?;
         file.save_content(content)
     }
 
-    pub fn get_path(&mut self, uuid: &UUID) -> PathBuf {
-        let file = self.create_or_open(uuid);
-        file.get_path()
+    pub fn get_path(&mut self, uuid: &UUID) -> Result<PathBuf, String> {
+        let file = self.create_or_open(uuid)?;
+        let path = file.get_path();
+        Ok(path)
     }
 }
 impl Drop for FileEditionHandler {
     fn drop(&mut self) {
-        self.files
-            .values_mut()
-            .into_iter()
-            .for_each(|f| f.remove().unwrap());
+        self.files.values_mut().into_iter().for_each(|f| {
+            let _ = f.remove();
+        });
     }
 }

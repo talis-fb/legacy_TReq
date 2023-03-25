@@ -118,7 +118,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 let buffer = input_handler.sync_open_vim(
                     app.get_input_buffer_value(),
                     app.get_data_store().get_request_uuid(),
-                );
+                ).unwrap();
 
 
                 // Set Buffer and return to Normal Mode

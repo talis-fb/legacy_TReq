@@ -77,7 +77,7 @@ impl InputHandler {
     }
     pub fn close(&mut self) {
         let sender = self.finisher_async_listener.take();
-        if sender.is_some()  {
+        if sender.is_some() {
             sender.unwrap().send(()).unwrap();
         }
 
@@ -100,7 +100,8 @@ impl InputHandler {
                 }
 
                 input_mode => {
-                    if self.task_async_listener.is_none() && self.finisher_async_listener.is_none() {
+                    if self.task_async_listener.is_none() && self.finisher_async_listener.is_none()
+                    {
                         self.open_async_listener();
                     }
 
@@ -147,13 +148,13 @@ impl InputHandler {
         self.finisher_async_listener = Some(finished_sender);
     }
 
-    pub fn sync_open_vim(&mut self, buffer: String, uuid: &UUID) -> String {
+    pub fn sync_open_vim(&mut self, buffer: String, uuid: &UUID) -> Result<String, String> {
         self.files
             .lock()
             .unwrap()
             .save_content(uuid, buffer)
             .unwrap();
-        let file_path = self.files.lock().unwrap().get_path(uuid);
+        let file_path = self.files.lock().unwrap().get_path(uuid)?;
 
         let mut child = OSCommand::new(&self.configuration.editor)
             .arg(file_path.clone())
@@ -165,6 +166,6 @@ impl InputHandler {
 
         let status = child.wait().expect("failed to wait on child");
 
-        std::fs::read_to_string(file_path).unwrap()
+        std::fs::read_to_string(file_path).map_err(|e| e.to_string())
     }
 }

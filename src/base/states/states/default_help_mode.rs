@@ -1,7 +1,6 @@
 use crate::actions::Actions;
 use crate::base::states::states::{CommandsMap, State, StatesNames};
 use crate::commands::Commands;
-use crate::input::keymaps::input_mode::keymap_factory;
 use std::collections::HashMap;
 
 pub struct DefaultHelpMode {
@@ -15,7 +14,7 @@ impl State for DefaultHelpMode {
         &self.maps
     }
     fn init() -> Self {
-        let mut maps = HashMap::from([
+        let maps = HashMap::from([
             // General Move
             (Actions::Up, Commands::doc_up()),
             (Actions::Down, Commands::doc_down()),
