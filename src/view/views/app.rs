@@ -12,6 +12,7 @@ use crate::view::style::Size;
 use crate::{base::stores::MainStore, view::components::Component};
 use tui::layout::{Constraint, Direction, Layout, Rect};
 
+use super::environment::EnvironmentEditView;
 use super::logs::LogView;
 
 use super::request::RequestView;
@@ -32,6 +33,7 @@ impl AppView<'_> {
         LogView::prepare_render(states, store);
         RequestView::prepare_render(states, store);
         ResponseView::prepare_render(states, store);
+        EnvironmentEditView::prepare_render(states, store);
     }
 }
 
@@ -165,6 +167,18 @@ impl Component for AppView<'_> {
             }
             _ => response_view.render(f),
         }
+
+        let environmet_view = EnvironmentEditView {
+            area: BackendTuiRs::create_absolute_centered_area(
+                Size::Percentage(80),
+                Size::Percentage(90),
+                screen_area,
+            ),
+            store,
+            states: self.states,
+        };
+
+        environmet_view.render(f);
 
         if let Some(component) = popup_component {
             component.render(f);
