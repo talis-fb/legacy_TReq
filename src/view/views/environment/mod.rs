@@ -1,39 +1,12 @@
-use super::request::request_edition_view::{RequestEditionView, StatesReqEditionView};
-use crate::base::states::names::StatesNames;
-use crate::base::web::request::METHODS;
-use crate::view::components::block_text::BlockText;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
 use crate::view::style::{Color, Style, Text, Texts};
 use crate::view::views::ViewStates;
 use crate::{base::stores::MainStore, view::components::Component};
-use serde::{Deserialize, Serialize};
 use tui::layout::{Constraint, Direction, Layout, Rect};
+use crate::view::views::environment::store::{State, Var, EnvironmentVars, OpenedVars};
 
-#[derive(Deserialize, Serialize)]
-struct Var {
-    key: String,
-}
-
-#[derive(Deserialize, Serialize)]
-struct EnvironmentVars {
-    global: Vec<Var>,
-    session: Vec<Var>,
-}
-
-#[derive(Deserialize, Serialize)]
-enum OpenedVars {
-    Global,
-    Session,
-}
-
-// Manage the State of view
-#[derive(Deserialize, Serialize)]
-struct State {
-    opened_section: OpenedVars,
-    active_var: usize,
-    vars: EnvironmentVars,
-}
+pub mod store;
 
 static KEY_STATE: &str = "environment_vars__state";
 // ------------------------
@@ -46,43 +19,44 @@ pub struct EnvironmentEditView<'a> {
 
 impl EnvironmentEditView<'_> {
     pub fn prepare_render<'b>(states: &mut ViewStates, store: &'b MainStore) {
-        let state_json = states.entry(KEY_STATE.to_string()).or_default();
-        let last_state: Result<State, serde_json::Error> = serde_json::from_str(state_json);
-
-        let global_vars: Vec<Var> = store
-            .environment
-            .global
-            .iter()
-            .map(|(key, _)| Var { key: key.clone() })
-            .collect();
-
-        let session_vars: Vec<Var> = store
-            .environment
-            .session
-            .iter()
-            .map(|(key, _)| Var { key: key.clone() })
-            .collect();
-
-        let state = State {
-            opened_section: OpenedVars::Session,
-            active_var: 0,
-            vars: EnvironmentVars {
-                global: global_vars,
-                session: session_vars,
-            },
-        };
-
-        states.insert(
-            KEY_STATE.to_string(),
-            serde_json::to_string(&state).unwrap(),
-        );
+        // let state_json = states.entry(KEY_STATE.to_string()).or_default();
+        // let last_state: Result<State, serde_json::Error> = serde_json::from_str(state_json);
+        //
+        // let global_vars: Vec<Var> = store
+        //     .environment
+        //     .global
+        //     .iter()
+        //     .map(|(key, _)| Var { key: key.clone() })
+        //     .collect();
+        //
+        // let session_vars: Vec<Var> = store
+        //     .environment
+        //     .session
+        //     .iter()
+        //     .map(|(key, _)| Var { key: key.clone() })
+        //     .collect();
+        //
+        // let state = State {
+        //     opened_section: OpenedVars::Session,
+        //     active_var: 0,
+        //     vars: EnvironmentVars {
+        //         global: global_vars,
+        //         session: session_vars,
+        //     },
+        // };
+        //
+        // states.insert(
+        //     KEY_STATE.to_string(),
+        //     serde_json::to_string(&state).unwrap(),
+        // );
     }
 }
 
 impl Component for EnvironmentEditView<'_> {
     type Backend = BackendTuiRs;
     fn render(&self, f: &mut Self::Backend) {
-        let state: State = serde_json::from_str(self.states.get(KEY_STATE).unwrap()).unwrap();
+        // let state: State = serde_json::from_str(self.states.get(KEY_STATE).unwrap()).unwrap();
+        let state = &self.store.view.environment;
 
         f.render_clear_area(self.area);
 
@@ -129,8 +103,8 @@ impl Component for EnvironmentEditView<'_> {
         };
 
         let vars_keys = match state.opened_section {
-            OpenedVars::Session => state.vars.session,
-            OpenedVars::Global => state.vars.global,
+            OpenedVars::Session => &state.vars.session,
+            OpenedVars::Global => &state.vars.global,
         };
 
         let vars_keys = vars_keys.split_at(0).1;

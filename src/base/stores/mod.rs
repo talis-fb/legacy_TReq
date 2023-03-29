@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 pub mod requests;
 pub mod environment;
+pub mod view;
 
 use crate::base::states::names::StatesNames;
 use crate::input::buffer::InputKeyboardBuffer;
@@ -10,6 +11,7 @@ use crate::{app::InputMode, config::manager::ConfigManager};
 
 use self::environment::EnvironmentStore;
 use self::requests::RequestStore;
+use self::view::ViewStore;
 
 use super::{
     doc::handler::DocReaderHandler,
@@ -42,6 +44,8 @@ pub struct MainStore {
     // Config
     pub config: ConfigManager,
     pub environment: EnvironmentStore,
+
+    pub view: ViewStore,
 }
 
 impl MainStore {
@@ -51,6 +55,7 @@ impl MainStore {
         Self {
             requests: RequestStore::init(config.saved_requests.clone()),
             environment: EnvironmentStore::init(),
+            view: ViewStore::init(),
             last_response,
             current_state: StatesNames::Default,
             mode: InputMode::Normal,

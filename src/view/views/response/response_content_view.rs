@@ -1,14 +1,9 @@
 use crate::view::components::tab_blocked_text::TabBlockText;
 use crate::view::components::Component;
 use crate::view::renderer::tui_rs::BackendTuiRs;
-use serde::{Deserialize, Serialize};
 use tui::layout::Rect;
 
-#[derive(Deserialize, Serialize)]
-pub enum StatesResEditionView {
-    BodyOpened,
-    HeadersOpened,
-}
+use crate::view::views::response::store::StatesResEditionView;
 
 pub struct ResposeEditionView<'a> {
     pub area: Rect,
