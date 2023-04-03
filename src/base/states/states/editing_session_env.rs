@@ -3,12 +3,12 @@ use crate::base::states::states::{CommandsMap, State, StatesNames};
 use crate::commands::Commands;
 use std::collections::HashMap;
 
-pub struct EditingEnvState {
+pub struct EditingSessionEnvState {
     pub maps: CommandsMap,
 }
-impl State for EditingEnvState {
+impl State for EditingSessionEnvState {
     fn get_state_name(&self) -> StatesNames {
-        StatesNames::EditingEnv
+        StatesNames::EditingSessionEnv
     }
     fn get_map(&self) -> &CommandsMap {
         &self.maps
@@ -16,10 +16,11 @@ impl State for EditingEnvState {
     fn init() -> Self {
         Self {
             maps: HashMap::from([
-                // (Actions::Edit, Commands::edit_request_body_vim()),
+                (Actions::Quit, Commands::exit_environment_view()),
                 (Actions::Switch, Commands::switch_opened_env_vars()),
-                // (Actions::Up, Commands::go_to_url_section()),
-                // (Actions::Right, Commands::go_to_response_body_section()),
+                (Actions::Edit, Commands::edit_current_session_env_var()),
+                (Actions::Up, Commands::go_to_prev_session_env_var()),
+                (Actions::Down, Commands::go_to_next_session_env_var()),
             ]),
         }
     }

@@ -1,10 +1,10 @@
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::renderer::Tui;
 use crate::view::style::{Color, Style, Text, Texts};
+use crate::view::views::environment::store::OpenedVars;
 use crate::view::views::ViewStates;
 use crate::{base::stores::MainStore, view::components::Component};
 use tui::layout::{Constraint, Direction, Layout, Rect};
-use crate::view::views::environment::store::{State, Var, EnvironmentVars, OpenedVars};
 
 pub mod store;
 
@@ -120,17 +120,29 @@ impl Component for EnvironmentEditView<'_> {
             .split(layout[1]);
 
         vars_keys.iter().enumerate().for_each(|(i, var)| {
-            let ff = format!(r#"{} => "{}""#, var.key, self.store.environment.session.get(&var.key).unwrap());
+            let content = format!(
+                r#"{} => "{}""#,
+                var.key,
+                self.store.environment.session.get(&var.key).unwrap()
+            );
 
-            if i == state.current_var {
+            let current_selected = match state.opened_section {
+                OpenedVars::Session => state.current_session_var,
+                OpenedVars::Global => state.current_global_var,
+            };
+
+            if i == current_selected {
                 f.render_text(
                     Texts {
-                        body: vec![Text::from_str_styled(&ff, Style::from_color(Color::Yellow))],
+                        body: vec![Text::from_str_styled(
+                            &content,
+                            Style::from_color(Color::Yellow),
+                        )],
                     },
                     layout_content[i],
                 );
             } else {
-                f.render_text(Texts::from_str(&ff), layout_content[i]);
+                f.render_text(Texts::from_str(&content), layout_content[i]);
             }
         });
 

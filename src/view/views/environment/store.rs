@@ -11,7 +11,7 @@ pub struct EnvironmentVars {
     pub session: Vec<Var>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Copy, Deserialize, Serialize)]
 pub enum OpenedVars {
     Global,
     Session,

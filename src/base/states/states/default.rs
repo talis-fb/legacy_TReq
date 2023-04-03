@@ -34,6 +34,7 @@ impl State for DefaultState {
                     Commands::go_to_response_body_section(),
                 ),
                 (Actions::GoToLogs, Commands::go_to_log_section()),
+                (Actions::GoToEnvironment, Commands::open_environment_view()),
                 (Actions::RenameTab, Commands::rename_tab()),
                 (Actions::DeleteTab, Commands::delete_tab()),
                 (Actions::Submit, Commands::async_submit()),

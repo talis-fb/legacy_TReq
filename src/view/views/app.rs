@@ -168,17 +168,22 @@ impl Component for AppView<'_> {
             _ => response_view.render(f),
         }
 
-        let environmet_view = EnvironmentEditView {
-            area: BackendTuiRs::create_absolute_centered_area(
-                Size::Percentage(80),
-                Size::Percentage(90),
-                screen_area,
-            ),
-            store,
-            states: self.states,
-        };
+        match store.current_state {
+            StatesNames::EditingGlobalEnv | StatesNames::EditingSessionEnv => {
+                let environmet_view = EnvironmentEditView {
+                    area: BackendTuiRs::create_absolute_centered_area(
+                        Size::Percentage(80),
+                        Size::Percentage(90),
+                        screen_area,
+                    ),
+                    store,
+                    states: self.states,
+                };
 
-        environmet_view.render(f);
+                environmet_view.render(f);
+            }
+            _ => {}
+        }
 
         if let Some(component) = popup_component {
             component.render(f);
