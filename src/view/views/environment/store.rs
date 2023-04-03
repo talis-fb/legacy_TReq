@@ -21,6 +21,7 @@ pub enum OpenedVars {
 #[derive(Deserialize, Serialize)]
 pub struct State {
     pub opened_section: OpenedVars,
-    pub active_var: usize,
+    pub current_global_var: usize,
+    pub current_session_var: usize,
     pub vars: EnvironmentVars,
 }

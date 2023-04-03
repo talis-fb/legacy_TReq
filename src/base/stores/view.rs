@@ -21,7 +21,8 @@ impl ViewStore {
                     global: vec![],
                     session: vec![]
                 },
-                active_var: 0,
+                current_global_var: 0,
+                current_session_var: 0,
             },
             request: StateRequestView {
                 opened: StatesReqEditionView::BodyOpened,

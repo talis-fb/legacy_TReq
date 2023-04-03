@@ -72,9 +72,7 @@ impl Component for RequestView<'_> {
 
         let req = self.store.get_request();
 
-        let state = State {
-            opened: self.store.view.request.opened,
-        };
+        let state: State = self.store.view.request;
 
         let state_color = match req.method {
             METHODS::GET => Color::Blue,

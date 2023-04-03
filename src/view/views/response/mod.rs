@@ -66,8 +66,6 @@ impl Component for ResponseView<'_> {
         let response_arc = self.store.get_response();
         let response = response_arc.lock().unwrap();
 
-        let state: State = serde_json::from_str(self.states.get(KEY_STATE).unwrap()).unwrap();
-
         let status_text = match response.status {
             0 => String::from("Hit ENTER to submit"),
             77 => String::from("Error"), // A STATUS CODE INTERNAL TO INTERNAL ERROR

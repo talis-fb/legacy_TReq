@@ -83,3 +83,6 @@ pub use default_edit_mode::DefaultEditMode;
 
 mod default_help_mode;
 pub use default_help_mode::DefaultHelpMode;
+
+mod editing_env;
+pub use editing_env::DefaultHelpMode;

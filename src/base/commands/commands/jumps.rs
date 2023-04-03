@@ -32,6 +32,7 @@ impl Commands {
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
                 app.set_new_state(states::RequestActiveState::init());
+                app.get_data_store_mut().view.request.open_body_view();
                 Ok(())
             }
         }
@@ -43,6 +44,7 @@ impl Commands {
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
                 app.set_new_state(states::RequestHeaderActiveState::init());
+                app.get_data_store_mut().view.request.open_headers_view();
                 Ok(())
             }
         }
@@ -54,6 +56,7 @@ impl Commands {
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
                 app.set_new_state(states::ResponseBodyActiveState::init());
+                app.get_data_store_mut().view.response.open_body_view();
                 Ok(())
             }
         }
@@ -65,6 +68,7 @@ impl Commands {
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
                 app.set_new_state(states::ResponseHeadersState::init());
+                app.get_data_store_mut().view.response.open_headers_view();
                 Ok(())
             }
         }

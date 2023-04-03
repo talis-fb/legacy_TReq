@@ -122,7 +122,7 @@ impl Component for EnvironmentEditView<'_> {
         vars_keys.iter().enumerate().for_each(|(i, var)| {
             let ff = format!(r#"{} => "{}""#, var.key, self.store.environment.session.get(&var.key).unwrap());
 
-            if i == state.active_var {
+            if i == state.current_var {
                 f.render_text(
                     Texts {
                         body: vec![Text::from_str_styled(&ff, Style::from_color(Color::Yellow))],
