@@ -103,8 +103,8 @@ impl Component for EnvironmentEditView<'_> {
         };
 
         let vars_keys = match state.opened_section {
-            OpenedVars::Session => &state.vars.session,
-            OpenedVars::Global => &state.vars.global,
+            OpenedVars::Session => &state.vars_keys.session,
+            OpenedVars::Global => &state.vars_keys.global,
         };
 
         let vars_keys = vars_keys.split_at(0).1;
@@ -122,8 +122,8 @@ impl Component for EnvironmentEditView<'_> {
         vars_keys.iter().enumerate().for_each(|(i, var)| {
             let content = format!(
                 r#"{} => "{}""#,
-                var.key,
-                self.store.environment.session.get(&var.key).unwrap()
+                var,
+                self.store.environment.session.get(var).unwrap()
             );
 
             let current_selected = match state.opened_section {

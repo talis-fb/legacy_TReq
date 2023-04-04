@@ -17,7 +17,7 @@ impl ViewStore {
         Self {
             environment: StateEnvironmentView { 
                 opened_section: OpenedVars::Session,
-                vars: EnvironmentVars {
+                vars_keys: EnvironmentVars {
                     global: vec![],
                     session: vec![]
                 },

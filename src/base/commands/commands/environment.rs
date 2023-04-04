@@ -1,7 +1,7 @@
 use crate::base::commands::CommandTrait;
 use crate::base::states::states::{self, State};
 use crate::commands::{Command, Commands};
-use crate::view::views::environment::store::OpenedVars;
+use crate::view::views::environment::store::{EnvironmentVars, OpenedVars};
 use crate::App;
 use std::sync::Arc;
 
@@ -10,11 +10,22 @@ impl Commands {
         struct S;
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                let opened = app.get_data_store_mut().view.environment.opened_section;
+                let store = app.get_data_store_mut();
+
+                // TODO:
+                // Probaly this will fail, once it clone keys to View Store in
+                // ever opened of Pop up. This should be smarter
+
+                store.view.environment.vars_keys = EnvironmentVars {
+                    global: store.environment.global.keys().cloned().collect(),
+                    session: store.environment.session.keys().cloned().collect(),
+                };
+
+                let opened = store.view.environment.opened_section;
 
                 let command_to_exec = match opened {
-                    OpenedVars::Session => Commands::open_global_env_vars(),
-                    OpenedVars::Global => Commands::open_session_env_vars(),
+                    OpenedVars::Session => Commands::open_session_env_vars(),
+                    OpenedVars::Global => Commands::open_global_env_vars(),
                 };
 
                 command_to_exec.execute(app)
@@ -77,17 +88,6 @@ impl Commands {
         Arc::new(Box::new(S {}))
     }
 
-    pub fn edit_current_global_env_var() -> Command {
-        struct S;
-        impl CommandTrait for S {
-            fn execute(&self, app: &mut App) -> Result<(), String> {
-                Ok(())
-            }
-        }
-
-        Arc::new(Box::new(S {}))
-    }
-
     pub fn go_to_next_session_env_var() -> Command {
         struct S;
         impl CommandTrait for S {
@@ -122,6 +122,48 @@ impl Commands {
 
                 store.view.environment.current_session_var = new_index;
 
+                Ok(())
+            }
+        }
+
+        Arc::new(Box::new(S {}))
+    }
+
+    pub fn edit_current_global_env_var() -> Command {
+        struct S;
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                let store = app.get_data_store_mut();
+                let var_key_active = store.view.environment.get_current_var_key();
+
+                let c = match store.view.environment.opened_section {
+                    OpenedVars::Global => {
+                        let v = store.environment.global.get(&var_key_active).clone().unwrap_or_default();
+                    }
+                    OpenedVars::Session => {
+                        let v = store.environment.session.get(&var_key_active).clone().unwrap_or_default();
+                    }
+                };
+
+                // Subcommand
+                struct _S;
+                impl CommandTrait for _S {
+                    fn execute(&self, app: &mut App) -> Result<(), String> {
+                        let buffer = app.get_input_buffer_value();
+                        let data_store = app.get_data_store_mut();
+
+                        let mut req = (*data_store.get_request()).clone();
+                        req.set_url(buffer);
+
+                        data_store.update_request(req.clone());
+                        Ok(())
+                    }
+                }
+
+                app.set_input_mode_with_command(
+                    Arc::new(Box::new(_S {})),
+                    app.get_data_store().get_request().url.clone(),
+                );
                 Ok(())
             }
         }
