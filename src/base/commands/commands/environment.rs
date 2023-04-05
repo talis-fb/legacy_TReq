@@ -133,38 +133,32 @@ impl Commands {
         struct S;
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                let store = app.get_data_store_mut();
-                let var_key_active = store.view.environment.get_current_var_key();
-
-                let c = match store.view.environment.opened_section {
-                    OpenedVars::Global => {
-                        let v = store.environment.global.get(&var_key_active).clone().unwrap_or_default();
-                    }
-                    OpenedVars::Session => {
-                        let v = store.environment.session.get(&var_key_active).clone().unwrap_or_default();
-                    }
-                };
-
-                // Subcommand
                 struct _S;
                 impl CommandTrait for _S {
                     fn execute(&self, app: &mut App) -> Result<(), String> {
-                        let buffer = app.get_input_buffer_value();
-                        let data_store = app.get_data_store_mut();
+                        let new_value = app.get_input_buffer_value();
 
-                        let mut req = (*data_store.get_request()).clone();
-                        req.set_url(buffer);
+                        let store = app.get_data_store_mut();
+                        let var_key_active = store.view.environment.get_current_var_key();
+                        let value = store.environment.global.get_mut(&var_key_active).unwrap();
+                        *value = new_value;
 
-                        data_store.update_request(req.clone());
                         Ok(())
                     }
                 }
 
-                app.set_input_mode_with_command(
-                    Arc::new(Box::new(_S {})),
-                    app.get_data_store().get_request().url.clone(),
-                );
+                let store = app.get_data_store_mut();
+                let var_key_active = store.view.environment.get_current_var_key();
+                let value = store
+                    .environment
+                    .global
+                    .get(&var_key_active)
+                    .cloned()
+                    .unwrap();
+
+                app.set_input_mode_with_command(Arc::new(Box::new(_S {})), value);
                 Ok(())
+
             }
         }
 
@@ -175,6 +169,30 @@ impl Commands {
         struct S;
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
+                struct _S;
+                impl CommandTrait for _S {
+                    fn execute(&self, app: &mut App) -> Result<(), String> {
+                        let new_value = app.get_input_buffer_value();
+
+                        let store = app.get_data_store_mut();
+                        let var_key_active = store.view.environment.get_current_var_key();
+                        let value = store.environment.session.get_mut(&var_key_active).unwrap();
+                        *value = new_value;
+
+                        Ok(())
+                    }
+                }
+
+                let store = app.get_data_store_mut();
+                let var_key_active = store.view.environment.get_current_var_key();
+                let value = store
+                    .environment
+                    .session
+                    .get(&var_key_active)
+                    .cloned()
+                    .unwrap();
+
+                app.set_input_mode_with_command(Arc::new(Box::new(_S {})), value);
                 Ok(())
             }
         }

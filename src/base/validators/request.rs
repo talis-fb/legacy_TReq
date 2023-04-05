@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use super::{Validator, Validators};
 use crate::base::{stores::environment::EnvironmentStore, web::request::Request};
 
@@ -20,10 +22,14 @@ impl Validators {
         Box::new(f)
     }
 
-    pub fn url_and_body_template_engine<'a>() -> Validator<Request> {
+    pub fn url_and_body_template_engine<'a>(
+        variables: &HashMap<String, String>,
+    ) -> Validator<Request> {
         let mut context = Context::new();
 
-        context.insert("token", "It works!");
+        variables.iter().for_each(|(k, v)| {
+            context.insert(k, v);
+        });
 
         let f = move |req: &mut Request| -> Result<(), String> {
             let mut tera = Tera::default();

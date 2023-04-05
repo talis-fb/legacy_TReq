@@ -5,20 +5,13 @@ pub struct EnvironmentStore {
     pub session: HashMap<String, String>,
 }
 
-// TODO: 
-// TODO: Change from HashMap to a Vec<(String, String)>, this way, order is guarated
-// TODO: 
-
 impl EnvironmentStore {
     pub fn init() -> Self {
         Self {
             global: HashMap::new(),
             session: HashMap::from([
                 ("lorem".to_string(), "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.".to_string()),
-                ("random_uuid".to_string(), "1aa05d53-711d-413f-b4ba-f9a5edd8bf2c".to_string()),
-                ("random_uuid1".to_string(), "1aa05d53-711d-413f-b4ba-f9a5edd8bf2c".to_string()),
-                ("random_uuid2".to_string(), "1aa05d53-711d-413f-b4ba-f9a5edd8bf2c".to_string()),
-                ("random_uuid3".to_string(), "1aa05d53-711d-413f-b4ba-f9a5edd8bf2c".to_string()),
+                ("random_uuid".to_string(), uuid::Uuid::new_v4().to_string()),
             ]),
         }
     }

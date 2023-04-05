@@ -17,6 +17,7 @@ impl State for EditingSessionEnvState {
         Self {
             maps: HashMap::from([
                 (Actions::Quit, Commands::exit_environment_view()),
+                (Actions::Submit, Commands::exit_environment_view()),
                 (Actions::Switch, Commands::switch_opened_env_vars()),
                 (Actions::Edit, Commands::edit_current_session_env_var()),
                 (Actions::Up, Commands::go_to_prev_session_env_var()),
