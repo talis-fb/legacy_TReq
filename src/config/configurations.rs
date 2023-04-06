@@ -1,5 +1,6 @@
 pub mod external_editor;
 pub mod save_files;
+pub mod global_variables_files;
 pub mod view;
 
 use crate::utils::file_facades::FileFacade;

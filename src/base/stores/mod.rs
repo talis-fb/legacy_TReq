@@ -55,7 +55,7 @@ impl MainStore {
 
         Self {
             requests: RequestStore::init(config.saved_requests.clone()),
-            environment: EnvironmentStore::init(),
+            environment: EnvironmentStore::init(config.global_variables.clone()),
             view: ViewStore::init(),
             last_response,
             current_state: StatesNames::Default,

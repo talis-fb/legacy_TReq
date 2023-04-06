@@ -1,7 +1,7 @@
 use crate::base::commands::CommandTrait;
 use crate::base::states::states::{self, State};
 use crate::commands::{Command, Commands};
-use crate::view::views::environment::store::{EnvironmentVars, OpenedVars};
+use crate::view::views::environment::store::OpenedVars;
 use crate::App;
 use std::sync::Arc;
 
@@ -143,6 +143,8 @@ impl Commands {
                         let value = store.environment.global.get_mut(&var_key_active).unwrap();
                         *value = new_value;
 
+                        store.environment.save_globals()?;
+
                         Ok(())
                     }
                 }
@@ -218,6 +220,8 @@ impl Commands {
                         let s = &store.environment.session;
                         store.view.environment.sync(g, s);
 
+                        store.environment.save_globals()?;
+
                         Ok(())
                     }
                 }
@@ -273,6 +277,8 @@ impl Commands {
                 let g = &store.environment.global;
                 let s = &store.environment.session;
                 store.view.environment.sync(g, s);
+
+                store.environment.save_globals()?;
 
                 Ok(())
             }
