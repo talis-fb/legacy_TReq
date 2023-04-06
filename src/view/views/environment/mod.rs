@@ -57,7 +57,7 @@ impl Component for EnvironmentEditView<'_> {
         f.render_text_raw_align_center("[UP/DOWN] or [j/k] to navegate between sections of app", layout_text_instruction[1]);
         f.render_text_raw_align_center("[n] to add a new variable", layout_text_instruction[2]);
         f.render_text_raw_align_center("[d] to remove variable", layout_text_instruction[3]);
-        f.render_text_raw_align_center("[e] to edit variable", layout_text_instruction[4]);
+        f.render_text_raw_align_center("[e] to edit variable value", layout_text_instruction[4]);
         f.render_text_raw_align_center("[TAB] to switch between global and session", layout_text_instruction[5]);
 
         match state.opened_section {
@@ -85,8 +85,6 @@ impl Component for EnvironmentEditView<'_> {
             OpenedVars::Session => &state.vars_keys.session,
             OpenedVars::Global => &state.vars_keys.global,
         };
-
-        // let vars_keys = vars_keys.split_at(0).1;
 
         let layout_content = Layout::default()
             .margin(1)
@@ -125,12 +123,5 @@ impl Component for EnvironmentEditView<'_> {
                 f.render_text(Texts::from_str(&content), layout_content[i]);
             }
         });
-
-        // let mut texts_showed = vec![];
-        //
-        // map.into_iter().for_each(|(k, v)| {
-        //     texts_showed.push(Texts::from_str(" "));
-        //     texts_showed.push(Texts::from_str(&(" => ".to_owned() + &v.to_owned())));
-        // });
     }
 }

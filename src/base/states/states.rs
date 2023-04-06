@@ -4,7 +4,6 @@ use crate::commands::Command;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-// Interfaces
 pub type CommandsMap = HashMap<Actions, Command>;
 
 pub trait State {

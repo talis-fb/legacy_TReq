@@ -24,6 +24,9 @@ use std::sync::Mutex;
 use super::logs::Log;
 
 pub struct MainStore {
+    // Config
+    pub config: ConfigManager,
+
     // Web
     requests: RequestStore,
     last_response: Arc<Mutex<Response>>,
@@ -31,7 +34,7 @@ pub struct MainStore {
     // States
     pub current_state: StatesNames,
 
-    // Modes / InputMode
+    // Inputs
     pub mode: InputMode,
     pub input_buffer: InputKeyboardBuffer,
 
@@ -41,10 +44,8 @@ pub struct MainStore {
     // DocReader
     pub doc_reader: Option<DocReaderHandler>,
 
-    // Config
-    pub config: ConfigManager,
+    // Stores
     pub environment: EnvironmentStore,
-
     pub view: ViewStore,
 }
 

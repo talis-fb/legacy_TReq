@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use super::{Validator, Validators};
-use crate::base::{stores::environment::EnvironmentStore, web::request::Request};
+use crate::base::web::request::Request;
 
 use tera::{Context, Tera};
 
@@ -87,5 +87,24 @@ mod tests {
             .execute(vec![Validators::url_protocol_request()])
             .unwrap();
         assert_eq!("http://url.com".to_string(), req_final.url);
+    }
+
+    #[test]
+    fn should_tera_work_in_template() {
+        let mut req = Request::default();
+        req.url = String::from("url.com/{{ route }}");
+        req.body = String::from("Hello {{ name }}, go to {{ route | upper }} page");
+
+        let req_final = ValidatorsHandler::from(&req)
+            .execute(vec![Validators::url_and_body_template_engine(
+                &HashMap::from([
+                    ("route".to_string(), "user".to_string()),
+                    ("name".to_string(), "James Dev".to_string()),
+                ]),
+            )])
+            .unwrap();
+
+        assert_eq!(req_final.url, "url.com/user");
+        assert_eq!(req_final.body, "Hello James Dev, go to USER page");
     }
 }
