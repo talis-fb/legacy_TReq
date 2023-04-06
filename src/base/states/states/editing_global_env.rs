@@ -22,6 +22,8 @@ impl State for EditingGlobalEnvState {
                 (Actions::Edit, Commands::edit_current_global_env_var()),
                 (Actions::Up, Commands::go_to_prev_global_env_var()),
                 (Actions::Down, Commands::go_to_next_global_env_var()),
+                (Actions::New, Commands::add_global_env_var()),
+                (Actions::Delete, Commands::remove_current_global_env_var()),
             ]),
         }
     }

@@ -16,10 +16,10 @@ impl Commands {
                 // Probaly this will fail, once it clone keys to View Store in
                 // ever opened of Pop up. This should be smarter
 
-                store.view.environment.vars_keys = EnvironmentVars {
-                    global: store.environment.global.keys().cloned().collect(),
-                    session: store.environment.session.keys().cloned().collect(),
-                };
+                let store = app.get_data_store_mut();
+                let g = &store.environment.global;
+                let s = &store.environment.session;
+                store.view.environment.sync(g, s);
 
                 let opened = store.view.environment.opened_section;
 
@@ -158,7 +158,6 @@ impl Commands {
 
                 app.set_input_mode_with_command(Arc::new(Box::new(_S {})), value);
                 Ok(())
-
             }
         }
 
@@ -193,6 +192,108 @@ impl Commands {
                     .unwrap();
 
                 app.set_input_mode_with_command(Arc::new(Box::new(_S {})), value);
+                Ok(())
+            }
+        }
+
+        Arc::new(Box::new(S {}))
+    }
+
+    pub fn add_global_env_var() -> Command {
+        struct S;
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                struct _S;
+                impl CommandTrait for _S {
+                    fn execute(&self, app: &mut App) -> Result<(), String> {
+                        let new_key_value = app.get_input_buffer_value();
+                        let value = app
+                            .get_data_store_mut()
+                            .environment
+                            .global
+                            .insert(new_key_value, String::new());
+
+                        let store = app.get_data_store_mut();
+                        let g = &store.environment.global;
+                        let s = &store.environment.session;
+                        store.view.environment.sync(g, s);
+
+                        Ok(())
+                    }
+                }
+
+                app.set_input_mode_with_command(Arc::new(Box::new(_S {})), "new_title".to_string());
+                Ok(())
+            }
+        }
+
+        Arc::new(Box::new(S {}))
+    }
+
+    pub fn add_session_env_var() -> Command {
+        struct S;
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                struct _S;
+                impl CommandTrait for _S {
+                    fn execute(&self, app: &mut App) -> Result<(), String> {
+                        let new_key_value = app.get_input_buffer_value();
+                        let value = app
+                            .get_data_store_mut()
+                            .environment
+                            .session
+                            .insert(new_key_value, String::new());
+
+                        let store = app.get_data_store_mut();
+                        let g = &store.environment.global;
+                        let s = &store.environment.session;
+                        store.view.environment.sync(g, s);
+
+                        Ok(())
+                    }
+                }
+
+                app.set_input_mode_with_command(Arc::new(Box::new(_S {})), "new_title".to_string());
+                Ok(())
+            }
+        }
+
+        Arc::new(Box::new(S {}))
+    }
+
+    pub fn remove_current_global_env_var() -> Command {
+        struct S;
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                let store = app.get_data_store_mut();
+                let current_key = store.view.environment.get_current_var_key();
+                store.environment.global.remove(&current_key);
+
+                let store = app.get_data_store_mut();
+                let g = &store.environment.global;
+                let s = &store.environment.session;
+                store.view.environment.sync(g, s);
+
+                Ok(())
+            }
+        }
+
+        Arc::new(Box::new(S {}))
+    }
+
+    pub fn remove_current_session_env_var() -> Command {
+        struct S;
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                let store = app.get_data_store_mut();
+                let current_key = store.view.environment.get_current_var_key();
+                store.environment.session.remove(&current_key);
+
+                let store = app.get_data_store_mut();
+                let g = &store.environment.global;
+                let s = &store.environment.session;
+                store.view.environment.sync(g, s);
+
                 Ok(())
             }
         }
