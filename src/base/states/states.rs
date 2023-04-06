@@ -79,8 +79,8 @@ pub use default::DefaultState;
 mod empty;
 pub use empty::EmptyState;
 
-mod default_edit_mode;
-pub use default_edit_mode::DefaultEditMode;
+mod default_insert_mode;
+pub use default_insert_mode::DefaultEditMode;
 
 mod default_help_mode;
 pub use default_help_mode::DefaultHelpMode;

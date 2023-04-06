@@ -4,7 +4,7 @@ use crate::base::states::names::StatesNames;
 use crate::base::web::response::ResponseStage;
 use crate::view::components::counter_response_time::CounterResponseTime;
 use crate::view::components::doc_reader::DocReader;
-use crate::view::components::input_block::InputTextBlock;
+use crate::view::components::input_insert_mode::InputTextBlock;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use crate::view::views::ViewStates;
 

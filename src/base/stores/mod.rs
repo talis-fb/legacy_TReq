@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-pub mod requests;
 pub mod environment;
+pub mod requests;
 pub mod view;
 
 use crate::base::states::names::StatesNames;

@@ -15,11 +15,11 @@ pub struct ViewStore {
 impl ViewStore {
     pub fn init() -> Self {
         Self {
-            environment: StateEnvironmentView { 
+            environment: StateEnvironmentView {
                 opened_section: OpenedVars::Session,
                 vars_keys: EnvironmentVars {
                     global: vec![],
-                    session: vec![]
+                    session: vec![],
                 },
                 current_global_var: 0,
                 current_session_var: 0,

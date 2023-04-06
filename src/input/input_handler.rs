@@ -16,7 +16,7 @@ use crate::utils::custom_types::uuid::UUID;
 use tokio::task::JoinHandle;
 
 use crate::input::keymaps::docs_mode;
-use crate::input::keymaps::input_mode;
+use crate::input::keymaps::insert_mode;
 use crate::input::keymaps::normal_mode;
 
 use super::listener::KeyboardListerner;
@@ -53,7 +53,7 @@ impl InputHandler {
             ),
             (
                 InputMode::Insert,
-                KeyboardListerner::init(input_mode::keymap_factory()),
+                KeyboardListerner::init(insert_mode::keymap_factory()),
             ),
             (
                 InputMode::Help,

@@ -22,7 +22,11 @@ where
         }
     }
 
-    pub async fn submit(&self, request: Request, variables: &HashMap<String, String>) -> Result<Response, String> {
+    pub async fn submit(
+        &self,
+        request: Request,
+        variables: &HashMap<String, String>,
+    ) -> Result<Response, String> {
         let request_to_do = ValidatorsHandler::from(&request).execute([
             Validators::url_protocol_request(),
             Validators::url_and_body_template_engine(variables),

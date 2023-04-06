@@ -12,5 +12,5 @@ pub enum StatesNames {
     Log,
     Empty,
     EditingGlobalEnv,
-    EditingSessionEnv
+    EditingSessionEnv,
 }

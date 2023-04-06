@@ -1,6 +1,6 @@
 pub mod components;
-pub mod views;
 pub mod help;
 pub mod renderer;
 pub mod style;
 pub mod ui;
+pub mod views;

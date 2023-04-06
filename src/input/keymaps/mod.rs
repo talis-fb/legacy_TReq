@@ -3,7 +3,7 @@ use crossterm::event::KeyCode;
 use std::collections::HashMap;
 
 pub mod docs_mode;
-pub mod input_mode;
+pub mod insert_mode;
 pub mod normal_mode;
 
 #[derive(PartialEq, Eq, Debug, Clone)]

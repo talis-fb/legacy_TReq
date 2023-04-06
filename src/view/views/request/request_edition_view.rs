@@ -1,8 +1,8 @@
+use super::store::StatesReqEditionView;
 use crate::view::components::tab_blocked_text::TabBlockText;
 use crate::view::components::Component;
 use crate::view::renderer::tui_rs::BackendTuiRs;
 use tui::layout::Rect;
-use super::store::StatesReqEditionView;
 
 pub struct RequestEditionView<'a> {
     pub area: Rect,

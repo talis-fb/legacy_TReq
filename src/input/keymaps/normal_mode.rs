@@ -36,7 +36,6 @@ pub fn keymap_factory() -> KeyMap {
                 create_keymap_char('T', Actions::GoToPreviousTab),
                 create_keymap_char('l', Actions::GrowHorizontalUiLeft),
                 create_keymap_char('h', Actions::GrowHorizontalUiRight),
-
                 create_keymap_char('v', Actions::GoToEnvironment),
             ]),
         ),

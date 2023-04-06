@@ -75,7 +75,12 @@ impl State {
         self.vars_keys.global.extend(new_keys);
 
         // Update INDEXES
-        if self.vars_keys.session.get(self.current_session_var).is_none() {
+        if self
+            .vars_keys
+            .session
+            .get(self.current_session_var)
+            .is_none()
+        {
             self.current_session_var = 0;
         }
         if self.vars_keys.global.get(self.current_global_var).is_none() {

@@ -53,12 +53,21 @@ impl Component for EnvironmentEditView<'_> {
             ])
             .split(layout[0]);
 
-        f.render_text_raw_align_center("All about how to use variables: https://github.com/talis-fb/TReq/wiki", layout_text_instruction[0]);
-        f.render_text_raw_align_center("[UP/DOWN] or [j/k] to navegate between sections of app", layout_text_instruction[1]);
+        f.render_text_raw_align_center(
+            "All about how to use variables: https://github.com/talis-fb/TReq/wiki",
+            layout_text_instruction[0],
+        );
+        f.render_text_raw_align_center(
+            "[UP/DOWN] or [j/k] to navegate between sections of app",
+            layout_text_instruction[1],
+        );
         f.render_text_raw_align_center("[n] to add a new variable", layout_text_instruction[2]);
         f.render_text_raw_align_center("[d] to remove variable", layout_text_instruction[3]);
         f.render_text_raw_align_center("[e] to edit variable value", layout_text_instruction[4]);
-        f.render_text_raw_align_center("[TAB] to switch between global and session", layout_text_instruction[5]);
+        f.render_text_raw_align_center(
+            "[TAB] to switch between global and session",
+            layout_text_instruction[5],
+        );
 
         match state.opened_section {
             OpenedVars::Session => {
