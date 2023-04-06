@@ -1,5 +1,5 @@
 use super::request::request_edition_view::RequestEditionView;
-use super::request::store::{State, StatesReqEditionView};
+use super::request::store::State;
 use crate::base::states::names::StatesNames;
 use crate::base::web::request::METHODS;
 use crate::view::components::block_text::BlockText;

@@ -53,7 +53,7 @@ impl Commands {
             fn execute(&self, app: &mut App) -> Result<(), String> {
                 let store = app.get_data_store_mut();
 
-                let max_index = store.environment.global.len().checked_sub(1).unwrap_or(0);
+                let max_index = store.environment.global.len().saturating_sub(1);
                 let current_index = store.view.environment.current_global_var;
 
                 store.view.environment.current_global_var =
@@ -72,12 +72,7 @@ impl Commands {
             fn execute(&self, app: &mut App) -> Result<(), String> {
                 let store = app.get_data_store_mut();
 
-                let new_index: usize = store
-                    .view
-                    .environment
-                    .current_session_var
-                    .checked_sub(1)
-                    .unwrap_or(0);
+                let new_index: usize = store.view.environment.current_session_var.saturating_sub(1);
 
                 store.view.environment.current_global_var = new_index;
 
@@ -94,7 +89,7 @@ impl Commands {
             fn execute(&self, app: &mut App) -> Result<(), String> {
                 let store = app.get_data_store_mut();
 
-                let max_index = store.environment.session.len().checked_sub(1).unwrap_or(0);
+                let max_index = store.environment.session.len().saturating_sub(1);
                 let current_index = store.view.environment.current_session_var;
 
                 store.view.environment.current_session_var =
@@ -113,12 +108,7 @@ impl Commands {
             fn execute(&self, app: &mut App) -> Result<(), String> {
                 let store = app.get_data_store_mut();
 
-                let new_index: usize = store
-                    .view
-                    .environment
-                    .current_session_var
-                    .checked_sub(1)
-                    .unwrap_or(0);
+                let new_index: usize = store.view.environment.current_session_var.saturating_sub(1);
 
                 store.view.environment.current_session_var = new_index;
 

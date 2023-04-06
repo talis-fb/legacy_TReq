@@ -10,7 +10,7 @@ use tui::layout::{Constraint, Direction, Layout, Rect};
 pub mod response_content_view;
 pub mod response_status_view;
 pub mod store;
-use store::{State, StatesResEditionView};
+use store::StatesResEditionView;
 
 static KEY_STATE: &str = "response_view__state";
 // ------------------------
