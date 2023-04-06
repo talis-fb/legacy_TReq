@@ -19,43 +19,13 @@ pub struct EnvironmentEditView<'a> {
 
 impl EnvironmentEditView<'_> {
     pub fn prepare_render<'b>(states: &mut ViewStates, store: &'b MainStore) {
-        // let state_json = states.entry(KEY_STATE.to_string()).or_default();
-        // let last_state: Result<State, serde_json::Error> = serde_json::from_str(state_json);
         //
-        // let global_vars: Vec<Var> = store
-        //     .environment
-        //     .global
-        //     .iter()
-        //     .map(|(key, _)| Var { key: key.clone() })
-        //     .collect();
-        //
-        // let session_vars: Vec<Var> = store
-        //     .environment
-        //     .session
-        //     .iter()
-        //     .map(|(key, _)| Var { key: key.clone() })
-        //     .collect();
-        //
-        // let state = State {
-        //     opened_section: OpenedVars::Session,
-        //     active_var: 0,
-        //     vars: EnvironmentVars {
-        //         global: global_vars,
-        //         session: session_vars,
-        //     },
-        // };
-        //
-        // states.insert(
-        //     KEY_STATE.to_string(),
-        //     serde_json::to_string(&state).unwrap(),
-        // );
     }
 }
 
 impl Component for EnvironmentEditView<'_> {
     type Backend = BackendTuiRs;
     fn render(&self, f: &mut Self::Backend) {
-        // let state: State = serde_json::from_str(self.states.get(KEY_STATE).unwrap()).unwrap();
         let state = &self.store.view.environment;
 
         f.render_clear_area(self.area);
@@ -65,13 +35,17 @@ impl Component for EnvironmentEditView<'_> {
         let layout = Layout::default()
             .direction(Direction::Vertical)
             .margin(0)
-            .constraints([Constraint::Length(6), Constraint::Min(1)])
+            .constraints([Constraint::Length(9), Constraint::Min(1)])
             .split(self.area);
 
         let layout_text_instruction = Layout::default()
             .direction(Direction::Vertical)
             .margin(1)
             .constraints([
+                Constraint::Length(1), // Border top space
+                Constraint::Length(1),
+                Constraint::Length(1),
+                Constraint::Length(1),
                 Constraint::Length(1),
                 Constraint::Length(1),
                 Constraint::Length(1),
@@ -79,7 +53,12 @@ impl Component for EnvironmentEditView<'_> {
             ])
             .split(layout[0]);
 
-        f.render_text_raw_align_center("Opa", layout_text_instruction[0]);
+        f.render_text_raw_align_center("All about how to use variables: https://github.com/talis-fb/TReq/wiki", layout_text_instruction[0]);
+        f.render_text_raw_align_center("[UP/DOWN] or [j/k] to navegate between sections of app", layout_text_instruction[1]);
+        f.render_text_raw_align_center("[n] to add a new variable", layout_text_instruction[2]);
+        f.render_text_raw_align_center("[d] to remove variable", layout_text_instruction[3]);
+        f.render_text_raw_align_center("[e] to edit variable", layout_text_instruction[4]);
+        f.render_text_raw_align_center("[TAB] to switch between global and session", layout_text_instruction[5]);
 
         match state.opened_section {
             OpenedVars::Session => {
@@ -88,7 +67,7 @@ impl Component for EnvironmentEditView<'_> {
                         Text::from_str_styled("Session", Style::from_color(Color::Yellow)),
                         Text::from_str(" / Global"),
                     ]),
-                    layout_text_instruction[3],
+                    layout_text_instruction[6],
                 );
             }
             OpenedVars::Global => {
@@ -97,7 +76,7 @@ impl Component for EnvironmentEditView<'_> {
                         Text::from_str("Session / "),
                         Text::from_str_styled("Global", Style::from_color(Color::Yellow)),
                     ]),
-                    layout_text_instruction[3],
+                    layout_text_instruction[6],
                 );
             }
         };
