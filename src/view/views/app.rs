@@ -136,14 +136,11 @@ impl Component for AppView<'_> {
         request_view.render(f);
         log_view.render(f);
 
-        let mut response_stage: Option<ResponseStage> = None;
-        let mut response_time: f64 = 0.0;
-        let mut response_status: i32 = 0;
-
+        let response_stage: Option<ResponseStage>;
+        let response_time: f64;
         {
             let response_ref = store.get_response();
             let response = response_ref.lock().unwrap();
-            response_status = response.status;
             response_stage = Some(response.stage);
             response_time = response.response_time;
         }
