@@ -4,14 +4,15 @@ use crate::base::states::names::StatesNames;
 use crate::base::web::response::ResponseStage;
 use crate::view::components::counter_response_time::CounterResponseTime;
 use crate::view::components::doc_reader::DocReader;
-use crate::view::components::input_block::InputTextBlock;
+use crate::view::components::input_insert_mode::InputTextBlock;
 use crate::view::renderer::tui_rs::BackendTuiRs;
-use crate::view::ViewStates;
+use crate::view::views::ViewStates;
 
 use crate::view::style::Size;
 use crate::{base::stores::MainStore, view::components::Component};
 use tui::layout::{Constraint, Direction, Layout, Rect};
 
+use super::environment::EnvironmentEditView;
 use super::logs::LogView;
 
 use super::request::RequestView;
@@ -32,6 +33,7 @@ impl AppView<'_> {
         LogView::prepare_render(states, store);
         RequestView::prepare_render(states, store);
         ResponseView::prepare_render(states, store);
+        EnvironmentEditView::prepare_render(states, store);
     }
 }
 
@@ -134,14 +136,11 @@ impl Component for AppView<'_> {
         request_view.render(f);
         log_view.render(f);
 
-        let mut response_stage: Option<ResponseStage> = None;
-        let mut response_time: f64 = 0.0;
-        let mut response_status: i32 = 0;
-
+        let response_stage: Option<ResponseStage>;
+        let response_time: f64;
         {
             let response_ref = store.get_response();
             let response = response_ref.lock().unwrap();
-            response_status = response.status;
             response_stage = Some(response.stage);
             response_time = response.response_time;
         }
@@ -166,14 +165,22 @@ impl Component for AppView<'_> {
             _ => response_view.render(f),
         }
 
-        log::info!("FOIIIIIIII fim");
-        // let stage = response.stage;
-        // let has_been = status != 0;
-        // if has_been {
-        //     response_view.render(f);
-        // } else {
-        //     welcome_doc_view.render(f);
-        // }
+        match store.current_state {
+            StatesNames::EditingGlobalEnv | StatesNames::EditingSessionEnv => {
+                let environmet_view = EnvironmentEditView {
+                    area: BackendTuiRs::create_absolute_centered_area(
+                        Size::Percentage(80),
+                        Size::Percentage(90),
+                        screen_area,
+                    ),
+                    store,
+                    states: self.states,
+                };
+
+                environmet_view.render(f);
+            }
+            _ => {}
+        }
 
         if let Some(component) = popup_component {
             component.render(f);

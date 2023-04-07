@@ -1,5 +1,6 @@
 pub mod docs;
 pub mod edit_mode;
+pub mod environment;
 pub mod jumps;
 pub mod request;
 pub mod response;

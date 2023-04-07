@@ -75,4 +75,7 @@ pub enum Actions {
 
     // HELP Mode --------------------
     DocExit,
+
+    // Environment view -------------
+    GoToEnvironment,
 }

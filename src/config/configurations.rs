@@ -1,18 +1,29 @@
 pub mod external_editor;
+pub mod global_variables_files;
 pub mod save_files;
 pub mod view;
 
-use std::collections::HashMap;
+use crate::utils::file_facades::FileFacade;
+use std::{collections::HashMap, hash::Hash};
 
-pub trait Configuration<K, File, EntityFile> {
-    fn get_map(&self) -> &HashMap<K, File>;
-    fn get_as_file(&self, key: &K) -> Option<&File>;
-    fn get_as_entity(&self, key: &K) -> Result<EntityFile, String>;
+pub trait Configuration<FileID, FileBuf, FileEntity>
+where
+    FileID: PartialEq + Eq + Hash,
+    FileBuf: FileFacade,
+{
+    fn get_map(&self) -> &HashMap<FileID, FileBuf>;
+    fn get_as_file(&self, key: &FileID) -> Option<&FileBuf>;
+    fn get_as_entity(&self, key: &FileID) -> Result<FileEntity, String>;
     fn setup_and_init() -> Result<Self, String>
     where
         Self: Sized;
 }
 
-pub trait ConfigurationEditable<K, File, EntityFile>: Configuration<K, File, EntityFile> {
-    fn set(&mut self, key: &K, value: &EntityFile) -> Result<(), String>;
+pub trait ConfigurationEditable<FileID, FileBuf, FileEntity>:
+    Configuration<FileID, FileBuf, FileEntity>
+where
+    FileID: PartialEq + Eq + Hash,
+    FileBuf: FileFacade,
+{
+    fn set(&mut self, key: &FileID, value: &FileEntity) -> Result<(), String>;
 }

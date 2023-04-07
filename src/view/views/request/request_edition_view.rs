@@ -1,24 +1,18 @@
+use super::store::StatesReqEditionView;
 use crate::view::components::tab_blocked_text::TabBlockText;
 use crate::view::components::Component;
 use crate::view::renderer::tui_rs::BackendTuiRs;
-use serde::{Deserialize, Serialize};
 use tui::layout::Rect;
 
-#[derive(Deserialize, Serialize)]
-pub enum StatesResEditionView {
-    BodyOpened,
-    HeadersOpened,
-}
-
-pub struct ResposeEditionView<'a> {
+pub struct RequestEditionView<'a> {
     pub area: Rect,
 
     pub body: &'a str,
     pub headers: &'a str,
-    pub opened: StatesResEditionView,
+    pub opened: StatesReqEditionView,
     pub marked: bool,
 }
-impl Component for ResposeEditionView<'_> {
+impl Component for RequestEditionView<'_> {
     type Backend = BackendTuiRs;
     fn render(&self, f: &mut Self::Backend) {
         let mut block = TabBlockText {
@@ -29,11 +23,11 @@ impl Component for ResposeEditionView<'_> {
         };
 
         match self.opened {
-            StatesResEditionView::BodyOpened => {
+            StatesReqEditionView::BodyOpened => {
                 block.texts[0].0 = "BODY";
                 block.current = 0;
             }
-            StatesResEditionView::HeadersOpened => {
+            StatesReqEditionView::HeadersOpened => {
                 let title_text = block.texts[1].0;
                 block.texts[1].0 = "HEADERS";
                 block.current = 1;

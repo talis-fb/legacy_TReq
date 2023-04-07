@@ -11,4 +11,6 @@ pub enum StatesNames {
     ResponseBody,
     Log,
     Empty,
+    EditingGlobalEnv,
+    EditingSessionEnv,
 }

@@ -1,7 +1,7 @@
 use crate::base::states::names::StatesNames;
 use crate::view::components::tab_list::Tabslist;
 use crate::view::renderer::tui_rs::BackendTuiRs;
-use crate::view::ViewStates;
+use crate::view::views::ViewStates;
 use crate::{base::stores::MainStore, view::components::Component};
 use tui::layout::Rect;
 

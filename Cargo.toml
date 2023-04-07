@@ -1,7 +1,7 @@
 [package]
 name = "treq"
 authors = [ "Talis-Fb" ]
-version = "0.2.1"
+version = "0.3.0"
 edition = "2021"
 license = "GPL-3.0"
 description = "A Client to make HTTP requests for Vim/Terminal Users"
@@ -24,6 +24,7 @@ directories = "4.0.1"
 regex = "1.7.1"
 log = "0.4.17"
 log4rs = "1.2.0"
+tera = "1.18.1"
 
 [[bin]]
 name = "treq"

@@ -393,7 +393,7 @@ impl Tui<Rect> for BackendTuiRs {
     fn render_divider_with_text(&mut self, text: Texts, area: Rect) {
         let block = Block::default()
             .borders(Borders::TOP)
-            .title(text.to_string())
+            .title(BackendTuiRs::style_span(text))
             .title_alignment(Alignment::Left)
             .border_type(BorderType::Rounded);
 

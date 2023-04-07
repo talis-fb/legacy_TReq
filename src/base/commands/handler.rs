@@ -8,7 +8,7 @@ use std::{
 
 use crate::{app::App, base::commands::CommandType};
 
-use super::{Command, CommandTrait};
+use super::Command;
 
 pub struct CommandHandler {
     running_jobs: Arc<Mutex<HashMap<String, tokio::sync::mpsc::Sender<()>>>>,
@@ -56,7 +56,7 @@ impl CommandHandler {
                         }
                     }
 
-                    command_to_exec.execute(app).unwrap();
+                    command_to_exec.execute(app)?;
 
                     // Insert in jobs running
                     let (close, mut close_listener) = tokio::sync::mpsc::channel(32);
@@ -75,7 +75,7 @@ impl CommandHandler {
                             tokio::select! {
                                 val = close_listener.recv() => {
                                     task_job.abort();
-                                    task_job.await;
+                                    task_job.await.ok();
                                 }
                                 val = &mut task_job => {
                                     if let Ok(command_final) = val {
@@ -104,7 +104,7 @@ impl CommandHandler {
                                 }
                             });
 
-                            command_to_exec.execute(app).unwrap();
+                            command_to_exec.execute(app)?;
                         }
                         None => {
                             return Err(" There is not command to cancel".to_string());

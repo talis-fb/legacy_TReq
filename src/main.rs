@@ -74,7 +74,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let keymap = KeyboardListerner::init(commands);
 
     // Input Mode
-    let commands_input_mode = keymaps::input_mode::keymap_factory();
+    let commands_input_mode = keymaps::insert_mode::keymap_factory();
     let keymap_input_mode = KeyboardListerner::init(commands_input_mode);
 
     // Help Mode

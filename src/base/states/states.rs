@@ -4,7 +4,6 @@ use crate::commands::Command;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-// Interfaces
 pub type CommandsMap = HashMap<Actions, Command>;
 
 pub trait State {
@@ -20,7 +19,7 @@ pub struct StatesMap {
 }
 impl StatesMap {
     pub fn init() -> Self {
-        let all_states: [Rc<Box<dyn State>>; 11] = [
+        let all_states: [Rc<Box<dyn State>>; 13] = [
             Rc::new(Box::new(LogsState::init())),
             Rc::new(Box::new(RequestActiveState::init())),
             Rc::new(Box::new(RequestHeaderActiveState::init())),
@@ -32,6 +31,8 @@ impl StatesMap {
             Rc::new(Box::new(EmptyState::init())),
             Rc::new(Box::new(DefaultEditMode::init())),
             Rc::new(Box::new(DefaultHelpMode::init())),
+            Rc::new(Box::new(EditingGlobalEnvState::init())),
+            Rc::new(Box::new(EditingSessionEnvState::init())),
         ];
 
         let states: HashMap<StatesNames, Rc<Box<dyn State>>> = all_states
@@ -78,8 +79,14 @@ pub use default::DefaultState;
 mod empty;
 pub use empty::EmptyState;
 
-mod default_edit_mode;
-pub use default_edit_mode::DefaultEditMode;
+mod default_insert_mode;
+pub use default_insert_mode::DefaultEditMode;
 
 mod default_help_mode;
 pub use default_help_mode::DefaultHelpMode;
+
+mod editing_global_env;
+pub use editing_global_env::EditingGlobalEnvState;
+
+mod editing_session_env;
+pub use editing_session_env::EditingSessionEnvState;

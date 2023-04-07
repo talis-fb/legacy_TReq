@@ -27,6 +27,8 @@ impl Commands {
 
                 let renderer = app.renderer.as_ref().unwrap().clone();
 
+                let variables = app.get_data_store().environment.get_map();
+
                 let task = tokio::task::spawn(async move {
                     {
                         let mut data = response_data_store.lock().unwrap();
@@ -63,7 +65,7 @@ impl Commands {
                     });
 
                     log::info!(" ** INIT SUBMIT");
-                    let new_response = client.submit((*request).clone()).await;
+                    let new_response = client.submit((*request).clone(), &variables).await;
 
                     close_timer.send(()).await.unwrap();
                     counter_time_task.await.unwrap();

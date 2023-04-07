@@ -36,7 +36,7 @@ impl FileEditionHandler {
 }
 impl Drop for FileEditionHandler {
     fn drop(&mut self) {
-        self.files.values_mut().into_iter().for_each(|f| {
+        self.files.values_mut().for_each(|f| {
             let _ = f.remove();
         });
     }

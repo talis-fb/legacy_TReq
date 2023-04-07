@@ -5,6 +5,11 @@ use std::path::PathBuf;
 pub struct DataFile {
     path: PathBuf,
 }
+impl DataFile {
+    pub fn from_path(path: PathBuf) -> Self {
+        Self { path }
+    }
+}
 impl FileFacade for DataFile {
     fn get_path(&self) -> PathBuf {
         self.path.clone()
