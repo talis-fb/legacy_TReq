@@ -1,11 +1,11 @@
-use crate::{base::web::request::Request, utils::{files::FileUtils, custom_types::uuid::UUID}};
+use crate::utils::files::FileUtils;
 
 use super::FileFacade;
-use std::{path::PathBuf, collections::HashMap};
+use std::{collections::HashMap, path::PathBuf};
 
 #[derive(Clone, Debug)]
 pub struct VariablesFile {
-    pub path: PathBuf
+    pub path: PathBuf,
 }
 impl FileFacade<String, HashMap<String, String>> for VariablesFile {
     fn get_path(&self) -> PathBuf {

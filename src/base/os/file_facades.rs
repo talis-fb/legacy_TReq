@@ -9,10 +9,10 @@ pub mod requests;
 pub mod temp_edition;
 pub mod variables;
 
-pub trait FileFacade<FileID, FileEntity>
+pub trait FileFacade<'a, FileID, FileEntity>
 where
     FileID: PartialEq + Eq + Hash,
-    FileEntity: for<'a> Deserialize<'a> + Serialize + Clone,
+    FileEntity: Deserialize<'a> + Serialize + Clone,
 {
     /// Setup the parent folders of the Struct
     fn setup() -> Result<(), String>

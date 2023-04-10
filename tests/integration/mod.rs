@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod file_handler_test {
+mod file_handler {
     #[test]
     #[ignore]
     fn sgodasdasdsa() {
@@ -11,7 +11,7 @@ mod file_handler_test {
 mod network {
     #[test]
     #[ignore]
-    fn sgodasdasdsa() {
-        assert_eq!(4, 4)
+    fn should_request() {
+        assert_eq!(1, 1)
     }
 }

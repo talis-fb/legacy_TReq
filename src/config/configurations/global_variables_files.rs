@@ -1,9 +1,9 @@
-use crate::utils::file_facades::{data_file::DataFile, FileFacade};
+use crate::utils::{file_facades::{data_file::DataFile, FileFacade}, files::FileUtils};
 use std::collections::HashMap;
 
 use super::{Configuration, ConfigurationEditable};
 
-static NAME_FILE: &str = "global_variables";
+static NAME_FILE: &str = "global_variables.json";
 
 #[derive(Clone)]
 pub struct GlobalVariablesFiles {
@@ -15,7 +15,14 @@ impl Configuration<(), DataFile, HashMap<String, String>> for GlobalVariablesFil
         DataFile::setup()?;
 
         let path = DataFile::get_parent_path().join(NAME_FILE);
-        let file_variables = DataFile::from_path(path);
+
+        let mut file_variables = DataFile::from_path(path);
+
+        let content = file_variables.get_content();
+        if content.is_err() {
+            file_variables.save_content("{}".to_string())?;
+        }
+        
 
         Ok(Self { file_variables })
     }

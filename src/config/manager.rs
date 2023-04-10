@@ -3,6 +3,7 @@ use super::configurations::global_variables_files::GlobalVariablesFiles;
 use super::configurations::view::ViewConfig;
 use super::configurations::Configuration;
 use crate::base::os::file_edition_handler::FileEditionHandler;
+// use crate::base::os::handler::FileHandler;
 use crate::config::configurations::save_files::SaveFiles;
 use crate::utils::file_facades::{data_file::DataFile, request_file::RequestFile, FileFacade};
 use std::rc::Rc;
@@ -14,6 +15,7 @@ pub struct ConfigManager {
     pub editor: Rc<ExternalEditor>,
     pub view: Rc<Mutex<ViewConfig>>,
     pub edition_files_handler: Rc<Mutex<FileEditionHandler>>,
+    // pub files_handler: Rc<Mutex<FileHandler>>,
     pub global_variables: Rc<Mutex<GlobalVariablesFiles>>,
 }
 impl ConfigManager {

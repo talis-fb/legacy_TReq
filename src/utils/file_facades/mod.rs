@@ -8,10 +8,11 @@ use std::io::Write;
 use std::path::PathBuf;
 
 pub trait FileFacade {
-    fn get_path(&self) -> PathBuf;
     fn from_name(filename: String) -> Result<Self, String>
     where
         Self: Sized;
+    
+    fn get_path(&self) -> PathBuf;
     fn get_parent_path() -> PathBuf;
 
     /// Setup the parent folders of the Struct

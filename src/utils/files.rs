@@ -1,5 +1,5 @@
 use directories::ProjectDirs;
-use std::path::PathBuf;
+use std::{path::PathBuf, fs::{OpenOptions, File}};
 
 pub struct FileUtils;
 impl FileUtils {
@@ -9,6 +9,15 @@ impl FileUtils {
         }
 
         Ok(())
+    }
+
+    pub fn open_or_create_file(path: PathBuf) -> Result<File, String> {
+        let file = OpenOptions::new()
+            .create(true)
+            .write(true)
+            .open(path)
+            .map_err(|e| e.to_string())?;
+        Ok(file)
     }
 
     pub fn get_data_dir() -> Option<PathBuf> {
