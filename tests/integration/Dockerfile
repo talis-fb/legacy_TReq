@@ -1,5 +1,7 @@
 FROM rust:1.68-bullseye
 
+RUN apt-get update && apt-get install -y vim
+
 WORKDIR /app
 COPY . .
 
@@ -8,4 +10,7 @@ RUN chown -R appuser:appuser /app
 
 USER appuser
 
-CMD ["cargo", "test", "integration ","--release", "--", "--test-threads=1", "--ignored"]
+ENV EDITOR=vim
+
+# CMD ["cargo", "test", "integration ","--release", "--", "--test-threads=1", "--ignored"]
+CMD ["/bin/bash"]
