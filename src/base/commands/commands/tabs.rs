@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use crate::base::commands::CommandTrait;
 use crate::base::web::request::Request;
-use crate::commands::{Command, Commands};
-use crate::App;
+use crate::base::commands::{Command, Commands};
+use crate::app::App;
 
 impl Commands {
     pub fn go_to_next_tab() -> Command {

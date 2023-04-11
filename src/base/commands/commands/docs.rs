@@ -3,8 +3,8 @@ use std::sync::Arc;
 use crate::app::InputMode;
 use crate::base::commands::CommandTrait;
 use crate::base::doc::DocsFactory;
-use crate::commands::{Command, Commands};
-use crate::App;
+use crate::base::commands::{Command, Commands};
+use crate::app::App;
 
 impl Commands {
     pub fn open_help_screen() -> Command {

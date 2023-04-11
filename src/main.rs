@@ -1,46 +1,34 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
-use base::actions::manager::ActionsManager;
-use base::actions::Actions;
-use base::commands::handler::CommandHandler;
-use base::stores::MainStore;
-use base::web::client::WebClient;
-use base::web::repository::reqwest::ReqwestClientRepository;
-use commands::Commands;
-use config::manager::ConfigManager;
+use treq::base::actions::manager::ActionsManager;
+use treq::base::actions::Actions;
+use treq::base::commands::handler::CommandHandler;
+use treq::base::stores::MainStore;
+use treq::base::web::client::WebClient;
+use treq::base::web::repository::reqwest::ReqwestClientRepository;
+use treq::base::commands::Commands;
+use treq::config::manager::ConfigManager;
 use std::error::Error;
 use std::sync::Arc;
 
-use base::states::manager::StateManager;
-use base::states::states::{DefaultEditMode, DefaultHelpMode, DefaultState, State};
+use treq::base::states::manager::StateManager;
+use treq::base::states::states::{DefaultEditMode, DefaultHelpMode, DefaultState, State};
 
 use std::sync::mpsc::{self, Receiver, Sender};
 
-mod app;
-use app::{App, InputMode};
+use treq::app::{App, InputMode};
 
-mod utils;
+use treq::input::keymaps;
+use treq::input::listener::KeyboardListerner;
 
-mod input;
-use input::keymaps;
-use input::listener::KeyboardListerner;
+use treq::view::ui::UI;
 
-mod base;
-use base::{actions, commands};
-
-mod view;
-use view::ui::UI;
-
-mod config;
-
-mod logger;
-
-use input::input_handler::InputHandler;
-use utils::custom_types::async_bool::AsyncBool;
+use treq::input::input_handler::InputHandler;
+use treq::utils::custom_types::async_bool::AsyncBool;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    logger::init_logger();
+    treq::logger::init_logger();
 
     let state_manager = StateManager::init(DefaultState::init(), DefaultState::init());
     let action_manager = ActionsManager::init();

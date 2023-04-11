@@ -1,6 +1,6 @@
-use crate::actions::Actions;
+use crate::base::actions::Actions;
 use crate::base::states::states::{CommandsMap, State, StatesNames};
-use crate::commands::Commands;
+use crate::base::commands::Commands;
 use crate::input::keymaps::insert_mode::keymap_factory;
 use std::collections::HashMap;
 

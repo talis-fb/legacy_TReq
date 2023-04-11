@@ -1,7 +1,7 @@
 use crate::base::commands::CommandTrait;
 use crate::base::web::request::METHODS;
-use crate::commands::{Command, Commands};
-use crate::App;
+use crate::base::commands::{Command, Commands};
+use crate::app::App;
 use std::collections::HashMap;
 use std::sync::Arc;
 

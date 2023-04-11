@@ -7,8 +7,8 @@ use tokio::task::JoinHandle;
 use crate::base::actions::Actions;
 use crate::base::commands::{CommandTrait, CommandType};
 use crate::base::web::response::{Response, ResponseStage};
-use crate::commands::{Command, Commands};
-use crate::App;
+use crate::base::commands::{Command, Commands};
+use crate::app::App;
 
 impl Commands {
     pub fn async_submit() -> Command {

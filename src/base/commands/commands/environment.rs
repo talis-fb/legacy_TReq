@@ -1,8 +1,8 @@
+use crate::app::App;
 use crate::base::commands::CommandTrait;
+use crate::base::commands::{Command, Commands};
 use crate::base::states::states::{self, State};
-use crate::commands::{Command, Commands};
 use crate::view::views::environment::store::OpenedVars;
-use crate::App;
 use std::sync::Arc;
 
 impl Commands {

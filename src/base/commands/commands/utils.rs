@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use crate::app::InputMode;
 use crate::base::commands::CommandTrait;
-use crate::commands::{Command, Commands};
-use crate::App;
+use crate::base::commands::{Command, Commands};
+use crate::app::App;
 
 impl Commands {
     pub fn do_nothing() -> Command {
