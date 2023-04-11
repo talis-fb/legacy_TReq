@@ -13,7 +13,7 @@ impl FileFacade<String, HashMap<String, String>> for VariablesFile {
     }
 
     fn get_root_path() -> PathBuf {
-        FileUtils::get_data_dir().unwrap().join("variables")
+        FileUtils::get_data_dir().unwrap().join("data")
     }
 
     fn create(id: String, value: HashMap<String, String>) -> Result<Self, String> {

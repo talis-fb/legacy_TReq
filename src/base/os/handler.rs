@@ -1,33 +1,45 @@
 use crate::base::web::request::Request;
 use crate::utils::custom_types::uuid::UUID;
 
-// use super::file_facades::requests::RequestFile;
-// use super::file_facades::temp_edition::TempEditionfile;
-// use super::file_facades::variables::VariablesFile;
+use super::file_facades::requests::RequestFile;
+use super::file_facades::temp_edition::TempEditionfile;
+use super::file_facades::variables::VariablesFile;
 // use std::path::PathBuf;
 use super::file_facades::FileFacade;
 use std::collections::HashMap;
 
-type RequestFile = Box<dyn FileFacade<UUID, Request>>;
-type TempEditionfile = Box<dyn FileFacade<UUID, String>>;
-type VariablesFile = Box<dyn FileFacade<String, HashMap<String, String>>>;
+type BoxRequestFile = Box<dyn FileFacade<UUID, Request>>;
+type BoxTempEditionfile = Box<dyn FileFacade<UUID, String>>;
+type BoxVariablesFile = Box<dyn FileFacade<String, HashMap<String, String>>>;
 
 #[derive(Default)]
 pub struct FileHandler {
-    files_request: HashMap<UUID, RequestFile>,
-    files_variables: HashMap<UUID, VariablesFile>,
-    files_temp_edition: HashMap<UUID, TempEditionfile>,
+    files_request: HashMap<UUID, BoxRequestFile>,
+    files_variables: HashMap<UUID, BoxVariablesFile>,
+    files_temp_edition: HashMap<UUID, BoxTempEditionfile>,
+}
+
+// -----------------
+// Setup all required folder of dependencys FileFacades
+// -----------------
+impl FileHandler {
+    pub fn setup_env_folder() -> Result<(), String> {
+        RequestFile::setup()?;
+        VariablesFile::setup()?;
+        TempEditionfile::setup()?;
+        Ok(())
+    }
 }
 
 // -----------------
 // Request
 // -----------------
 impl FileHandler {
-    fn get_request(&mut self, key: &UUID) -> Result<&mut RequestFile, String> {
+    fn get_request(&mut self, key: &UUID) -> Result<&mut BoxRequestFile, String> {
         self.files_request.get_mut(key).ok_or("No file".to_string())
     }
 
-    pub fn add_request(&mut self, file: RequestFile) -> UUID {
+    pub fn add_request(&mut self, file: BoxRequestFile) -> UUID {
         let key = UUID::new();
         self.files_request.insert(key.clone(), file);
         key
@@ -46,13 +58,13 @@ impl FileHandler {
 // Variables
 // -----------------
 impl FileHandler {
-    fn get_variables(&mut self, key: &UUID) -> Result<&mut VariablesFile, String> {
+    fn get_variables(&mut self, key: &UUID) -> Result<&mut BoxVariablesFile, String> {
         self.files_variables
             .get_mut(key)
             .ok_or("No file".to_string())
     }
 
-    pub fn add_variables(&mut self, file: VariablesFile) -> UUID {
+    pub fn add_variables(&mut self, file: BoxVariablesFile) -> UUID {
         let key = UUID::new();
         self.files_variables.insert(key.clone(), file);
         key
@@ -77,13 +89,13 @@ impl FileHandler {
 // Temp Files
 // -----------------
 impl FileHandler {
-    fn get_temp_edition(&mut self, key: &UUID) -> Result<&mut TempEditionfile, String> {
+    fn get_temp_edition(&mut self, key: &UUID) -> Result<&mut BoxTempEditionfile, String> {
         self.files_temp_edition
             .get_mut(key)
             .ok_or("No file".to_string())
     }
 
-    pub fn add_temp_edition(&mut self, file: TempEditionfile) -> UUID {
+    pub fn add_temp_edition(&mut self, file: BoxTempEditionfile) -> UUID {
         let key = UUID::new();
         self.files_temp_edition.insert(key.clone(), file);
         key

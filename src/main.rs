@@ -56,14 +56,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let commands = keymaps::normal_mode::keymap_factory();
     let keymap = KeyboardListerner::init(commands);
 
-    // Input Mode
-    let commands_input_mode = keymaps::insert_mode::keymap_factory();
-    let keymap_input_mode = KeyboardListerner::init(commands_input_mode);
-
-    // Help Mode
-    let commands_input_mode = keymaps::docs_mode::keymap_factory();
-    let keymap_doc_mode = KeyboardListerner::init(commands_input_mode);
-
     let mut input_handler = InputHandler::init(
         keymap,
         data_store.config.editor.clone(),
