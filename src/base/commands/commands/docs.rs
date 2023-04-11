@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
+use crate::app::App;
 use crate::app::InputMode;
 use crate::base::commands::CommandTrait;
-use crate::base::doc::DocsFactory;
 use crate::base::commands::{Command, Commands};
-use crate::app::App;
+use crate::base::doc::DocsFactory;
 
 impl Commands {
     pub fn open_help_screen() -> Command {

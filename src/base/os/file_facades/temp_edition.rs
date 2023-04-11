@@ -29,7 +29,7 @@ impl FileFacade<UUID, String> for TempEditionfile {
         Path::new("/tmp").to_path_buf()
     }
 
-    fn create(id: UUID, value: String) -> Result<Self, String> {
+    fn create(id: UUID, _value: String) -> Result<Self, String> {
         let temp_file = Builder::new()
             .prefix(&id.value)
             .suffix(".json")

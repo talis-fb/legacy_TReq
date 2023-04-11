@@ -3,8 +3,8 @@ use std::sync::Arc;
 use crate::app::InputMode;
 use crate::base::commands::CommandTrait;
 
-use crate::base::commands::{Command, Commands};
 use crate::app::App;
+use crate::base::commands::{Command, Commands};
 
 impl Commands {
     pub fn edit_mode_insert_char(c: char) -> Command {

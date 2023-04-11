@@ -1,7 +1,7 @@
-use crate::base::commands::CommandTrait;
-use crate::base::states::states::{self, State};
-use crate::base::commands::{Command, Commands};
 use crate::app::App;
+use crate::base::commands::CommandTrait;
+use crate::base::commands::{Command, Commands};
+use crate::base::states::states::{self, State};
 use std::sync::Arc;
 
 impl Commands {

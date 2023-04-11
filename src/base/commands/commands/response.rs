@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
+use crate::app::App;
 use crate::base::commands::CommandTrait;
 use crate::base::commands::{Command, Commands};
-use crate::app::App;
 
 impl Commands {
     pub fn edit_response_vim() -> Command {

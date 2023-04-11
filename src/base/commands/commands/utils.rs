@@ -1,15 +1,15 @@
 use std::sync::Arc;
 
+use crate::app::App;
 use crate::app::InputMode;
 use crate::base::commands::CommandTrait;
 use crate::base::commands::{Command, Commands};
-use crate::app::App;
 
 impl Commands {
     pub fn do_nothing() -> Command {
         struct S;
         impl CommandTrait for S {
-            fn execute(&self, app: &mut App) -> Result<(), String> {
+            fn execute(&self, _app: &mut App) -> Result<(), String> {
                 Ok(())
             }
         }
@@ -20,7 +20,7 @@ impl Commands {
     pub fn err() -> Command {
         struct S;
         impl CommandTrait for S {
-            fn execute(&self, app: &mut App) -> Result<(), String> {
+            fn execute(&self, _app: &mut App) -> Result<(), String> {
                 Err("Ai".to_string())
             }
         }

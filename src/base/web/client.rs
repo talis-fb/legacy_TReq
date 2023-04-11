@@ -8,7 +8,6 @@ use super::{request::Request, response::Response};
 
 pub struct WebClient<T: HttpClientRepository> {
     http_client: T,
-    response: Option<Response>,
 }
 
 impl<T> WebClient<T>
@@ -18,7 +17,6 @@ where
     pub fn init(repository: T) -> Self {
         Self {
             http_client: repository,
-            response: None,
         }
     }
 

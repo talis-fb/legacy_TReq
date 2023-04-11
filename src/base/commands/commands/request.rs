@@ -1,7 +1,7 @@
-use crate::base::commands::CommandTrait;
-use crate::base::web::request::METHODS;
-use crate::base::commands::{Command, Commands};
 use crate::app::App;
+use crate::base::commands::CommandTrait;
+use crate::base::commands::{Command, Commands};
+use crate::base::web::request::METHODS;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -30,7 +30,7 @@ impl Commands {
     pub fn switch_request_options() -> Command {
         struct S;
         impl CommandTrait for S {
-            fn execute(&self, app: &mut App) -> Result<(), String> {
+            fn execute(&self, _app: &mut App) -> Result<(), String> {
                 Ok(())
             }
         }

@@ -28,7 +28,7 @@ impl RequestStore {
 
         let requests: Vec<(UUID, Request)> = map_saved_files
             .iter()
-            .map(|(k, v)| {
+            .map(|(k, _v)| {
                 let req = save_files_content.get_as_entity(k).unwrap();
                 (k.clone(), req)
             })
@@ -78,7 +78,7 @@ impl RequestStore {
     }
 
     pub fn goto_request(&mut self, index: usize) -> Option<()> {
-        let key = self.requests.get(index)?;
+        let _key = self.requests.get(index)?;
         self.current_ind = index;
         Some(())
     }
@@ -115,7 +115,7 @@ impl RequestStore {
     }
 
     pub fn get_requests(&self) -> Vec<&Request> {
-        self.requests.iter().map(|(uuid, req)| req).collect()
+        self.requests.iter().map(|(_uuid, req)| req).collect()
     }
 
     pub fn request_ind(&self) -> usize {

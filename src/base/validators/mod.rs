@@ -118,7 +118,7 @@ mod tests {
 
     // Ignoring errors TEST CASES
     fn validator_to_throw_error() -> Validator<String> {
-        let f = |parameter: &mut String| Err("".to_string());
+        let f = |_parameter: &mut String| Err("".to_string());
         Box::new(f)
     }
 

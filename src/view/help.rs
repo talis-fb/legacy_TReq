@@ -112,7 +112,7 @@ mod tests {
             ]
         }"#;
 
-        let parsed: DocView = serde_json::from_str(data).unwrap();
+        let _parsed: DocView = serde_json::from_str(data).unwrap();
     }
 
     mod parse_tui_rs {

@@ -1,4 +1,3 @@
-
 #[cfg(test)]
 mod file_handler {
     use treq::base::os::handler::FileHandler;

@@ -1,5 +1,8 @@
 use directories::ProjectDirs;
-use std::{path::PathBuf, fs::{OpenOptions, File}};
+use std::{
+    fs::{File, OpenOptions},
+    path::PathBuf,
+};
 
 pub struct FileUtils;
 impl FileUtils {

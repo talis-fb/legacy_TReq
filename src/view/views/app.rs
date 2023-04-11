@@ -91,13 +91,13 @@ impl Component for AppView<'_> {
         };
 
         // TODO: It should not use the same state of Response, only its area
-        let welcome_doc_view = WelcomeDoc {
+        let _welcome_doc_view = WelcomeDoc {
             area: content_layout[1],
             marked: store.current_state == StatesNames::ResponseBody
                 || store.current_state == StatesNames::ResponseHeader,
         };
 
-        let counter_response_time_view = CounterResponseTime {
+        let _counter_response_time_view = CounterResponseTime {
             area: content_layout[1],
             marked: store.current_state == StatesNames::ResponseBody
                 || store.current_state == StatesNames::ResponseHeader,

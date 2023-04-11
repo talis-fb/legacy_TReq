@@ -73,7 +73,7 @@ impl CommandHandler {
                         let running_jobs_arc = self.running_jobs.clone();
                         async move {
                             tokio::select! {
-                                val = close_listener.recv() => {
+                                _val = close_listener.recv() => {
                                     task_job.abort();
                                     task_job.await.ok();
                                 }

@@ -1,15 +1,15 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
+use std::error::Error;
+use std::sync::Arc;
 use treq::base::actions::manager::ActionsManager;
 use treq::base::actions::Actions;
 use treq::base::commands::handler::CommandHandler;
+use treq::base::commands::Commands;
 use treq::base::stores::MainStore;
 use treq::base::web::client::WebClient;
 use treq::base::web::repository::reqwest::ReqwestClientRepository;
-use treq::base::commands::Commands;
 use treq::config::manager::ConfigManager;
-use std::error::Error;
-use std::sync::Arc;
 
 use treq::base::states::manager::StateManager;
 use treq::base::states::states::{DefaultEditMode, DefaultHelpMode, DefaultState, State};

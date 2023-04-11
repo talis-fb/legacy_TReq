@@ -1,6 +1,6 @@
 use crate::base::actions::Actions;
-use crate::base::states::states::{CommandsMap, State, StatesNames};
 use crate::base::commands::Commands;
+use crate::base::states::states::{CommandsMap, State, StatesNames};
 use std::collections::HashMap;
 
 pub struct TabActiveState {

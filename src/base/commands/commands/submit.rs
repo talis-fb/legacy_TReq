@@ -4,11 +4,11 @@ use std::time::{Duration, Instant};
 use tokio::sync::mpsc::{self};
 use tokio::task::JoinHandle;
 
+use crate::app::App;
 use crate::base::actions::Actions;
+use crate::base::commands::{Command, Commands};
 use crate::base::commands::{CommandTrait, CommandType};
 use crate::base::web::response::{Response, ResponseStage};
-use crate::base::commands::{Command, Commands};
-use crate::app::App;
 
 impl Commands {
     pub fn async_submit() -> Command {
@@ -23,7 +23,7 @@ impl Commands {
                 let request = app.data_store.as_ref().unwrap().get_request();
                 let response_data_store = app.data_store.as_ref().unwrap().get_response();
 
-                let data_store = app.get_data_store().clone();
+                let _data_store = app.get_data_store().clone();
 
                 let renderer = app.renderer.as_ref().unwrap().clone();
 
@@ -112,8 +112,8 @@ impl Commands {
         struct S;
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                let client = app.client_web.as_ref().unwrap().clone();
-                let request = app.data_store.as_ref().unwrap().get_request();
+                let _client = app.client_web.as_ref().unwrap().clone();
+                let _request = app.data_store.as_ref().unwrap().get_request();
                 let response_data_store = app.data_store.as_ref().unwrap().get_response();
 
                 let mut response = response_data_store.lock().unwrap();

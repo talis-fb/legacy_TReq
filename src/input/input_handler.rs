@@ -61,7 +61,7 @@ impl InputHandler {
             ),
         ]);
 
-        let current_listener = listeners.get(&InputMode::Normal);
+        let _current_listener = listeners.get(&InputMode::Normal);
 
         Self {
             current_listener: Arc::new(Mutex::new(listener)),
@@ -164,7 +164,7 @@ impl InputHandler {
             .spawn()
             .expect("failed to execute child");
 
-        let status = child.wait().expect("failed to wait on child");
+        let _status = child.wait().expect("failed to wait on child");
 
         std::fs::read_to_string(file_path).map_err(|e| e.to_string())
     }

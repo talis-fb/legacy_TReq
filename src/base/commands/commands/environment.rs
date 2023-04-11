@@ -10,7 +10,7 @@ impl Commands {
         struct S;
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                let store = app.get_data_store_mut();
+                let _store = app.get_data_store_mut();
 
                 // TODO:
                 // Probaly this will fail, once it clone keys to View Store in
@@ -199,7 +199,7 @@ impl Commands {
                 impl CommandTrait for _S {
                     fn execute(&self, app: &mut App) -> Result<(), String> {
                         let new_key_value = app.get_input_buffer_value();
-                        let value = app
+                        let _value = app
                             .get_data_store_mut()
                             .environment
                             .global
@@ -232,7 +232,7 @@ impl Commands {
                 impl CommandTrait for _S {
                     fn execute(&self, app: &mut App) -> Result<(), String> {
                         let new_key_value = app.get_input_buffer_value();
-                        let value = app
+                        let _value = app
                             .get_data_store_mut()
                             .environment
                             .session

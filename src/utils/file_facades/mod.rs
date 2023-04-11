@@ -11,7 +11,7 @@ pub trait FileFacade {
     fn from_name(filename: String) -> Result<Self, String>
     where
         Self: Sized;
-    
+
     fn get_path(&self) -> PathBuf;
     fn get_parent_path() -> PathBuf;
 

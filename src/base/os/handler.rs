@@ -20,7 +20,7 @@ pub struct FileHandler {
 }
 
 // -----------------
-// Request 
+// Request
 // -----------------
 impl FileHandler {
     fn get_request(&mut self, key: &UUID) -> Result<&mut RequestFile, String> {
@@ -43,7 +43,7 @@ impl FileHandler {
 }
 
 // -----------------
-// Variables 
+// Variables
 // -----------------
 impl FileHandler {
     fn get_variables(&mut self, key: &UUID) -> Result<&mut VariablesFile, String> {
@@ -74,7 +74,7 @@ impl FileHandler {
 }
 
 // -----------------
-// Temp Files 
+// Temp Files
 // -----------------
 impl FileHandler {
     fn get_temp_edition(&mut self, key: &UUID) -> Result<&mut TempEditionfile, String> {

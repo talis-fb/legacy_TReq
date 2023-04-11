@@ -8,9 +8,6 @@ use tui::layout::{Constraint, Direction, Layout, Rect};
 
 pub mod store;
 
-static KEY_STATE: &str = "environment_vars__state";
-// ------------------------
-
 pub struct EnvironmentEditView<'a> {
     pub area: Rect,
     pub store: &'a MainStore,
@@ -18,7 +15,7 @@ pub struct EnvironmentEditView<'a> {
 }
 
 impl EnvironmentEditView<'_> {
-    pub fn prepare_render<'b>(states: &mut ViewStates, store: &'b MainStore) {
+    pub fn prepare_render<'b>(_states: &mut ViewStates, _store: &'b MainStore) {
         //
     }
 }
@@ -100,7 +97,7 @@ impl Component for EnvironmentEditView<'_> {
             .constraints(
                 vars_keys
                     .iter()
-                    .map(|f| Constraint::Length(3))
+                    .map(|_f| Constraint::Length(3))
                     .collect::<Vec<Constraint>>(),
             )
             .split(layout[1]);
