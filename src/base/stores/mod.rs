@@ -54,8 +54,8 @@ impl MainStore {
         let last_response = Arc::new(Mutex::new(Response::default()));
 
         Self {
-            requests: RequestStore::init(config.saved_requests.clone()),
-            environment: EnvironmentStore::init(config.global_variables.clone()),
+            requests: RequestStore::init(config.files.clone()),
+            environment: EnvironmentStore::init(config.files.clone()).unwrap(),
             view: ViewStore::init(),
             last_response,
             current_state: StatesNames::Default,

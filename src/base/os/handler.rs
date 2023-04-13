@@ -31,6 +31,21 @@ impl FileHandler {
     }
 }
 
+// -------------------
+// Getters all maps
+// -------------------
+impl FileHandler {
+    pub fn get_map_files_request(&self) -> &HashMap<UUID, BoxRequestFile> {
+        &self.files_request
+    }
+    pub fn get_map_files_variables(&self) -> &HashMap<UUID, BoxVariablesFile> {
+        &self.files_variables
+    }
+    pub fn get_map_files_temp_edition(&self) -> &HashMap<UUID, BoxTempEditionfile> {
+        &self.files_temp_edition
+    }
+}
+
 // -----------------
 // Request
 // -----------------
@@ -51,6 +66,12 @@ impl FileHandler {
 
     pub fn save_content_request_file(&mut self, key: &UUID, value: Request) -> Result<(), String> {
         self.get_request(key)?.save_content(value)
+    }
+
+    pub fn delete_request_file(&mut self, key: &UUID) -> Result<(), String> {
+        self.get_request(key)?.remove()?;
+        self.files_request.remove(key);
+        Ok(())
     }
 }
 
@@ -83,6 +104,12 @@ impl FileHandler {
     ) -> Result<(), String> {
         self.get_variables(key)?.save_content(value)
     }
+
+    pub fn delete_variable_file(&mut self, key: &UUID) -> Result<(), String> {
+        self.get_variables(key)?.remove()?;
+        self.files_variables.remove(key);
+        Ok(())
+    }
 }
 
 // -----------------
@@ -106,6 +133,12 @@ impl FileHandler {
 
     pub fn save_content_temp_file(&mut self, key: &UUID, value: String) -> Result<(), String> {
         self.get_temp_edition(key)?.save_content(value)
+    }
+
+    pub fn delete_temp_edition_file(&mut self, key: &UUID) -> Result<(), String> {
+        self.get_temp_edition(key)?.remove()?;
+        self.files_temp_edition.remove(key);
+        Ok(())
     }
 }
 

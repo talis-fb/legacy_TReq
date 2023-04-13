@@ -30,6 +30,18 @@ use treq::utils::custom_types::async_bool::AsyncBool;
 async fn main() -> Result<(), Box<dyn Error>> {
     treq::logger::init_logger();
 
+    // 1- Chamar os setup_env do config manager aq no comeco da main()
+    // 2- Passar o file_handler como injecao de dependencia pro ConfigManager
+    //  (os mocks dos FileFacades serão usados pelo FileHandler na execução, passando para add)
+    // 3-
+
+    // No mock...
+    // 1- Iniciar o FileHandler e MockWebClient
+    // 2- Iniciar o ConfigManager( <-FileHandler)
+    // 3- DataStore( <-ConfigManager )
+    // 4- let (action_queue_sender, action_queue_receiver): (Sender<Actions>, Receiver<Actions>) = mpsc::channel();
+    // 5- Init app e set builders
+
     let state_manager = StateManager::init(DefaultState::init(), DefaultState::init());
     let action_manager = ActionsManager::init();
     let mut command_handler = CommandHandler::init();
@@ -49,7 +61,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // User Input
     let (action_queue_sender, action_queue_receiver): (Sender<Actions>, Receiver<Actions>) =
         mpsc::channel();
-    let has_clicked_before = Arc::new(AsyncBool::init(true));
 
     // Keymaps...
     // Normal Mode
