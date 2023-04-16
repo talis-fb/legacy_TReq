@@ -57,12 +57,12 @@ impl MainStore {
             requests: RequestStore::init(config.files.clone()),
             environment: EnvironmentStore::init(config.files.clone()).unwrap(),
             view: ViewStore::init(),
-            last_response,
             current_state: StatesNames::Default,
             mode: InputMode::Normal,
             input_buffer: InputKeyboardBuffer::init(),
             log: Log::default(),
             doc_reader: None,
+            last_response,
             config,
         }
 

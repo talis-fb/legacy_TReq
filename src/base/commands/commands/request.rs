@@ -169,9 +169,9 @@ impl Commands {
             fn execute(&self, app: &mut App) -> Result<(), String> {
                 let data_store = app.get_data_store_mut();
                 let current_uuid = data_store.get_request_uuid();
-                let file_handler_cc = data_store.config.edition_files_handler.clone();
+                let file_handler_cc = data_store.config.files.clone();
                 let mut file_handler = file_handler_cc.try_lock().map_err(|e| e.to_string())?;
-                let buffer = file_handler.get_content(current_uuid)?;
+                let buffer = file_handler.get_content_temp_file(current_uuid)?;
 
                 let mut req = (*data_store.get_request()).clone();
                 req.set_body(buffer);

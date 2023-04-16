@@ -6,6 +6,8 @@ use treq::base::actions::manager::ActionsManager;
 use treq::base::actions::Actions;
 use treq::base::commands::handler::CommandHandler;
 use treq::base::commands::Commands;
+use treq::base::os::file_facades::FileFacade;
+use treq::base::os::file_facades::variables::VariablesFile;
 use treq::base::stores::MainStore;
 use treq::base::web::client::WebClient;
 use treq::base::web::repository::reqwest::ReqwestClientRepository;
@@ -41,6 +43,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // 3- DataStore( <-ConfigManager )
     // 4- let (action_queue_sender, action_queue_receiver): (Sender<Actions>, Receiver<Actions>) = mpsc::channel();
     // 5- Init app e set builders
+
+    let variables_file = VariablesFile::create("global_variables".to_string(), value)
 
     let state_manager = StateManager::init(DefaultState::init(), DefaultState::init());
     let action_manager = ActionsManager::init();
