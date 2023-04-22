@@ -9,7 +9,7 @@ use std::time::Duration;
 
 use crate::app::InputMode;
 use crate::base::actions::Actions;
-use crate::base::os::file_facades::temp_edition::TempEditionfile;
+
 use crate::base::os::file_facades::FileFacade;
 use crate::base::os::handler::FileHandler;
 use crate::config::configurations::external_editor::ExternalEditor;
@@ -157,8 +157,8 @@ impl InputHandler {
 
         let uuid_file_handler = self.opened_files.entry(uuid_edition.clone()).or_insert_with(|| {
             let file = files.file_factory.as_ref().unwrap().create_temp_file(uuid_edition.clone(), buffer).unwrap();
-            let uuid_new_file = files.add_temp_edition(file);
-            uuid_new_file
+            
+            files.add_temp_edition(file)
         });
 
         let file_path = files.get_path(uuid_file_handler).unwrap();

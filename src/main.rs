@@ -2,14 +2,15 @@
 #![allow(unused_variables)]
 use std::collections::HashMap;
 use std::error::Error;
-use std::sync::Arc;
+
 use treq::base::actions::manager::ActionsManager;
 use treq::base::actions::Actions;
 use treq::base::commands::handler::CommandHandler;
 use treq::base::commands::Commands;
-use treq::base::os::file_facades::FileFacade;
 use treq::base::os::file_facades::requests::RequestFile;
 use treq::base::os::file_facades::variables::VariablesFile;
+use treq::base::os::file_facades::FileFacade;
+
 use treq::base::os::file_factory::FileDefaultFactory;
 use treq::base::os::handler::FileHandler;
 use treq::base::stores::MainStore;
@@ -32,7 +33,6 @@ use treq::input::listener::KeyboardListerner;
 use treq::view::ui::UI;
 
 use treq::input::input_handler::InputHandler;
-use treq::utils::custom_types::async_bool::AsyncBool;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -50,32 +50,29 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // 4- let (action_queue_sender, action_queue_receiver): (Sender<Actions>, Receiver<Actions>) = mpsc::channel();
     // 5- Init app e set builders
 
-    let state_manager = StateManager::init(DefaultState::init(), DefaultState::init());
-    let action_manager = ActionsManager::init();
-    let mut command_handler = CommandHandler::init();
-
-
-
-
+    // ---------------------------------------------
     // Configurations and Setup of necessary folders
-    FileHandler::setup_env_folder().expect("Error creating folders of data at '.local/share/treq.'");
+    // ---------------------------------------------
+    FileHandler::setup_env_folder()
+        .expect("Error creating folders of data at '.local/share/treq.'");
     let mut file_handler = FileHandler::default();
-    file_handler.set_file_factory(Box::new(FileDefaultFactory::default()));
+    file_handler.set_file_factory(Box::<FileDefaultFactory>::default());
 
     let request_already_saved = RequestFile::factory_saved_files().unwrap();
-    request_already_saved.into_iter().for_each(|file| {
+    for file in request_already_saved  {
         file_handler.add_request(Box::new(file));
-    });
+    }
 
     let fg = VariablesFile::create("global_variables.json".to_string(), HashMap::new()).unwrap();
     file_handler.add_variables(Box::new(fg));
 
     // other configs
     let view_config = ViewConfig::init();
-    let external_editor = ExternalEditor::setup_and_init().expect("It's necessary set $EDITOR enviroment variable to desired editor to use with TReq");
+    let external_editor = ExternalEditor::setup_and_init().expect(
+        "It's necessary set $EDITOR enviroment variable to desired editor to use with TReq",
+    );
 
     let config_manager = ConfigManager::init(file_handler, view_config, external_editor);
-
 
     // Init of Data Stores
     let mut data_store = MainStore::init(config_manager);
@@ -85,12 +82,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let web_client: WebClient<ReqwestClientRepository> =
         WebClient::init(ReqwestClientRepository::default());
 
-    // User Input
+    // ------------------------------------------
+    // Input
+    // ------------------------------------------
+    // EVENTS of actions
     let (action_queue_sender, action_queue_receiver): (Sender<Actions>, Receiver<Actions>) =
         mpsc::channel();
 
-    // Keymaps...
-    // Normal Mode
     let commands = keymaps::normal_mode::keymap_factory();
     let keymap = KeyboardListerner::init(commands);
 
@@ -101,16 +99,26 @@ async fn main() -> Result<(), Box<dyn Error>> {
         action_queue_sender.clone(),
     );
 
-    // Init UI
+    // ------------------------------------------
+    // View
+    // ------------------------------------------
     let mut view = UI::init();
 
+
+    // ------------------------------------------
     // Init app -> it starts with a empty request
+    // ------------------------------------------
+    let state_manager = StateManager::init(DefaultState::init(), DefaultState::init());
+    let action_manager = ActionsManager::init();
+
     let mut app = App::default();
     app.set_state_manager(state_manager);
     app.set_action_manager(action_manager);
     app.set_web_client(web_client);
     app.set_data_store(data_store);
     app.set_renderer(action_queue_sender);
+
+    let mut command_handler = CommandHandler::init();
 
     while !app.is_finished {
         view.render(app.get_data_store());

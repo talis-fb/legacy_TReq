@@ -4,7 +4,7 @@ use crate::{
 };
 
 use super::FileFacade;
-use std::{collections::HashMap, path::PathBuf};
+use std::{path::PathBuf};
 
 #[derive(Clone, Debug)]
 pub struct RequestFile {

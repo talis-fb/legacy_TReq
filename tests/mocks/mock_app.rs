@@ -1,4 +1,4 @@
-use treq::{app::App, base::os::handler::FileHandler, config::manager::ConfigManager};
+
 
 
 pub struct MockApp {
@@ -6,8 +6,8 @@ pub struct MockApp {
 }
 
 impl MockApp {
-    pub fn init() -> () {
-        ()
+    pub fn init() {
+        
         // let file_handler = FileHandler::default();
         // let configs = ConfigManager::init(file_handler);
     }

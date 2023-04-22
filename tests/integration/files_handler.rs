@@ -1,11 +1,11 @@
 #[cfg(test)]
 mod file_handler {
-    use std::{collections::HashMap, fs, path::Path};
+    use std::{collections::HashMap, path::Path};
     use treq::{
         base::{
             os::{
                 file_facades::{
-                    requests::RequestFile, temp_edition::TempEditionfile, variables::VariablesFile,
+                    requests::RequestFile, variables::VariablesFile,
                     FileFacade,
                 },
                 handler::FileHandler,
@@ -77,7 +77,7 @@ mod file_handler {
             RequestFile::create(id_file_request1.clone(), request_1.clone()).unwrap();
         let path_file = format!(
             "/home/talis/.local/share/treq/requests/{}",
-            id_file_request1.clone().value
+            id_file_request1.value
         );
 
         let id = handler.add_request(Box::new(file_request1));
@@ -135,7 +135,7 @@ mod file_handler {
             RequestFile::create(id_file_request1.clone(), new_request.clone()).unwrap();
         let path_file = format!(
             "/home/talis/.local/share/treq/requests/{}",
-            id_file_request1.clone().value
+            id_file_request1.value
         );
 
         let id = handler.add_request(Box::new(file_request1));
