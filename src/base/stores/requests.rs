@@ -4,6 +4,7 @@ use crate::{
     base::{
         os::{
             file_facades::{requests::RequestFile, FileFacade},
+            file_factory::FileFactory,
             handler::FileHandler,
         },
         web::request::Request,
@@ -135,8 +136,14 @@ impl RequestStore {
             let mut file_handler = self.file_handler.lock().unwrap();
 
             if !file_handler.get_map_files_request().contains_key(uuid) {
-                let file = RequestFile::create(uuid.clone(), req.clone())?;
-                let new_uuid = file_handler.add_request(Box::new(file));
+                let file = file_handler
+                    .file_factory
+                    .as_ref()
+                    .unwrap()
+                    .create_request_file(uuid.clone(), req.clone())
+                    .unwrap();
+
+                let new_uuid = file_handler.add_request(file);
 
                 // Update UUID in 'requests' vector
                 *uuid = new_uuid;

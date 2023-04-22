@@ -10,6 +10,7 @@ use treq::base::commands::Commands;
 use treq::base::os::file_facades::FileFacade;
 use treq::base::os::file_facades::requests::RequestFile;
 use treq::base::os::file_facades::variables::VariablesFile;
+use treq::base::os::file_factory::FileDefaultFactory;
 use treq::base::os::handler::FileHandler;
 use treq::base::stores::MainStore;
 use treq::base::web::client::WebClient;
@@ -59,6 +60,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Configurations and Setup of necessary folders
     FileHandler::setup_env_folder().expect("Error creating folders of data at '.local/share/treq.'");
     let mut file_handler = FileHandler::default();
+    file_handler.set_file_factory(Box::new(FileDefaultFactory::default()));
 
     let request_already_saved = RequestFile::factory_saved_files().unwrap();
     request_already_saved.into_iter().for_each(|file| {

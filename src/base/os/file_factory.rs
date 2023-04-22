@@ -11,35 +11,33 @@ type BoxTempEditionfile = Box<dyn FileFacade<UUID, String>>;
 type BoxVariablesFile = Box<dyn FileFacade<String, HashMap<String, String>>>;
 
 pub trait FileFactory {
-    fn create_request_file(id: UUID, request: Request) -> Result<BoxRequestFile, String>
-    where
-        Self: Sized;
+    fn create_request_file(&self, id: UUID, request: Request) -> Result<BoxRequestFile, String>;
 
     fn create_variables_file(
+        &self,
         id: String,
         variables: HashMap<String, String>,
-    ) -> Result<BoxVariablesFile, String>
-    where
-        Self: Sized;
+    ) -> Result<BoxVariablesFile, String>;
 
-    fn create_temp_file(id: UUID, content: String) -> Result<BoxTempEditionfile, String>
-    where
-        Self: Sized;
+    fn create_temp_file(&self, id: UUID, content: String) -> Result<BoxTempEditionfile, String>;
 }
 
-struct FileDefaultFactory;
+#[derive(Default)]
+pub struct FileDefaultFactory;
+
 impl FileFactory for FileDefaultFactory {
-    fn create_temp_file(id: UUID, content: String) -> Result<BoxTempEditionfile, String> {
+    fn create_temp_file(&self, id: UUID, content: String) -> Result<BoxTempEditionfile, String> {
         let file = TempEditionfile::create(id, content)?;
         Ok(Box::new(file))
     }
 
-    fn create_request_file(id: UUID, request: Request) -> Result<BoxRequestFile, String> {
+    fn create_request_file(&self, id: UUID, request: Request) -> Result<BoxRequestFile, String> {
         let file = RequestFile::create(id, request)?;
         Ok(Box::new(file))
     }
 
     fn create_variables_file(
+        &self,
         id: String,
         variables: HashMap<String, String>,
     ) -> Result<BoxVariablesFile, String> {
