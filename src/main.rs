@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
+use std::collections::HashMap;
 use std::error::Error;
 use std::sync::Arc;
 use treq::base::actions::manager::ActionsManager;
@@ -7,10 +8,14 @@ use treq::base::actions::Actions;
 use treq::base::commands::handler::CommandHandler;
 use treq::base::commands::Commands;
 use treq::base::os::file_facades::FileFacade;
+use treq::base::os::file_facades::requests::RequestFile;
 use treq::base::os::file_facades::variables::VariablesFile;
+use treq::base::os::handler::FileHandler;
 use treq::base::stores::MainStore;
 use treq::base::web::client::WebClient;
 use treq::base::web::repository::reqwest::ReqwestClientRepository;
+use treq::config::configurations::external_editor::ExternalEditor;
+use treq::config::configurations::view::ViewConfig;
 use treq::config::manager::ConfigManager;
 
 use treq::base::states::manager::StateManager;
@@ -44,15 +49,31 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // 4- let (action_queue_sender, action_queue_receiver): (Sender<Actions>, Receiver<Actions>) = mpsc::channel();
     // 5- Init app e set builders
 
-    let variables_file = VariablesFile::create("global_variables".to_string(), value)
-
     let state_manager = StateManager::init(DefaultState::init(), DefaultState::init());
     let action_manager = ActionsManager::init();
     let mut command_handler = CommandHandler::init();
 
+
+
+
     // Configurations and Setup of necessary folders
-    ConfigManager::setup_env().expect("Error creating folders .local/share/treq. If error persist create it with mkdir $HOME/.local/share/treq");
-    let config_manager = ConfigManager::init();
+    FileHandler::setup_env_folder().expect("Error creating folders of data at '.local/share/treq.'");
+    let mut file_handler = FileHandler::default();
+
+    let request_already_saved = RequestFile::factory_saved_files().unwrap();
+    request_already_saved.into_iter().for_each(|file| {
+        file_handler.add_request(Box::new(file));
+    });
+
+    let fg = VariablesFile::create("global_variables.json".to_string(), HashMap::new()).unwrap();
+    file_handler.add_variables(Box::new(fg));
+
+    // other configs
+    let view_config = ViewConfig::init();
+    let external_editor = ExternalEditor::setup_and_init().expect("It's necessary set $EDITOR enviroment variable to desired editor to use with TReq");
+
+    let config_manager = ConfigManager::init(file_handler, view_config, external_editor);
+
 
     // Init of Data Stores
     let mut data_store = MainStore::init(config_manager);
@@ -74,7 +95,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut input_handler = InputHandler::init(
         keymap,
         data_store.config.editor.clone(),
-        data_store.config.edition_files_handler.clone(),
+        data_store.config.files.clone(),
         action_queue_sender.clone(),
     );
 

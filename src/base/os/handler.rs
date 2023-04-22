@@ -6,7 +6,9 @@ use super::file_facades::temp_edition::TempEditionfile;
 use super::file_facades::variables::VariablesFile;
 // use std::path::PathBuf;
 use super::file_facades::FileFacade;
+use super::file_factory::FileFactory;
 use std::collections::HashMap;
+use std::path::PathBuf;
 
 type BoxRequestFile = Box<dyn FileFacade<UUID, Request>>;
 type BoxTempEditionfile = Box<dyn FileFacade<UUID, String>>;
@@ -17,6 +19,8 @@ pub struct FileHandler {
     files_request: HashMap<UUID, BoxRequestFile>,
     files_variables: HashMap<UUID, BoxVariablesFile>,
     files_temp_edition: HashMap<UUID, BoxTempEditionfile>,
+
+    pub file_factory: Option<Box<dyn FileFactory>>
 }
 
 // -----------------
@@ -28,6 +32,28 @@ impl FileHandler {
         VariablesFile::setup()?;
         TempEditionfile::setup()?;
         Ok(())
+    }
+
+    pub fn set_file_factory(&mut self, file_factory: Box<dyn FileFactory>) {
+        self.file_factory = Some(file_factory);
+    }
+}
+
+impl FileHandler {
+    pub fn get_path(&self, key: &UUID) -> Option<PathBuf> {
+        if let Some(file) = self.files_request.get(key) {
+            return Some(file.get_path());
+        }
+
+        if let Some(file) = self.files_variables.get(key) {
+            return Some(file.get_path());
+        }
+
+        if let Some(file) = self.files_temp_edition.get(key) {
+            return Some(file.get_path());
+        }
+
+        None
     }
 }
 

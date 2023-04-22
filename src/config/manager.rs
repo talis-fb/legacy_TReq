@@ -20,7 +20,7 @@ pub struct ConfigManager {
     // pub global_variables: Rc<Mutex<GlobalVariablesFiles>>,
 }
 impl ConfigManager {
-    pub fn nit(file_handler: FileHandler, view: ViewConfig, editor: ExternalEditor) -> Self {
+    pub fn init(file_handler: FileHandler, view: ViewConfig, editor: ExternalEditor) -> Self {
         // let saved_requests = SaveFiles::setup_and_init().unwrap();
         // let global_variables = GlobalVariablesFiles::setup_and_init().unwrap();
         // let editor = ExternalEditor::setup_and_init().unwrap();

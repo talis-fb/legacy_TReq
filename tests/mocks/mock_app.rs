@@ -2,11 +2,12 @@ use treq::{app::App, base::os::handler::FileHandler, config::manager::ConfigMana
 
 
 pub struct MockApp {
-    app: App
+    // app: App
 }
 
 impl MockApp {
-    pub fn init() -> Self {
+    pub fn init() -> () {
+        ()
         // let file_handler = FileHandler::default();
         // let configs = ConfigManager::init(file_handler);
     }

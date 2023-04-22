@@ -9,7 +9,9 @@ use std::time::Duration;
 
 use crate::app::InputMode;
 use crate::base::actions::Actions;
-use crate::base::os::file_edition_handler::FileEditionHandler;
+use crate::base::os::file_facades::temp_edition::TempEditionfile;
+use crate::base::os::file_facades::FileFacade;
+use crate::base::os::handler::FileHandler;
 use crate::config::configurations::external_editor::ExternalEditor;
 use crate::utils::custom_types::uuid::UUID;
 
@@ -25,7 +27,8 @@ use std::process::{Command as OSCommand, Stdio};
 pub struct InputHandler {
     // Save files
     configuration: Rc<ExternalEditor>,
-    files: Rc<Mutex<FileEditionHandler>>,
+    files: Rc<Mutex<FileHandler>>,
+    opened_files: HashMap<UUID, UUID>,
 
     // Listener
     current_listener: Arc<Mutex<KeyboardListerner>>,
@@ -43,7 +46,7 @@ impl InputHandler {
     pub fn init(
         listener: KeyboardListerner,
         configuration: Rc<ExternalEditor>,
-        files: Rc<Mutex<FileEditionHandler>>,
+        files: Rc<Mutex<FileHandler>>,
         sender_events: Sender<Actions>,
     ) -> Self {
         let listeners = HashMap::from([
@@ -67,6 +70,7 @@ impl InputHandler {
             current_listener: Arc::new(Mutex::new(listener)),
             configuration,
             files,
+            opened_files: HashMap::new(),
             last_input_mode_state: None,
             listeners,
             sender_events,
@@ -148,13 +152,16 @@ impl InputHandler {
         self.finisher_async_listener = Some(finished_sender);
     }
 
-    pub fn sync_open_vim(&mut self, buffer: String, uuid: &UUID) -> Result<String, String> {
-        self.files
-            .lock()
-            .unwrap()
-            .save_content(uuid, buffer)
-            .unwrap();
-        let file_path = self.files.lock().unwrap().get_path(uuid)?;
+    pub fn sync_open_vim(&mut self, buffer: String, uuid_edition: &UUID) -> Result<String, String> {
+        let mut files = self.files.lock().unwrap();
+
+        let uuid_file_handler = self.opened_files.entry(uuid_edition.clone()).or_insert_with(|| {
+            let file = TempEditionfile::create(uuid_edition.clone(), buffer).unwrap();
+            let uuid_new_file = files.add_temp_edition(Box::new(file));
+            uuid_new_file
+        });
+
+        let file_path = files.get_path(uuid_file_handler).unwrap();
 
         let mut child = OSCommand::new(&self.configuration.editor)
             .arg(file_path.clone())
