@@ -1,7 +1,7 @@
 echo " ========================"
 echo " ===== CREATE IMAGE ====="
 echo " ========================"
-docker build -t treq -f tests/integration/Dockerfile .
+docker build -t treq -f tests/Dockerfile .
 
 
 echo " Tests ............................................"
