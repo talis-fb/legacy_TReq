@@ -25,14 +25,14 @@ mod file_handler {
     #[test]
     #[ignore]
     fn test1_should_create_folders_corretly_when_they_are_not_created() {
-        assert_eq!(folder_exists("/home/talis/.local/share/treq"), false);
+        assert_eq!(folder_exists("/home/appuser/.local/share/treq"), false);
 
         FileHandler::setup_env_folder().unwrap();
 
-        assert_eq!(folder_exists("/home/talis/.local/share/treq"), true);
-        assert_eq!(folder_exists("/home/talis/.local/share/treq/data"), true);
+        assert_eq!(folder_exists("/home/appuser/.local/share/treq"), true);
+        assert_eq!(folder_exists("/home/appuser/.local/share/treq/data"), true);
         assert_eq!(
-            folder_exists("/home/talis/.local/share/treq/requests"),
+            folder_exists("/home/appuser/.local/share/treq/requests"),
             true
         );
     }
@@ -40,19 +40,19 @@ mod file_handler {
     #[test]
     #[ignore]
     fn test2_should_not_panic_if_folder_already_exist() {
-        assert_eq!(folder_exists("/home/talis/.local/share/treq"), true);
-        assert_eq!(folder_exists("/home/talis/.local/share/treq/data"), true);
+        assert_eq!(folder_exists("/home/appuser/.local/share/treq"), true);
+        assert_eq!(folder_exists("/home/appuser/.local/share/treq/data"), true);
         assert_eq!(
-            folder_exists("/home/talis/.local/share/treq/requests"),
+            folder_exists("/home/appuser/.local/share/treq/requests"),
             true
         );
 
         FileHandler::setup_env_folder().unwrap();
 
-        assert_eq!(folder_exists("/home/talis/.local/share/treq"), true);
-        assert_eq!(folder_exists("/home/talis/.local/share/treq/data"), true);
+        assert_eq!(folder_exists("/home/appuser/.local/share/treq"), true);
+        assert_eq!(folder_exists("/home/appuser/.local/share/treq/data"), true);
         assert_eq!(
-            folder_exists("/home/talis/.local/share/treq/requests"),
+            folder_exists("/home/appuser/.local/share/treq/requests"),
             true
         );
     }
@@ -60,9 +60,9 @@ mod file_handler {
     #[test]
     #[ignore]
     fn test3_should_create_files_corretly() {
-        assert_eq!(folder_is_empty("/home/talis/.local/share/treq/data"), true);
+        assert_eq!(folder_is_empty("/home/appuser/.local/share/treq/data"), true);
         assert_eq!(
-            folder_is_empty("/home/talis/.local/share/treq/requests"),
+            folder_is_empty("/home/appuser/.local/share/treq/requests"),
             true
         );
 
@@ -76,14 +76,14 @@ mod file_handler {
         let file_request1 =
             RequestFile::create(id_file_request1.clone(), request_1.clone()).unwrap();
         let path_file = format!(
-            "/home/talis/.local/share/treq/requests/{}",
+            "/home/appuser/.local/share/treq/requests/{}",
             id_file_request1.value
         );
 
         let id = handler.add_request(Box::new(file_request1));
 
         assert_eq!(
-            folder_is_empty("/home/talis/.local/share/treq/requests"),
+            folder_is_empty("/home/appuser/.local/share/treq/requests"),
             false
         );
         assert_eq!(folder_exists(&path_file), true);
@@ -117,9 +117,9 @@ mod file_handler {
     #[test]
     #[ignore]
     fn test4_should_create_files_corretly_even_when_is_already_files_in_folder() {
-        assert_eq!(folder_is_empty("/home/talis/.local/share/treq/data"), false);
+        assert_eq!(folder_is_empty("/home/appuser/.local/share/treq/data"), false);
         assert_eq!(
-            folder_is_empty("/home/talis/.local/share/treq/requests"),
+            folder_is_empty("/home/appuser/.local/share/treq/requests"),
             false
         );
 
@@ -134,7 +134,7 @@ mod file_handler {
         let file_request1 =
             RequestFile::create(id_file_request1.clone(), new_request.clone()).unwrap();
         let path_file = format!(
-            "/home/talis/.local/share/treq/requests/{}",
+            "/home/appuser/.local/share/treq/requests/{}",
             id_file_request1.value
         );
 

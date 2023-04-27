@@ -7,21 +7,22 @@ use treq::base::actions::manager::ActionsManager;
 use treq::base::actions::Actions;
 use treq::base::commands::handler::CommandHandler;
 use treq::base::commands::Commands;
-use treq::base::os::file_facades::requests::RequestFile;
 use treq::base::os::file_facades::variables::VariablesFile;
 use treq::base::os::file_facades::FileFacade;
 
-use treq::base::os::file_factory::FileDefaultFactory;
+use treq::base::os::file_factory::{FileDefaultFactory, FileFactory};
 use treq::base::os::handler::FileHandler;
 use treq::base::stores::MainStore;
 use treq::base::web::client::WebClient;
 use treq::base::web::repository::reqwest::ReqwestClientRepository;
+use treq::base::web::request::Request;
 use treq::config::configurations::external_editor::ExternalEditor;
 use treq::config::configurations::view::ViewConfig;
 use treq::config::manager::ConfigManager;
 
 use treq::base::states::manager::StateManager;
 use treq::base::states::states::{DefaultEditMode, DefaultHelpMode, DefaultState, State};
+use treq::utils::custom_types::uuid::UUID;
 
 use std::sync::mpsc::{self, Receiver, Sender};
 
@@ -58,13 +59,21 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut file_handler = FileHandler::default();
     file_handler.set_file_factory(Box::<FileDefaultFactory>::default());
 
-    let request_already_saved = RequestFile::factory_saved_files().unwrap();
-    for file in request_already_saved  {
-        file_handler.add_request(Box::new(file));
+    FileDefaultFactory
+        .get_saved_files_request()
+        .unwrap()
+        .into_iter()
+        .for_each(|file| {
+            file_handler.add_request(file);
+        });
+
+    if file_handler.get_map_files_request().is_empty() {
+        let default_file = FileDefaultFactory.create_request_file(UUID::new(), Request::default()).unwrap();
+        file_handler.add_request(default_file);
     }
 
-    let fg = VariablesFile::create("global_variables.json".to_string(), HashMap::new()).unwrap();
-    file_handler.add_variables(Box::new(fg));
+    let file_variables = FileDefaultFactory.create_variables_file("global_variables.json".to_string(), HashMap::new()).unwrap();
+    file_handler.add_variables(file_variables);
 
     // other configs
     let view_config = ViewConfig::init();
@@ -99,11 +108,24 @@ async fn main() -> Result<(), Box<dyn Error>> {
         action_queue_sender.clone(),
     );
 
+    // File handler
+    // Config(<<<)
+    // MainStore(<<Config)
+    // WebClient
+    // Action queue definition
+    // Init app
+    //  Pass ever dependeny to App
+    //  -> state_manager
+    //  -> action_manager
+    //  -> web_client
+    //  -> MainStore
+    //  -> Action queue sender
+    //  Defintion CommandHandler
+
     // ------------------------------------------
     // View
     // ------------------------------------------
     let mut view = UI::init();
-
 
     // ------------------------------------------
     // Init app -> it starts with a empty request

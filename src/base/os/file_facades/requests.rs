@@ -27,21 +27,3 @@ impl FileFacade<UUID, Request> for RequestFile {
     }
 }
 
-impl RequestFile {
-    pub fn factory_saved_files() -> Result<Vec<Self>, String> {
-        let mut all_files = vec![];
-        let root_path = RequestFile::get_root_path();
-        let paths = std::fs::read_dir(root_path).map_err(|e| e.to_string())?;
-        for entry in paths {
-            let path = entry.map_err(|e| e.to_string())?.path();
-            let request_file = RequestFile { path };
-
-            // Verify if content in File is valid
-            if request_file.get_content().is_ok() {
-                all_files.push(request_file);
-            }
-        }
-
-        Ok(all_files)
-    }
-}

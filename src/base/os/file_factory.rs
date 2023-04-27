@@ -20,6 +20,9 @@ pub trait FileFactory {
     ) -> Result<BoxVariablesFile, String>;
 
     fn create_temp_file(&self, id: UUID, content: String) -> Result<BoxTempEditionfile, String>;
+
+    // Utils
+    fn get_saved_files_request(&self) -> Result<Vec<BoxRequestFile>, String>;
 }
 
 #[derive(Default)]
@@ -43,5 +46,22 @@ impl FileFactory for FileDefaultFactory {
     ) -> Result<BoxVariablesFile, String> {
         let file = VariablesFile::create(id, variables)?;
         Ok(Box::new(file))
+    }
+
+    fn get_saved_files_request(&self) -> Result<Vec<BoxRequestFile>, String> {
+        let mut all_files: Vec<Box<dyn FileFacade<UUID, Request>>> = vec![];
+        let root_path = RequestFile::get_root_path();
+        let paths = std::fs::read_dir(root_path).map_err(|e| e.to_string())?;
+        for entry in paths {
+            let path = entry.map_err(|e| e.to_string())?.path();
+            let request_file = RequestFile { path };
+
+            // Verify if content in File is valid
+            if request_file.get_content().is_ok() {
+                all_files.push(Box::new(request_file));
+            }
+        }
+
+        Ok(all_files)
     }
 }
