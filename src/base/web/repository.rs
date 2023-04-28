@@ -3,6 +3,11 @@ use super::response::Response;
 use async_trait::async_trait;
 use std::collections::HashMap;
 
+// #[cfg(test)]
+// use mockall::{automock, mock, predicate::*};
+
+// #[cfg_attr(test, mockall::automock)]
+#[mockall::automock]
 #[async_trait]
 pub trait HttpClientRepository {
     async fn call_get(

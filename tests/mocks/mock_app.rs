@@ -5,10 +5,12 @@ use std::collections::HashMap;
 use crate::mocks::file_factory::MockFileFactory;
 use treq::app::App;
 use treq::base::actions::manager::ActionsManager;
-use treq::base::commands::Commands;
 use treq::base::commands::handler::CommandHandler;
+use treq::base::commands::Commands;
 use treq::base::states::manager::StateManager;
 use treq::base::states::states::{DefaultState, State};
+use treq::base::web::client::WebClient;
+use treq::base::web::repository::{HttpClientRepository, MockHttpClientRepository};
 use treq::{
     base::{
         actions::Actions,
@@ -56,10 +58,8 @@ impl MockApp {
 
         let data_store = MainStore::init(config_manager);
 
-        // TODOOOOOOOOOOOOOOOO
-        // let web_client: WebClient<ReqwestClientRepository> =
-        //     WebClient::init(ReqwestClientRepository::default());
-        // TODOOOOOOOOOOOOOOOO
+        let web_client: WebClient<MockHttpClientRepository> =
+            WebClient::init(MockHttpClientRepository::default());
 
         let (queue_actions_sender, queue_actions_receiver): (Sender<Actions>, Receiver<Actions>) =
             mpsc::channel();
@@ -70,7 +70,7 @@ impl MockApp {
         let mut app = App::default();
         app.set_state_manager(state_manager);
         app.set_action_manager(action_manager);
-        // app.set_web_client(web_client);
+        app.set_web_client(web_client);
         app.set_data_store(data_store);
         app.set_renderer(queue_actions_sender.clone());
 
@@ -106,7 +106,8 @@ impl MockApp {
                 let command_result = self.command_handler.run(&mut self.app);
 
                 if let Err(e) = &command_result {
-                    self.app.get_data_store_mut()
+                    self.app
+                        .get_data_store_mut()
                         .set_log_error(String::from("COMMAND ERROR"), e.to_string())
                 }
 
@@ -116,6 +117,10 @@ impl MockApp {
                 panic!("Error in read queue receiver -> {}", error);
             }
         }
+    }
+
+    fn get_http_mock_client(&mut self) -> &mut dyn HttpClientRepository {
+        &mut self.app.client_web.unwrap().http_client
     }
 
     fn is_finished(&self) -> bool {

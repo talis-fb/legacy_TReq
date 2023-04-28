@@ -7,7 +7,7 @@ use super::request::METHODS;
 use super::{request::Request, response::Response};
 
 pub struct WebClient<T: HttpClientRepository> {
-    http_client: T,
+    pub http_client: T,
 }
 
 impl<T> WebClient<T>
