@@ -58,7 +58,7 @@ impl MockApp {
 
         let data_store = MainStore::init(config_manager);
 
-        let web_client: WebClient<MockHttpClientRepository> =
+        let web_client: WebClient =
             WebClient::init(MockHttpClientRepository::default());
 
         let (queue_actions_sender, queue_actions_receiver): (Sender<Actions>, Receiver<Actions>) =
@@ -117,10 +117,6 @@ impl MockApp {
                 panic!("Error in read queue receiver -> {}", error);
             }
         }
-    }
-
-    fn get_http_mock_client(&mut self) -> &mut dyn HttpClientRepository {
-        &mut self.app.client_web.unwrap().http_client
     }
 
     fn is_finished(&self) -> bool {

@@ -6,17 +6,14 @@ use super::repository::HttpClientRepository;
 use super::request::METHODS;
 use super::{request::Request, response::Response};
 
-pub struct WebClient<T: HttpClientRepository> {
-    pub http_client: T,
+pub struct WebClient {
+    pub http_client: Box<dyn HttpClientRepository>,
 }
 
-impl<T> WebClient<T>
-where
-    T: HttpClientRepository,
-{
-    pub fn init(repository: T) -> Self {
+impl WebClient {
+    pub fn init<T: HttpClientRepository + 'static>(repository: T) -> Self {
         Self {
-            http_client: repository,
+            http_client: Box::new(repository),
         }
     }
 

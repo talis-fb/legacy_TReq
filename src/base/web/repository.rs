@@ -9,7 +9,7 @@ use std::collections::HashMap;
 // #[cfg_attr(test, mockall::automock)]
 #[mockall::automock]
 #[async_trait]
-pub trait HttpClientRepository {
+pub trait HttpClientRepository: Send + Sync {
     async fn call_get(
         &self,
         url: String,

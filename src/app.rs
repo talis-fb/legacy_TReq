@@ -35,7 +35,7 @@ pub struct App {
     pub action_manager: Option<ActionsManager>,
 
     // Web Client
-    pub client_web: Option<Arc<WebClient<ReqwestClientRepository>>>,
+    pub client_web: Option<Arc<WebClient>>,
 }
 
 // ---------------------------------------
@@ -54,7 +54,7 @@ impl App {
     pub fn set_action_manager(&mut self, action_manager: ActionsManager) {
         self.action_manager = Some(action_manager)
     }
-    pub fn set_web_client(&mut self, client: WebClient<ReqwestClientRepository>) {
+    pub fn set_web_client(&mut self, client: WebClient) {
         self.client_web = Some(Arc::new(client))
     }
     pub fn set_renderer(&mut self, renderer: Sender<Actions>) {

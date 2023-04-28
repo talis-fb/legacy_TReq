@@ -86,7 +86,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     data_store.set_log_warning(String::from("NEEDING HELP,"), String::from("press [?]"));
 
     // Init Web Client
-    let web_client: WebClient<ReqwestClientRepository> =
+    let web_client: WebClient =
         WebClient::init(ReqwestClientRepository::default());
 
     // ------------------------------------------
