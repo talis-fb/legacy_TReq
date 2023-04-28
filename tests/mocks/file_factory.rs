@@ -11,6 +11,7 @@ type BoxRequestFile = Box<dyn FileFacade<UUID, Request>>;
 type BoxTempEditionfile = Box<dyn FileFacade<UUID, String>>;
 type BoxVariablesFile = Box<dyn FileFacade<String, HashMap<String, String>>>;
 
+#[derive(Default)]
 pub struct MockFileFactory;
 
 impl FileFactory for MockFileFactory {

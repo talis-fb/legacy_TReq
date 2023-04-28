@@ -39,18 +39,6 @@ use treq::input::input_handler::InputHandler;
 async fn main() -> Result<(), Box<dyn Error>> {
     treq::logger::init_logger();
 
-    // 1- Chamar os setup_env do config manager aq no comeco da main()
-    // 2- Passar o file_handler como injecao de dependencia pro ConfigManager
-    //  (os mocks dos FileFacades serão usados pelo FileHandler na execução, passando para add)
-    // 3-
-
-    // No mock...
-    // 1- Iniciar o FileHandler e MockWebClient
-    // 2- Iniciar o ConfigManager( <-FileHandler)
-    // 3- DataStore( <-ConfigManager )
-    // 4- let (action_queue_sender, action_queue_receiver): (Sender<Actions>, Receiver<Actions>) = mpsc::channel();
-    // 5- Init app e set builders
-
     // ---------------------------------------------
     // Configurations and Setup of necessary folders
     // ---------------------------------------------
@@ -117,20 +105,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
         data_store.config.files.clone(),
         action_queue_sender.clone(),
     );
-
-    // File handler
-    // Config(<<<)
-    // MainStore(<<Config)
-    // WebClient
-    // Action queue definition
-    // Init app
-    //  Pass ever dependeny to App
-    //  -> state_manager
-    //  -> action_manager
-    //  -> web_client
-    //  -> MainStore
-    //  -> Action queue sender
-    //  Defintion CommandHandler
 
     // ------------------------------------------
     // View
