@@ -8,6 +8,8 @@ use treq::base::actions::Actions;
 use treq::base::commands::handler::CommandHandler;
 use treq::base::commands::Commands;
 
+use treq::base::os::file_facades::variables::VariablesFile;
+use treq::base::os::file_facades::FileFacade;
 use treq::base::os::file_factory::{FileDefaultFactory, FileFactory};
 use treq::base::os::handler::FileHandler;
 use treq::base::stores::MainStore;
@@ -66,11 +68,21 @@ async fn main() -> Result<(), Box<dyn Error>> {
         });
 
     if file_handler.get_map_files_request().is_empty() {
-        let default_file = FileDefaultFactory.create_request_file(UUID::new(), Request::default()).unwrap();
+        let default_file = FileDefaultFactory
+            .create_request_file(UUID::new(), Request::default())
+            .unwrap();
         file_handler.add_request(default_file);
     }
 
-    let file_variables = FileDefaultFactory.create_variables_file("global_variables.json".to_string(), HashMap::new()).unwrap();
+    let path_saved_file_variables = VariablesFile::get_root_path().join("global_variables.json");
+    let file_variables = FileDefaultFactory
+        .get_saved_variables_file(path_saved_file_variables)
+        .unwrap_or_else(|_| {
+            FileDefaultFactory
+                .create_variables_file("global_variables.json".to_string(), HashMap::new())
+                .unwrap()
+        });
+
     file_handler.add_variables(file_variables);
 
     // other configs

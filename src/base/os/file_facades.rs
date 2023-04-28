@@ -5,11 +5,15 @@ use std::hash::Hash;
 use std::io::Write;
 use std::path::PathBuf;
 
+// #[cfg(test)]
+// use mockall::{automock, mock, predicate::*};
+
 pub mod requests;
 pub mod temp_edition;
 pub mod variables;
 
-pub trait FileFacade<FileID, FileEntity>
+#[cfg_attr(test, mockall::automock)]
+pub trait FileFacade<FileID: 'static, FileEntity: 'static>
 where
     FileID: PartialEq + Eq + Hash,
     FileEntity: for<'a> Deserialize<'a> + Serialize + Clone,
