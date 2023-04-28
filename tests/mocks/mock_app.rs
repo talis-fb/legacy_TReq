@@ -1,14 +1,15 @@
 use std::sync::mpsc::{self, Receiver, Sender};
 
 use std::collections::HashMap;
+use std::time::Duration;
 
 use crate::mocks::file_factory::MockFileFactory;
-use treq::app::App;
+use treq::app::{App, InputMode};
 use treq::base::actions::manager::ActionsManager;
 use treq::base::commands::handler::CommandHandler;
 use treq::base::commands::Commands;
 use treq::base::states::manager::StateManager;
-use treq::base::states::states::{DefaultState, State};
+use treq::base::states::states::{DefaultEditMode, DefaultHelpMode, DefaultState, State};
 use treq::base::web::client::WebClient;
 use treq::base::web::repository::{HttpClientRepository, MockHttpClientRepository};
 use treq::{
@@ -32,6 +33,9 @@ pub struct MockApp {
     pub queue_actions_receiver: Receiver<Actions>,
 
     pub history_commands: Vec<Result<(), String>>,
+
+    // Input Mock
+    pub buffer_input: String,
 }
 
 impl MockApp {
@@ -58,8 +62,7 @@ impl MockApp {
 
         let data_store = MainStore::init(config_manager);
 
-        let web_client: WebClient =
-            WebClient::init(MockHttpClientRepository::default());
+        let web_client: WebClient = WebClient::init(MockHttpClientRepository::default());
 
         let (queue_actions_sender, queue_actions_receiver): (Sender<Actions>, Receiver<Actions>) =
             mpsc::channel();
@@ -82,44 +85,66 @@ impl MockApp {
             queue_actions_receiver,
             queue_actions_sender,
             history_commands: Vec::new(),
+            buffer_input: String::new(),
         }
+    }
+
+    pub fn exec(&mut self, action: Actions) {
+        self.push_action(action);
+        self.run_commands_in_queue();
     }
 
     pub fn push_action(&mut self, action: Actions) {
         self.queue_actions_sender.send(action).unwrap();
     }
 
-    fn run_commands_in_queue(&mut self) {
-        match self.queue_actions_receiver.recv() {
-            Ok(action_to_exec) => {
-                log::info!("Action {:?}", action_to_exec);
-
-                let command = self
-                    .app
-                    .get_command_of_action(action_to_exec)
-                    .unwrap_or(Commands::do_nothing());
-
-                // Add Command to queue
-                self.command_handler.add(command);
-
-                // exec it
-                let command_result = self.command_handler.run(&mut self.app);
-
-                if let Err(e) = &command_result {
-                    self.app
-                        .get_data_store_mut()
-                        .set_log_error(String::from("COMMAND ERROR"), e.to_string())
-                }
-
-                self.history_commands.push(command_result);
+    pub fn run_commands_in_queue(&mut self) {
+        match self.app.get_mode() {
+            InputMode::Help => {
+                self.app.set_new_state(DefaultHelpMode::init());
             }
-            Err(error) => {
-                panic!("Error in read queue receiver -> {}", error);
+
+            InputMode::Insert => {
+                self.app.set_new_state(DefaultEditMode::init());
             }
+
+            _ => {}
+        }
+
+        while let Ok(action_to_exec) = self.queue_actions_receiver.try_recv() {
+            log::info!("Action {:?}", action_to_exec);
+
+            // panic!("Entrou nessa porra");
+
+            let command = self
+                .app
+                .get_command_of_action(action_to_exec)
+                .unwrap_or(Commands::do_nothing());
+
+            // Add Command to queue
+            self.command_handler.add(command);
+
+            // exec it
+            let command_result = self.command_handler.run(&mut self.app);
+
+            if let Err(e) = &command_result {
+                self.app
+                    .get_data_store_mut()
+                    .set_log_error(String::from("COMMAND ERROR"), e.to_string())
+            }
+
+            self.history_commands.push(command_result);
         }
     }
 
-    fn is_finished(&self) -> bool {
+    pub fn set_return_input<F>(&self, func: F) -> String
+    where
+        F: Fn(String) -> String,
+    {
+        func(self.buffer_input.clone())
+    }
+
+    pub fn is_finished(&self) -> bool {
         self.app.is_finished
     }
 }
