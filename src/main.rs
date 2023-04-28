@@ -7,8 +7,6 @@ use treq::base::actions::manager::ActionsManager;
 use treq::base::actions::Actions;
 use treq::base::commands::handler::CommandHandler;
 use treq::base::commands::Commands;
-use treq::base::os::file_facades::variables::VariablesFile;
-use treq::base::os::file_facades::FileFacade;
 
 use treq::base::os::file_factory::{FileDefaultFactory, FileFactory};
 use treq::base::os::handler::FileHandler;

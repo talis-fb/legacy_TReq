@@ -25,6 +25,7 @@ regex = "1.7.1"
 log = "0.4.17"
 log4rs = "1.2.0"
 tera = "1.18.1"
+mockall = "0.11.4"
 
 [[bin]]
 name = "treq"
