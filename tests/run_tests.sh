@@ -1,20 +1,24 @@
-echo " ========================"
-echo " ===== CREATE IMAGE ====="
-echo " ========================"
-docker build -t treq -f tests/Dockerfile .
+#!/bin/bash
 
+cleanup() {
+  echo " ===================================="
+  echo " ==== Removing opened containers ===="
+  echo " ===================================="
+  docker rm -f treq_container_app
+  docker rm -f treq_container_app2
+}
 
-echo " Tests ............................................"
+trap cleanup EXIT
+
 echo " ========================"
 echo " ===== FILE HANDLER ====="
 echo " ========================"
-docker run -d -it --name container_app treq
-docker exec -it container_app cargo test integration --release -- --test-threads=1 --ignored
+docker run -d -it --name treq_container_app treq
+docker exec -it treq_container_app cargo test integration --release -- --test-threads=1 --ignored || exit 1
 
 echo " ========================"
-echo " ===== e2e ====="
+echo " ====== e2e tests ======="
 echo " ========================"
-docker run -d -it --name container_app2 treq
-docker exec -it container_app2 cargo test integration --release -- --test-threads=1 --ignored
+docker run -d -it --name treq_container_app2 treq
+docker exec -it treq_container_app2 cargo test integration --release -- --test-threads=1 --ignored || exit 1
 
-# docker exec -it nome_container [COMANDO DESEJADO]

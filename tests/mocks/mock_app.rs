@@ -1,7 +1,6 @@
 use std::sync::mpsc::{self, Receiver, Sender};
 
 use std::collections::HashMap;
-use std::time::Duration;
 
 use crate::mocks::file_factory::MockFileFactory;
 use treq::app::{App, InputMode};
@@ -11,7 +10,7 @@ use treq::base::commands::Commands;
 use treq::base::states::manager::StateManager;
 use treq::base::states::states::{DefaultEditMode, DefaultHelpMode, DefaultState, State};
 use treq::base::web::client::WebClient;
-use treq::base::web::repository::{HttpClientRepository, MockHttpClientRepository};
+use treq::base::web::repository::MockHttpClientRepository;
 use treq::{
     base::{
         actions::Actions,
@@ -119,8 +118,6 @@ impl MockApp {
 
         while let Ok(action_to_exec) = self.queue_actions_receiver.try_recv() {
             log::info!("Action {:?}", action_to_exec);
-
-            // panic!("Entrou nessa porra");
 
             let command = self
                 .app
