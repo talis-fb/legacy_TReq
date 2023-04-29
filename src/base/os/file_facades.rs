@@ -1,6 +1,7 @@
 use serde::{self, Deserialize, Serialize};
 
 use crate::utils::files::FileUtils;
+use std::fs::OpenOptions;
 use std::hash::Hash;
 use std::io::Write;
 use std::path::PathBuf;
@@ -33,7 +34,12 @@ where
     }
 
     fn save_content(&mut self, value: FileEntity) -> Result<(), String> {
-        let mut file = FileUtils::open_or_create_file(self.get_path())?;
+        let mut file = OpenOptions::new()
+            .create(true)
+            .write(true)
+            .open(self.get_path())
+            .map_err(|e| e.to_string())?;
+
         file.set_len(0).map_err(|e| e.to_string())?;
 
         let content: String = serde_json::to_string_pretty(&value).map_err(|e| e.to_string())?;

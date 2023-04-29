@@ -2,6 +2,7 @@ use crate::utils::custom_types::uuid::UUID;
 use tempfile::Builder;
 
 use super::FileFacade;
+use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
@@ -29,16 +30,22 @@ impl FileFacade<UUID, String> for TempEditionfile {
         Path::new("/tmp").to_path_buf()
     }
 
-    fn create(id: UUID, _value: String) -> Result<Self, String> {
-        let temp_file = Builder::new()
+    fn create(id: UUID, value: String) -> Result<Self, String> {
+        let mut temp_file = Builder::new()
             .prefix(&id.value)
             .suffix(".json")
             .rand_bytes(10)
             .tempfile()
             .map_err(|e| e.to_string())?;
 
-        let path = temp_file.path().to_path_buf();
+        temp_file.write_all(value.as_bytes()).map_err(|e| e.to_string())?;
 
-        Ok(Self { path })
+        let path = temp_file.path().to_path_buf();
+        let temp_file_facade = Self { path };
+
+        // Create file in '/tmp' folder to be used then
+        temp_file.into_temp_path().keep().map_err(|e| e.to_string())?;
+
+        Ok(temp_file_facade)
     }
 }

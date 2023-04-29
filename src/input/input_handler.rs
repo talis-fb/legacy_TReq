@@ -155,11 +155,12 @@ impl InputHandler {
     pub fn sync_open_vim(&mut self, buffer: String, uuid_edition: &UUID) -> Result<String, String> {
         let mut files = self.files.lock().unwrap();
 
-        let uuid_file_handler = self.opened_files.entry(uuid_edition.clone()).or_insert_with(|| {
-            let file = files.file_factory.as_ref().unwrap().create_temp_file(uuid_edition.clone(), buffer).unwrap();
-            
-            files.add_temp_edition(file)
-        });
+        let uuid_file_handler = self.opened_files
+            .entry(uuid_edition.clone())
+            .or_insert_with(|| {
+                let file_to_add = files.file_factory.as_ref().unwrap().create_temp_file(uuid_edition.clone(), buffer).unwrap();
+                files.add_temp_edition(file_to_add)
+            });
 
         let file_path = files.get_path(uuid_file_handler).unwrap();
 
