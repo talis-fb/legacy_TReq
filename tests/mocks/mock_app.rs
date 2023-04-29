@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use std::sync::mpsc::{self, Receiver, Sender};
 
 use std::collections::HashMap;
@@ -7,6 +8,7 @@ use treq::app::{App, InputMode};
 use treq::base::actions::manager::ActionsManager;
 use treq::base::commands::handler::CommandHandler;
 use treq::base::commands::Commands;
+use treq::base::os::file_editor::MockOsCommand;
 use treq::base::states::manager::StateManager;
 use treq::base::states::states::{DefaultEditMode, DefaultHelpMode, DefaultState, State};
 use treq::base::web::client::WebClient;
@@ -53,11 +55,9 @@ impl MockApp {
         file_handler.add_variables(default_variables_file);
 
         let view_config = ViewConfig::init();
-        let external_editor = ExternalEditor::setup_and_init().expect(
-            "It's necessary set $EDITOR enviroment variable to desired editor to use with TReq",
-        );
+        let external_editor = MockOsCommand::<PathBuf, String>::new();
 
-        let config_manager = ConfigManager::init(file_handler, view_config, external_editor);
+        let config_manager = ConfigManager::init(file_handler, view_config, Box::new(external_editor));
 
         let data_store = MainStore::init(config_manager);
 

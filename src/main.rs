@@ -8,6 +8,7 @@ use treq::base::actions::Actions;
 use treq::base::commands::handler::CommandHandler;
 use treq::base::commands::Commands;
 
+use treq::base::os::file_editor::{ExternalEditor, OsCommand};
 use treq::base::os::file_facades::variables::VariablesFile;
 use treq::base::os::file_facades::FileFacade;
 use treq::base::os::file_factory::{FileDefaultFactory, FileFactory};
@@ -16,7 +17,6 @@ use treq::base::stores::MainStore;
 use treq::base::web::client::WebClient;
 use treq::base::web::repository::reqwest::ReqwestClientRepository;
 use treq::base::web::request::Request;
-use treq::config::configurations::external_editor::ExternalEditor;
 use treq::config::configurations::view::ViewConfig;
 use treq::config::manager::ConfigManager;
 
@@ -75,9 +75,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // other configs
     let view_config = ViewConfig::init();
-    let external_editor = ExternalEditor::setup_and_init().expect(
-        "It's necessary set $EDITOR enviroment variable to desired editor to use with TReq",
-    );
+
+    let external_editor = Box::new(ExternalEditor::init().unwrap());
 
     let config_manager = ConfigManager::init(file_handler, view_config, external_editor);
 

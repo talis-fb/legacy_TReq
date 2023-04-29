@@ -10,9 +10,8 @@ use std::time::Duration;
 use crate::app::InputMode;
 use crate::base::actions::Actions;
 
-use crate::base::os::file_facades::FileFacade;
 use crate::base::os::handler::FileHandler;
-use crate::config::configurations::external_editor::ExternalEditor;
+use crate::base::os::file_editor::OsCommandEditor;
 use crate::utils::custom_types::uuid::UUID;
 
 use tokio::task::JoinHandle;
@@ -22,11 +21,10 @@ use crate::input::keymaps::insert_mode;
 use crate::input::keymaps::normal_mode;
 
 use super::listener::KeyboardListerner;
-use std::process::{Command as OSCommand, Stdio};
 
 pub struct InputHandler {
     // Save files
-    configuration: Rc<ExternalEditor>,
+    external_editor: Rc<OsCommandEditor>,
     files: Rc<Mutex<FileHandler>>,
     opened_files: HashMap<UUID, UUID>,
 
@@ -45,7 +43,7 @@ pub struct InputHandler {
 impl InputHandler {
     pub fn init(
         listener: KeyboardListerner,
-        configuration: Rc<ExternalEditor>,
+        external_editor: Rc<OsCommandEditor>,
         files: Rc<Mutex<FileHandler>>,
         sender_events: Sender<Actions>,
     ) -> Self {
@@ -68,7 +66,7 @@ impl InputHandler {
 
         Self {
             current_listener: Arc::new(Mutex::new(listener)),
-            configuration,
+            external_editor,
             files,
             opened_files: HashMap::new(),
             last_input_mode_state: None,
@@ -164,16 +162,6 @@ impl InputHandler {
 
         let file_path = files.get_path(uuid_file_handler).unwrap();
 
-        let mut child = OSCommand::new(&self.configuration.editor)
-            .arg(file_path.clone())
-            .stdin(Stdio::inherit())
-            .stdout(Stdio::inherit())
-            .stderr(Stdio::inherit())
-            .spawn()
-            .expect("failed to execute child");
-
-        let _status = child.wait().expect("failed to wait on child");
-
-        std::fs::read_to_string(file_path).map_err(|e| e.to_string())
+        self.external_editor.sync_open(file_path)
     }
 }
