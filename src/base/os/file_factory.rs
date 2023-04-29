@@ -55,16 +55,19 @@ impl FileFactory for FileDefaultFactory {
 
     fn get_saved_request_file(&self, path: PathBuf) -> Result<BoxRequestFile, String> {
         let file = RequestFile { path };
+        file.get_content()?;
         Ok(Box::new(file))
     }
 
     fn get_saved_variables_file(&self, path: PathBuf) -> Result<BoxVariablesFile, String> {
         let file = VariablesFile { path };
+        file.get_content()?;
         Ok(Box::new(file))
     }
 
     fn get_saved_temp_file(&self, path: PathBuf) -> Result<BoxTempEditionfile, String> {
         let file = TempEditionfile { path };
+        file.get_content()?;
         Ok(Box::new(file))
     }
 

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::mocks::mock_app::MockApp;
 use treq::app::InputMode;
 use treq::base::actions::Actions;
@@ -162,5 +164,35 @@ fn should_create_and_edit_tabs() {
     assert_eq!(
         get_request_names(&mock_app),
         vec!["New editing", "New Request", "New Request<<<",]
+    );
+}
+
+#[test]
+fn should_manage_enviroment() {
+    let mut mock_app = MockApp::init();
+    mock_app.exec(Actions::GoToEnvironment);
+
+    // Goto Global Environments
+    mock_app.exec(Actions::Switch);
+
+    assert_eq!(
+        mock_app.app.get_data_store().environment.global,
+        HashMap::from([])
+    );
+
+    mock_app.exec(Actions::Delete);
+
+    assert_eq!(
+        mock_app.app.get_data_store().environment.global,
+        HashMap::from([])
+    );
+
+    (0..100).for_each(|_| {
+        mock_app.exec(Actions::Delete);
+    });
+
+    assert_eq!(
+        mock_app.app.get_data_store().environment.global,
+        HashMap::from([])
     );
 }

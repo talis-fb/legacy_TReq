@@ -29,16 +29,16 @@ pub struct State {
 }
 
 impl State {
-    pub fn get_current_var_key(&self) -> String {
+    pub fn get_current_var_key(&self) -> Option<String> {
         match self.opened_section {
             OpenedVars::Global => {
                 let index = self.current_global_var;
-                self.vars_keys.global.get(index).unwrap().clone()
+                Some(self.vars_keys.global.get(index)?.clone())
             }
 
             OpenedVars::Session => {
                 let index = self.current_session_var;
-                self.vars_keys.session.get(index).unwrap().clone()
+                Some(self.vars_keys.session.get(index)?.clone())
             }
         }
     }

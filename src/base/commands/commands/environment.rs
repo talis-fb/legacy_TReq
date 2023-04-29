@@ -129,7 +129,7 @@ impl Commands {
                         let new_value = app.get_input_buffer_value();
 
                         let store = app.get_data_store_mut();
-                        let var_key_active = store.view.environment.get_current_var_key();
+                        let var_key_active = store.view.environment.get_current_var_key().ok_or("no var key".to_string())?;
                         let value = store.environment.global.get_mut(&var_key_active).unwrap();
                         *value = new_value;
 
@@ -140,7 +140,7 @@ impl Commands {
                 }
 
                 let store = app.get_data_store_mut();
-                let var_key_active = store.view.environment.get_current_var_key();
+                let var_key_active = store.view.environment.get_current_var_key().ok_or("no var key".to_string())?;
                 let value = store
                     .environment
                     .global
@@ -166,7 +166,7 @@ impl Commands {
                         let new_value = app.get_input_buffer_value();
 
                         let store = app.get_data_store_mut();
-                        let var_key_active = store.view.environment.get_current_var_key();
+                        let var_key_active = store.view.environment.get_current_var_key().ok_or("no var key".to_string())?;
                         let value = store.environment.session.get_mut(&var_key_active).unwrap();
                         *value = new_value;
 
@@ -175,7 +175,7 @@ impl Commands {
                 }
 
                 let store = app.get_data_store_mut();
-                let var_key_active = store.view.environment.get_current_var_key();
+                let var_key_active = store.view.environment.get_current_var_key().ok_or("no var key".to_string())?;
                 let value = store
                     .environment
                     .session
@@ -260,7 +260,7 @@ impl Commands {
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
                 let store = app.get_data_store_mut();
-                let current_key = store.view.environment.get_current_var_key();
+                let current_key = store.view.environment.get_current_var_key().ok_or("no var key".to_string())?;
                 store.environment.global.remove(&current_key);
 
                 let store = app.get_data_store_mut();
@@ -282,7 +282,8 @@ impl Commands {
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
                 let store = app.get_data_store_mut();
-                let current_key = store.view.environment.get_current_var_key();
+                let current_key = store.view.environment.get_current_var_key().ok_or("no var key".to_string())?;
+
                 store.environment.session.remove(&current_key);
 
                 let store = app.get_data_store_mut();
