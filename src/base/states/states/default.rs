@@ -33,6 +33,7 @@ impl State for DefaultState {
                     Actions::GoToResponseBody,
                     Commands::go_to_response_body_section(),
                 ),
+                (Actions::GoToUrl, Commands::go_to_url_section()),
                 (Actions::GoToLogs, Commands::go_to_log_section()),
                 (Actions::GoToEnvironment, Commands::open_environment_view()),
                 (Actions::RenameTab, Commands::rename_tab()),

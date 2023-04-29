@@ -85,7 +85,7 @@ impl MockApp {
             queue_actions_receiver,
             queue_actions_sender,
             history_commands: Vec::new(),
-            buffer_input: String::new(),
+            buffer_input: String::new()
         }
     }
 
@@ -143,15 +143,7 @@ impl MockApp {
         }
     }
 
-    pub fn set_return_input<F>(&self, func: F) -> String
-    where
-        F: Fn(String) -> String,
-    {
-        func(self.buffer_input.clone())
-    }
-
     pub fn is_finished(&self) -> bool {
         self.app.is_finished
     }
 }
-
