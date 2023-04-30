@@ -85,15 +85,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
     data_store.set_log_warning(String::from("NEEDING HELP,"), String::from("press [?]"));
 
     // Init Web Client
-    let web_client: WebClient =
-        WebClient::init(ReqwestClientRepository::default());
+    let web_client: WebClient = WebClient::init(ReqwestClientRepository::default());
 
     // ------------------------------------------
     // Input
     // ------------------------------------------
     // EVENTS of actions
-    let (action_queue_sender, action_queue_receiver): (Sender<Actions>, Receiver<Actions>) =
-        mpsc::channel();
+    let (action_queue_sender, action_queue_receiver) = mpsc::channel::<Actions>();
 
     let commands = keymaps::normal_mode::keymap_factory();
     let keymap = KeyboardListerner::init(commands);
@@ -204,7 +202,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    input_handler.close();
+    input_handler.close_async_listener();
     view.close();
 
     Ok(())

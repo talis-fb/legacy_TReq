@@ -1,5 +1,7 @@
 use std::path::PathBuf;
+use std::rc::Rc;
 use std::sync::mpsc::{self, Receiver, Sender};
+use std::sync::Mutex;
 
 use std::collections::HashMap;
 
@@ -8,7 +10,7 @@ use treq::app::{App, InputMode};
 use treq::base::actions::manager::ActionsManager;
 use treq::base::commands::handler::CommandHandler;
 use treq::base::commands::Commands;
-use treq::base::os::file_editor::MockOsCommand;
+use treq::base::os::file_editor::{MockOsCommand, OsCommandEditor};
 use treq::base::states::manager::StateManager;
 use treq::base::states::states::{DefaultEditMode, DefaultHelpMode, DefaultState, State};
 use treq::base::web::client::WebClient;
@@ -36,7 +38,8 @@ pub struct MockApp {
     pub history_commands: Vec<Result<(), String>>,
 
     // Input Mock
-    pub buffer_input: String,
+    // pub buffer_input: String,
+    pub opened_files: HashMap<UUID, UUID>,
 }
 
 impl MockApp {
@@ -57,7 +60,8 @@ impl MockApp {
         let view_config = ViewConfig::init();
         let external_editor = MockOsCommand::<PathBuf, String>::new();
 
-        let config_manager = ConfigManager::init(file_handler, view_config, Box::new(external_editor));
+        let config_manager =
+            ConfigManager::init(file_handler, view_config, Box::new(external_editor));
 
         let data_store = MainStore::init(config_manager);
 
@@ -84,7 +88,8 @@ impl MockApp {
             queue_actions_receiver,
             queue_actions_sender,
             history_commands: Vec::new(),
-            buffer_input: String::new()
+            opened_files: HashMap::new(),
+            // buffer_input: String::new(),
         }
     }
 
@@ -100,7 +105,13 @@ impl MockApp {
     pub fn run_commands_in_queue(&mut self) {
         match self.app.get_mode() {
             InputMode::Vim => {
-                self.app.set_input_buffer_value(self.buffer_input.clone());
+                let buf = self.app.get_input_buffer_value();
+                let uuid = self.app.get_data_store().get_request_uuid().clone();
+
+                let buffer = self.sync_open_vim(buf, &uuid).unwrap();
+
+                // Set Buffer and return to Normal Mode
+                self.app.set_input_buffer_value(buffer);
                 self.app.exec_input_buffer_command().unwrap();
                 self.app.set_mode(InputMode::Normal);
             }
@@ -138,6 +149,37 @@ impl MockApp {
 
             self.history_commands.push(command_result);
         }
+    }
+
+    fn sync_open_vim(&mut self, buffer: String, uuid_edition: &UUID) -> Result<String, String> {
+        let mut files = self.app.get_data_store().config.files.lock().unwrap();
+
+        let uuid_file_handler = self
+            .opened_files
+            .entry(uuid_edition.clone())
+            .or_insert_with(|| {
+                let file_to_add = files
+                    .file_factory
+                    .as_ref()
+                    .unwrap()
+                    .create_temp_file(uuid_edition.clone(), buffer)
+                    .unwrap();
+                files.add_temp_edition(file_to_add)
+            });
+
+        let file_path = files.get_path(uuid_file_handler).unwrap();
+
+        self.app.get_data_store().config.editor.sync_open(file_path)
+    }
+
+    pub fn set_output_sync_external_editor(&mut self, output: String) {
+        let mut mock = MockOsCommand::default();
+        mock.expect_sync_open().return_const(Ok(output));
+        self.app.get_data_store_mut().config.editor = Rc::new(Box::new(mock));
+    }
+
+    pub fn set_external_editor(&mut self, editor: MockOsCommand<PathBuf, String>) {
+        self.app.get_data_store_mut().config.editor = Rc::new(Box::new(editor));
     }
 
     pub fn is_finished(&self) -> bool {

@@ -10,8 +10,8 @@ use std::time::Duration;
 use crate::app::InputMode;
 use crate::base::actions::Actions;
 
-use crate::base::os::handler::FileHandler;
 use crate::base::os::file_editor::OsCommandEditor;
+use crate::base::os::handler::FileHandler;
 use crate::utils::custom_types::uuid::UUID;
 
 use tokio::task::JoinHandle;
@@ -77,17 +77,6 @@ impl InputHandler {
             finisher_async_listener: None,
         }
     }
-    pub fn close(&mut self) {
-        let sender = self.finisher_async_listener.take();
-        if sender.is_some() {
-            sender.unwrap().send(()).unwrap();
-        }
-
-        let task = self.task_async_listener.take();
-        if task.is_some() {
-            task.unwrap().abort();
-        }
-    }
 
     pub fn update(&mut self, new_input_mode: InputMode) {
         let last_mode = self.last_input_mode_state;
@@ -98,7 +87,7 @@ impl InputHandler {
 
             match new_input_mode {
                 InputMode::Vim => {
-                    self.close();
+                    self.close_async_listener();
                 }
 
                 input_mode => {
@@ -150,18 +139,30 @@ impl InputHandler {
         self.finisher_async_listener = Some(finished_sender);
     }
 
-    pub fn sync_open_vim(&mut self, buffer: String, uuid_edition: &UUID) -> Result<String, String> {
-        let mut files = self.files.lock().unwrap();
+    pub fn close_async_listener(&mut self) {
+        let sender = self.finisher_async_listener.take();
+        if sender.is_some() {
+            sender.unwrap().send(()).unwrap();
+        }
 
-        let uuid_file_handler = self.opened_files
-            .entry(uuid_edition.clone())
-            .or_insert_with(|| {
-                let file_to_add = files.file_factory.as_ref().unwrap().create_temp_file(uuid_edition.clone(), buffer).unwrap();
-                files.add_temp_edition(file_to_add)
-            });
-
-        let file_path = files.get_path(uuid_file_handler).unwrap();
-
-        self.external_editor.sync_open(file_path)
+        let task = self.task_async_listener.take();
+        if task.is_some() {
+            task.unwrap().abort();
+        }
     }
+
+    // pub fn sync_open_vim(&mut self, buffer: String, uuid_edition: &UUID) -> Result<String, String> {
+    //     let mut files = self.files.lock().unwrap();
+    //
+    //     let uuid_file_handler = self.opened_files
+    //         .entry(uuid_edition.clone())
+    //         .or_insert_with(|| {
+    //             let file_to_add = files.file_factory.as_ref().unwrap().create_temp_file(uuid_edition.clone(), buffer).unwrap();
+    //             files.add_temp_edition(file_to_add)
+    //         });
+    //
+    //     let file_path = files.get_path(uuid_file_handler).unwrap();
+    //
+    //     self.external_editor.sync_open(file_path)
+    // }
 }

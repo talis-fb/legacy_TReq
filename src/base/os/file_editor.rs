@@ -1,3 +1,4 @@
+/*
 use std::path::PathBuf;
 use std::process::{Command as OSCommand, Stdio};
 use std::sync::mpsc;
@@ -79,3 +80,4 @@ impl OsCommand<PathBuf, String> for ExternalEditor {
         Ok(Self { command })
     }
 }
+*/
