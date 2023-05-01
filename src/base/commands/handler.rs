@@ -40,6 +40,10 @@ impl CommandHandler {
         });
     }
 
+    pub fn get_sender(&self) -> Sender<Command> {
+        self.sender_commands.clone()
+    }
+
     pub fn run(&mut self, command_to_exec: Command, app: &mut App) -> Result<(), String> {
         match command_to_exec.type_running() {
             CommandType::Sync => {

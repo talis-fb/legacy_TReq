@@ -12,7 +12,7 @@ use crate::view::components::Component;
 use crate::view::views::app::AppView;
 use crate::view::views::ViewStates;
 
-use super::renderer::tui_rs::BackendTuiRs;
+use super::{renderer::tui_rs::BackendTuiRs, UiTrait};
 
 pub struct UI {
     backend: BackendTuiRs,
@@ -39,8 +39,9 @@ impl UI {
             view_states: HashMap::new(),
         }
     }
-
-    pub fn close(&mut self) {
+}
+impl UiTrait for UI {
+    fn close(&mut self) {
         disable_raw_mode().unwrap();
         execute!(
             self.backend.terminal.backend_mut(),
@@ -51,7 +52,7 @@ impl UI {
         self.backend.terminal.show_cursor().unwrap();
     }
 
-    pub fn render(&mut self, data_store: &MainStore) {
+    fn render(&mut self, data_store: &MainStore) {
         self.backend.terminal.autoresize().unwrap();
         let screen_area = self.backend.terminal.get_frame().size();
 
@@ -66,5 +67,23 @@ impl UI {
         app_view.render(&mut self.backend);
 
         self.backend.draw_all();
+    }
+
+    fn restart(&mut self) {
+        enable_raw_mode().unwrap();
+        let mut stdout = io::stdout();
+        execute!(stdout, EnterAlternateScreen).unwrap_or(());
+        let stdout = io::stdout();
+        let backend = CrosstermBackend::new(stdout);
+        let terminal = Terminal::new(backend).unwrap();
+
+        let backend = BackendTuiRs {
+            terminal,
+            configs: ViewConfig::init(),
+            queue_render: vec![],
+        };
+
+        self.backend = backend;
+        self.view_states = HashMap::new();
     }
 }

@@ -23,6 +23,7 @@ use treq::config::manager::ConfigManager;
 
 use treq::base::states::manager::StateManager;
 use treq::base::states::states::{DefaultEditMode, DefaultHelpMode, DefaultState, State};
+use treq::runner::Runner;
 use treq::utils::custom_types::uuid::UUID;
 
 // use std::sync::mpsc;
@@ -113,7 +114,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // ------------------------------------------
     // View
     // ------------------------------------------
-    let mut view = UI::init();
+    let view = UI::init();
 
     // ------------------------------------------
     // Init app -> it starts with a empty request
@@ -128,99 +129,108 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.set_data_store(data_store);
     app.set_renderer(action_queue_sender);
 
-    let mut command_handler = CommandHandler::init(commands_queue_sender.clone());
+    let command_handler = CommandHandler::init(commands_queue_sender.clone());
 
-    while !app.is_finished {
-        view.render(app.get_data_store());
+    let mut runner = Runner::init(app, command_handler, input_handler, view);
 
-        input_handler.update(app.get_mode());
+    runner.set_receiver_actions_queue(action_queue_receiver);
+    runner.set_receiver_commands_queue(commands_queue_receiver);
+    runner.set_receiver_os_commands_queue(os_commands_queue_receiver);
 
-        match app.get_mode() {
-            InputMode::Help => {
-                app.set_new_state(DefaultHelpMode::init());
-            }
-
-            InputMode::Insert => {
-                app.set_new_state(DefaultEditMode::init());
-            }
-
-            _ => {}
-        }
-
-        tokio::select! {
-            _ = tokio::signal::ctrl_c() => {
-                panic!("FOIO");
-            }
-            action = action_queue_receiver.recv() => {
-                log::info!("Action {:?}", action);
-
-                let command = app
-                    .get_command_of_action(action.unwrap())
-                    .unwrap_or(Commands::do_nothing());
-
-                // Add Command to queue
-                command_handler.add(command);
-            }
-            command = commands_queue_receiver.recv() => {
-                let command_result = command_handler.run(command.unwrap(), &mut app);
-
-                if let Err(e) = command_result {
-                    app.get_data_store_mut()
-                        .set_log_error(String::from("COMMAND ERROR"), e.to_string())
-                }
-            }
-            os_command = os_commands_queue_receiver.recv() => {
-                match os_command.unwrap() {
-                    OsCommand::Sync(comm) => {
-                        view.close();
-
-                        let output = comm.exec(commands_queue_sender.clone());
-
-                        if let Err(e) = output {
-                            app.get_data_store_mut()
-                                .set_log_error(String::from("OS COMMAND ERROR"), e.to_string())
-                        }
-
-                        view = UI::init();
-                        view.render(app.get_data_store());
-
-                        while action_queue_receiver.try_recv().is_ok() {
-                            log::info!("Clear queue");
-                        }
-                    }
-
-                    OsCommand::Async(comm) => {
-                        let sender = commands_queue_sender.clone();
-                        tokio::task::spawn(async move {
-                            comm.exec(sender).unwrap();
-                        });
-                    }
-                }
-            }
-            
-        }
-
-
-        // while let Ok(command) = os_commands_queue_receiver.try_recv() {
-        // }
-
-
-        // Listen queue of user's events to execute --------------------
-        // log::info!("Wainting action....");
-        // match action_queue_receiver.recv() {
-        //     Ok(action_to_exec) => {
-        //
-        //         // exec it
-        //     }
-        //     Err(err) => {
-        //         log::error!("Action ERROR");
-        //         log::error!("{}", err);
-        //     }
-        // }
+    while !runner.is_finished() {
+        runner.render();
+        runner.update_input_handler();
+        runner.proccess().await;
     }
+    
+    runner.close();
 
-    input_handler.close_async_listener();
-    view.close();
+
+    // while !app.is_finished {
+    //     view.render(app.get_data_store());
+    //
+    //     input_handler.update(app.get_mode());
+    //
+    //     match app.get_mode() {
+    //         InputMode::Help => {
+    //             app.set_new_state(DefaultHelpMode::init());
+    //         }
+    //
+    //         InputMode::Insert => {
+    //             app.set_new_state(DefaultEditMode::init());
+    //         }
+    //
+    //         _ => {}
+    //     }
+    //
+    //     tokio::select! {
+    //         action = action_queue_receiver.recv() => {
+    //             log::info!("Action {:?}", action);
+    //
+    //             let command = app
+    //                 .get_command_of_action(action.unwrap())
+    //                 .unwrap_or(Commands::do_nothing());
+    //
+    //             // Add Command to queue
+    //             command_handler.add(command);
+    //         }
+    //         command = commands_queue_receiver.recv() => {
+    //             let command_result = command_handler.run(command.unwrap(), &mut app);
+    //
+    //             if let Err(e) = command_result {
+    //                 app.get_data_store_mut()
+    //                     .set_log_error(String::from("COMMAND ERROR"), e.to_string())
+    //             }
+    //         }
+    //         os_command = os_commands_queue_receiver.recv() => {
+    //             match os_command.unwrap() {
+    //                 OsCommand::Sync(comm) => {
+    //                     view.close();
+    //
+    //                     let output = comm.exec(commands_queue_sender.clone());
+    //
+    //                     if let Err(e) = output {
+    //                         app.get_data_store_mut()
+    //                             .set_log_error(String::from("OS COMMAND ERROR"), e.to_string())
+    //                     }
+    //
+    //                     view = UI::init();
+    //                     view.render(app.get_data_store());
+    //
+    //                     while action_queue_receiver.try_recv().is_ok() {
+    //                         log::info!("Clear queue");
+    //                     }
+    //                 }
+    //
+    //                 OsCommand::Async(comm) => {
+    //                     let sender = commands_queue_sender.clone();
+    //                     tokio::task::spawn(async move {
+    //                         comm.exec(sender).unwrap();
+    //                     });
+    //                 }
+    //             }
+    //         }
+    //         
+    //     }
+    //
+    //
+    //     // while let Ok(command) = os_commands_queue_receiver.try_recv() {
+    //     // }
+    //
+    //
+    //     // Listen queue of user's events to execute --------------------
+    //     // log::info!("Wainting action....");
+    //     // match action_queue_receiver.recv() {
+    //     //     Ok(action_to_exec) => {
+    //     //
+    //     //         // exec it
+    //     //     }
+    //     //     Err(err) => {
+    //     //         log::error!("Action ERROR");
+    //     //         log::error!("{}", err);
+    //     //     }
+    //     // }
+    // }
 
     Ok(())
 }
