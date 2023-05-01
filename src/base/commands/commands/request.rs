@@ -44,8 +44,8 @@ impl Commands {
         struct S;
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                struct _S;
-                impl CommandTrait for _S {
+                struct ProccessOutputInBody;
+                impl CommandTrait for ProccessOutputInBody {
                     fn execute(&self, app: &mut App) -> Result<(), String> {
                         let buffer = app.get_input_buffer_value();
                         let data_store = app.get_data_store_mut();
@@ -58,42 +58,14 @@ impl Commands {
                     }
                 }
 
-                let path;
-                {
-                    let store = app.get_data_store_mut();
-                    let mut file_handler = store.config.files.lock().unwrap();
+                let command = Commands::open_editor_to_buffer(
+                    Commands::from(ProccessOutputInBody {}),
+                    app.get_data_store().get_request().body.clone(),
+                    None,
+                );
 
-                    let uui = UUID::new();
-                    let temp_file_to_edit = file_handler
-                        .file_factory
-                        .as_mut()
-                        .unwrap()
-                        .create_temp_file(uui.clone(), "SETADO NA MNAO".to_string())?;
-                    let uuid_mesmo = file_handler.add_temp_edition(temp_file_to_edit);
+                command.execute(app)?;
 
-                    path = file_handler
-                        .get_map_files_temp_edition()
-                        .get(&uuid_mesmo)
-                        .unwrap()
-                        .get_path();
-                }
-
-                let fa = app.os_commands_factory.as_ref().unwrap();
-                let cc = fa.external_editor(path, Arc::new(Box::new(_S {}))).unwrap();
-                // let ca = OsCommand::create_sync_from(*cc);
-                let ca = OsCommand::Sync(Arc::new(cc));
-
-                tokio::task::spawn({
-                    let sender = app.os_commands_queue.as_ref().unwrap().clone();
-                    async move {
-                        sender.send(ca).await;
-                    }
-                });
-
-                // app.set_vim_mode_with_command(
-                //     Arc::new(Box::new(_S {})),
-                //     app.get_data_store().get_request().body.clone(),
-                // );
                 Ok(())
             }
         }
@@ -109,8 +81,8 @@ impl Commands {
                 let initial_headers_as_str =
                     serde_json::to_string_pretty(&initial_headers).unwrap_or_default();
 
-                struct _S;
-                impl CommandTrait for _S {
+                struct ProccessOutputInHeaders;
+                impl CommandTrait for ProccessOutputInHeaders {
                     fn execute(&self, app: &mut App) -> Result<(), String> {
                         let buffer = app.get_input_buffer();
                         let header_map: HashMap<String, String> =
@@ -134,6 +106,14 @@ impl Commands {
                         Ok(())
                     }
                 }
+
+                let command = Commands::open_editor_to_buffer(
+                    Commands::from(ProccessOutputInHeaders {}),
+                    initial_headers_as_str,
+                    None,
+                );
+
+                command.execute(app)?;
 
                 // app.set_vim_mode_with_command(Arc::new(Box::new(_S {})), initial_headers_as_str);
                 Ok(())

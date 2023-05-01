@@ -24,6 +24,7 @@ impl State for DefaultEditMode {
             (Actions::TypingEndLine, Commands::edit_mode_go_to_end()),
             (Actions::TypingClose, Commands::process_edit_mode()),
             (Actions::TypingCancel, Commands::cancel_edit_mode()),
+            (Actions::TypingClearAll, Commands::edit_mode_delete_all()),
         ]);
 
         keymap_factory().values().for_each(|f| {
