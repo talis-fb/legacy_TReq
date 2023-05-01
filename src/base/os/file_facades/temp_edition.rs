@@ -38,13 +38,18 @@ impl FileFacade<UUID, String> for TempEditionfile {
             .tempfile()
             .map_err(|e| e.to_string())?;
 
-        temp_file.write_all(value.as_bytes()).map_err(|e| e.to_string())?;
+        temp_file
+            .write_all(value.as_bytes())
+            .map_err(|e| e.to_string())?;
 
         let path = temp_file.path().to_path_buf();
         let temp_file_facade = Self { path };
 
         // Create file in '/tmp' folder to be used then
-        temp_file.into_temp_path().keep().map_err(|e| e.to_string())?;
+        temp_file
+            .into_temp_path()
+            .keep()
+            .map_err(|e| e.to_string())?;
 
         Ok(temp_file_facade)
     }

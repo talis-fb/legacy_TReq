@@ -4,7 +4,7 @@ use crate::{
 };
 
 use super::FileFacade;
-use std::{path::PathBuf};
+use std::path::PathBuf;
 
 #[derive(Clone, Debug)]
 pub struct RequestFile {
@@ -26,4 +26,3 @@ impl FileFacade<UUID, Request> for RequestFile {
         Ok(file)
     }
 }
-

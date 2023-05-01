@@ -98,7 +98,8 @@ async fn should_create_and_edit_tabs() {
 
     fn get_request_names(mock_app: &MockApp) -> Vec<&String> {
         mock_app
-            .runner.app
+            .runner
+            .app
             .get_data_store()
             .get_requests()
             .iter()
@@ -139,7 +140,13 @@ async fn should_delete_last_tab_creating_a_default() {
 
     set_input_mode_value(&mut mock_app, "Some new value").await;
 
-    let request_name = mock_app.runner.app.get_data_store().get_request().name.clone();
+    let request_name = mock_app
+        .runner
+        .app
+        .get_data_store()
+        .get_request()
+        .name
+        .clone();
     assert_eq!(&request_name, "Some new value");
 
     mock_app.exec(Actions::Delete).await;
@@ -148,6 +155,12 @@ async fn should_delete_last_tab_creating_a_default() {
     let requests = mock_app.runner.app.get_data_store().get_requests();
     assert_eq!(requests.len(), 1);
 
-    let request_name = mock_app.runner.app.get_data_store().get_request().name.clone();
+    let request_name = mock_app
+        .runner
+        .app
+        .get_data_store()
+        .get_request()
+        .name
+        .clone();
     assert_eq!(&request_name, "New Request");
 }

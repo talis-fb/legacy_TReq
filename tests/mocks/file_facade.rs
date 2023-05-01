@@ -40,4 +40,3 @@ where
         Ok(Self { id, value })
     }
 }
-

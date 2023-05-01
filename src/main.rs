@@ -6,15 +6,15 @@ use std::error::Error;
 use treq::base::actions::manager::ActionsManager;
 use treq::base::actions::Actions;
 use treq::base::commands::handler::CommandHandler;
-use treq::base::commands::{Command, Commands};
+use treq::base::commands::Command;
 
 use treq::base::os::file_facades::variables::VariablesFile;
 use treq::base::os::file_facades::FileFacade;
 use treq::base::os::file_factory::{FileDefaultFactory, FileFactory};
 use treq::base::os::handler::FileHandler;
-use treq::base::os::os_commands::external_editor::ExternalEditor;
+
 use treq::base::os::os_commands::factory::OsCommandDefaultFactory;
-use treq::base::os::os_commands::{OsCommand, OsCommandTrait};
+use treq::base::os::os_commands::OsCommand;
 use treq::base::stores::MainStore;
 use treq::base::web::client::WebClient;
 use treq::base::web::repository::reqwest::ReqwestClientRepository;
@@ -23,14 +23,14 @@ use treq::config::configurations::view::ViewConfig;
 use treq::config::manager::ConfigManager;
 
 use treq::base::states::manager::StateManager;
-use treq::base::states::states::{DefaultEditMode, DefaultHelpMode, DefaultState, State};
+use treq::base::states::states::{DefaultState, State};
 use treq::runner::Runner;
 use treq::utils::custom_types::uuid::UUID;
 
 // use std::sync::mpsc;
 use tokio::sync::mpsc;
 
-use treq::app::{App, InputMode};
+use treq::app::App;
 
 use treq::input::keymaps;
 use treq::input::listener::KeyboardListerner;
@@ -145,9 +145,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         runner.update_input_handler();
         runner.proccess().await;
     }
-    
-    runner.close();
 
+    runner.close();
 
     // while !app.is_finished {
     //     view.render(app.get_data_store());
@@ -213,7 +212,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     //                 }
     //             }
     //         }
-    //         
+    //
     //     }
     //
     //

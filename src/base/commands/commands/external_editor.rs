@@ -6,7 +6,11 @@ use crate::utils::custom_types::uuid::UUID;
 use std::sync::Arc;
 
 impl Commands {
-    pub fn open_editor_to_buffer(command: Command, initial_value:String, uuid: Option<UUID>) -> Command {
+    pub fn open_editor_to_buffer(
+        command: Command,
+        initial_value: String,
+        uuid: Option<UUID>,
+    ) -> Command {
         struct S {
             command: Command,
             uuid: Option<UUID>,
@@ -23,7 +27,7 @@ impl Commands {
                     path = if let Some(uuid) = &self.uuid {
                         file_handler
                             .get_map_files_temp_edition()
-                            .get(&uuid)
+                            .get(uuid)
                             .unwrap()
                             .get_path()
                     } else {
@@ -59,6 +63,10 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S { command, uuid, initial_value }))
+        Arc::new(Box::new(S {
+            command,
+            uuid,
+            initial_value,
+        }))
     }
 }

@@ -19,7 +19,7 @@ pub struct FileHandler {
     files_variables: HashMap<UUID, BoxVariablesFile>,
     files_temp_edition: HashMap<UUID, BoxTempEditionfile>,
 
-    pub file_factory: Option<Box<dyn FileFactory>>
+    pub file_factory: Option<Box<dyn FileFactory>>,
 }
 
 // -----------------

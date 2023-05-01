@@ -1,11 +1,11 @@
-use crate::{base::{commands::{Command, Commands}, os::file_facades::FileFacade}, utils::custom_types::uuid::UUID};
+use crate::base::commands::{Command, Commands};
 
 use super::OsCommandTrait;
-use tokio::sync::mpsc::{self, Sender};
 use std::{
     path::PathBuf,
     process::{Command as OSCommand, Stdio},
 };
+use tokio::sync::mpsc::Sender;
 
 pub type OsCommandEditor = Box<dyn OsCommandTrait>;
 
@@ -78,4 +78,3 @@ impl OsCommandTrait for ExternalEditor {
     //     std::env::var("EDITOR").is_ok()
     // }
 }
-

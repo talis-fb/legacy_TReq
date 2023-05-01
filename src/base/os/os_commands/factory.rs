@@ -1,9 +1,7 @@
-use std::{hash::Hash, path::PathBuf};
-
-use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
 
 use super::{external_editor::ExternalEditor, OsCommandTrait};
-use crate::{base::{commands::Command, os::file_facades::FileFacade}, utils::custom_types::uuid::UUID};
+use crate::base::commands::Command;
 
 #[mockall::automock]
 pub trait OsCommandFactory {

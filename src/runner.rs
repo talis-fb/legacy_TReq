@@ -5,10 +5,11 @@ use crate::{
     base::{
         actions::Actions,
         commands::{handler::CommandHandler, Command, Commands},
-        os::os_commands::OsCommand, states::states::{DefaultHelpMode, DefaultEditMode, State},
+        os::os_commands::OsCommand,
+        states::states::{DefaultEditMode, DefaultHelpMode, State},
     },
-    input::input_handler::{InputDefaultHandler, InputHandler},
-    view::{ui::UI, UiTrait},
+    input::input_handler::InputHandler,
+    view::UiTrait,
 };
 
 pub struct Runner<View: UiTrait, Input: InputHandler> {
@@ -90,7 +91,6 @@ where
 
             _ => {}
         }
-
     }
 
     pub async fn proccess(&mut self) {
@@ -118,7 +118,7 @@ where
 
                 if let Err(e) = command_result {
                     self.app.get_data_store_mut()
-                        .set_log_error(String::from("COMMAND ERROR"), e.to_string())
+                        .set_log_error(String::from("COMMAND ERROR"), e)
                 }
             }
             os_command = os_commands.recv() => {
@@ -135,7 +135,7 @@ where
 
                         if let Err(e) = output {
                             self.app.get_data_store_mut()
-                                .set_log_error(String::from("OS COMMAND ERROR"), e.to_string())
+                                .set_log_error(String::from("OS COMMAND ERROR"), e)
                         }
 
                         // self.input_handler.close_async_listener();

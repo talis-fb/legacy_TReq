@@ -1,6 +1,6 @@
-use std::{collections::HashMap, rc::Rc, sync::Mutex};
 use crate::base::os::handler::FileHandler;
 use crate::utils::custom_types::uuid::UUID;
+use std::{collections::HashMap, rc::Rc, sync::Mutex};
 
 pub struct EnvironmentStore {
     pub session: HashMap<String, String>,

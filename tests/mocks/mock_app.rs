@@ -1,22 +1,19 @@
-use std::path::PathBuf;
-use std::rc::Rc;
-use std::sync::Mutex;
 use std::time::Duration;
-use tokio::sync::mpsc::{self, Receiver, Sender};
+use tokio::sync::mpsc::{self, Sender};
 use treq::base::os::os_commands::factory::MockOsCommandFactory;
 use treq::input::input_handler::MockInputHandler;
 
 use std::collections::HashMap;
 
 use crate::mocks::file_factory::MockFileFactory;
-use treq::app::{App, InputMode};
+use treq::app::App;
 use treq::base::actions::manager::ActionsManager;
 use treq::base::commands::handler::CommandHandler;
-use treq::base::commands::{Command, Commands};
+use treq::base::commands::Command;
 // use treq::base::os::file_editor::{MockOsCommand, OsCommandEditor};
 use treq::base::os::os_commands::{MockOsCommandTrait, OsCommand};
 use treq::base::states::manager::StateManager;
-use treq::base::states::states::{DefaultEditMode, DefaultHelpMode, DefaultState, State};
+use treq::base::states::states::{DefaultState, State};
 use treq::base::web::client::WebClient;
 use treq::base::web::repository::MockHttpClientRepository;
 use treq::runner::Runner;
@@ -28,10 +25,7 @@ use treq::{
         stores::MainStore,
         web::request::Request,
     },
-    config::{
-        configurations::{external_editor::ExternalEditor, view::ViewConfig},
-        manager::ConfigManager,
-    },
+    config::{configurations::view::ViewConfig, manager::ConfigManager},
     utils::custom_types::uuid::UUID,
 };
 
@@ -71,7 +65,7 @@ impl MockApp {
         file_handler.add_variables(default_variables_file);
 
         let view_config = ViewConfig::init();
-        let external_editor = MockOsCommandTrait::new();
+        let _external_editor = MockOsCommandTrait::new();
 
         let config_manager = ConfigManager::init(file_handler, view_config);
 

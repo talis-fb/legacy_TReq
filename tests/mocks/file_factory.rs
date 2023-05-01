@@ -2,10 +2,10 @@ use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 
 use super::file_facade::MockFile;
-use treq::utils::custom_types::uuid::UUID;
-use treq::base::web::request::Request;
-use treq::base::os::file_factory::FileFactory;
 use treq::base::os::file_facades::FileFacade;
+use treq::base::os::file_factory::FileFactory;
+use treq::base::web::request::Request;
+use treq::utils::custom_types::uuid::UUID;
 
 type BoxRequestFile = Box<dyn FileFacade<UUID, Request>>;
 type BoxTempEditionfile = Box<dyn FileFacade<UUID, String>>;
@@ -19,8 +19,11 @@ pub struct MockFileFactory {
 }
 
 impl FileFactory for MockFileFactory {
-
-    fn create_request_file(&mut self, id: UUID, request: Request) -> Result<BoxRequestFile, String> {
+    fn create_request_file(
+        &mut self,
+        id: UUID,
+        request: Request,
+    ) -> Result<BoxRequestFile, String> {
         let does_not_contains_before = self.requests.insert(id.clone());
 
         if !does_not_contains_before {
@@ -29,7 +32,6 @@ impl FileFactory for MockFileFactory {
 
         Ok(Box::new(MockFile::create(id, request)?))
     }
-
 
     fn create_variables_file(
         &mut self,
@@ -45,7 +47,11 @@ impl FileFactory for MockFileFactory {
         Ok(Box::new(MockFile::create(id, variables)?))
     }
 
-    fn create_temp_file(&mut self, id: UUID, content: String) -> Result<BoxTempEditionfile, String> {
+    fn create_temp_file(
+        &mut self,
+        id: UUID,
+        content: String,
+    ) -> Result<BoxTempEditionfile, String> {
         let does_not_contains_before = self.temp.insert(id.clone());
 
         if !does_not_contains_before {
@@ -55,13 +61,13 @@ impl FileFactory for MockFileFactory {
         Ok(Box::new(MockFile::create(id, content)?))
     }
 
-    fn get_saved_request_file(&self, path: PathBuf) -> Result<BoxRequestFile, String> {
+    fn get_saved_request_file(&self, _path: PathBuf) -> Result<BoxRequestFile, String> {
         todo!()
     }
-    fn get_saved_variables_file(&self, path: PathBuf) -> Result<BoxVariablesFile, String> {
+    fn get_saved_variables_file(&self, _path: PathBuf) -> Result<BoxVariablesFile, String> {
         todo!()
     }
-    fn get_saved_temp_file(&self, path: PathBuf) -> Result<BoxTempEditionfile, String> {
+    fn get_saved_temp_file(&self, _path: PathBuf) -> Result<BoxTempEditionfile, String> {
         todo!()
     }
 

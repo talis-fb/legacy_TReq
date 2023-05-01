@@ -1,23 +1,18 @@
+pub mod requests;
 pub mod tabs;
 pub mod variables;
-pub mod requests;
 
 // async fn set_input_mode_value(mock_app: &mut MockApp, value: &str) {
 //     for _ in 0..50 {
 //         mock_app.exec(Actions::TypingErase).await;
 //     }
-//     
+//
 //     for c in value.chars() {
 //         mock_app.exec(Actions::TypingChar(c)).await;
 //     }
 //
 //     mock_app.exec(Actions::TypingClose).await;
 // }
-
-
-
-
-
 
 /*
 

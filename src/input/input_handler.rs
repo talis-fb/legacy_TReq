@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
-use tokio::sync::mpsc::{self, Receiver, Sender};
+use tokio::sync::mpsc::{self, Sender};
 
 use crate::app::InputMode;
 use crate::base::actions::Actions;
@@ -44,7 +44,7 @@ impl InputDefaultHandler {
     pub fn init(
         listener: KeyboardListerner,
         // external_editor: Rc<OsCommandEditor>,
-        files: Rc<Mutex<FileHandler>>,
+        _files: Rc<Mutex<FileHandler>>,
         sender_events: Sender<Actions>,
     ) -> Self {
         let listeners = HashMap::from([

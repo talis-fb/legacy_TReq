@@ -1,5 +1,5 @@
 use super::configurations::view::ViewConfig;
-use crate::base::os::os_commands::external_editor::OsCommandEditor;
+
 use crate::base::os::handler::FileHandler;
 use std::rc::Rc;
 use std::sync::Mutex;
@@ -18,5 +18,4 @@ impl ConfigManager {
             files: Rc::new(Mutex::new(file_handler)),
         }
     }
-
 }

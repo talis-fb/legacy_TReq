@@ -1,10 +1,7 @@
 use std::{rc::Rc, sync::Mutex};
 
 use crate::{
-    base::{
-        os::handler::FileHandler,
-        web::request::Request,
-    },
+    base::{os::handler::FileHandler, web::request::Request},
     utils::custom_types::uuid::UUID,
 };
 

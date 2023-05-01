@@ -1,7 +1,7 @@
 use crate::base::actions::{manager::ActionsManager, Actions};
 use crate::base::commands::Command;
 use crate::base::os::os_commands::factory::OsCommandFactory;
-use crate::base::os::os_commands::{OsCommand, OsCommandTrait};
+use crate::base::os::os_commands::OsCommand;
 use crate::base::states::manager::StateManager;
 use crate::base::states::states::State;
 use crate::base::stores::MainStore;
@@ -9,8 +9,8 @@ use crate::base::web::client::WebClient;
 
 use crate::config::configurations::save_files::SaveFiles;
 use crate::input::buffer::InputKeyboardBuffer;
-use tokio::sync::mpsc::Sender;
 use std::sync::Arc;
+use tokio::sync::mpsc::Sender;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub enum InputMode {
@@ -66,7 +66,7 @@ impl App {
     pub fn set_os_commands_queue(&mut self, sender: Sender<OsCommand>) {
         self.os_commands_queue = Some(sender)
     }
-    pub fn set_os_commands_factory(&mut self, factory: impl OsCommandFactory + 'static)  {
+    pub fn set_os_commands_factory(&mut self, factory: impl OsCommandFactory + 'static) {
         self.os_commands_factory = Some(Box::new(factory));
     }
 }

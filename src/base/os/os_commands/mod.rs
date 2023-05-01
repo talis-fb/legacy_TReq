@@ -1,6 +1,5 @@
-use tokio::sync::mpsc;
-use tokio::sync::mpsc::Sender;
 use std::sync::Arc;
+use tokio::sync::mpsc::Sender;
 
 use crate::base::commands::Command;
 

@@ -4,10 +4,7 @@ mod file_handler {
     use treq::{
         base::{
             os::{
-                file_facades::{
-                    requests::RequestFile, variables::VariablesFile,
-                    FileFacade,
-                },
+                file_facades::{requests::RequestFile, variables::VariablesFile, FileFacade},
                 handler::FileHandler,
             },
             web::request::Request,
@@ -60,7 +57,10 @@ mod file_handler {
     #[test]
     #[ignore]
     fn test3_should_create_files_of_file_facades_corretly() {
-        assert_eq!(folder_is_empty("/home/appuser/.local/share/treq/data"), true);
+        assert_eq!(
+            folder_is_empty("/home/appuser/.local/share/treq/data"),
+            true
+        );
         assert_eq!(
             folder_is_empty("/home/appuser/.local/share/treq/requests"),
             true
@@ -117,7 +117,10 @@ mod file_handler {
     #[test]
     #[ignore]
     fn test4_should_create_files_corretly_even_when_is_already_files_in_folder() {
-        assert_eq!(folder_is_empty("/home/appuser/.local/share/treq/data"), false);
+        assert_eq!(
+            folder_is_empty("/home/appuser/.local/share/treq/data"),
+            false
+        );
         assert_eq!(
             folder_is_empty("/home/appuser/.local/share/treq/requests"),
             false

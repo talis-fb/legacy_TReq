@@ -1,14 +1,11 @@
-use std::collections::HashMap;
-use treq::base::actions::Actions;
 use crate::mocks::mock_app::MockApp;
-use std::time::Duration;
 use crate::utils::set_input_mode_value;
+use std::collections::HashMap;
+use std::time::Duration;
+use treq::base::actions::Actions;
 use treq::base::web::client::WebClient;
 use treq::base::web::repository::MockHttpClientRepository;
 use treq::base::web::response::Response;
-
-
-
 
 #[tokio::test]
 async fn should_manage_enviroment() {
@@ -79,7 +76,10 @@ async fn should_replace_var_fields_url() {
         Ok(res)
     });
 
-    mock_app.runner.app.set_web_client(WebClient::init(http_client));
+    mock_app
+        .runner
+        .app
+        .set_web_client(WebClient::init(http_client));
 
     // Submit and await async functions be runned
     mock_app.exec(Actions::Submit).await;

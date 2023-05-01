@@ -3,8 +3,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use tokio::sync::mpsc;
-use tokio::sync::mpsc::{Receiver, Sender};
+use tokio::sync::mpsc::Sender;
 
 use crate::{app::App, base::commands::CommandType};
 
@@ -73,7 +72,7 @@ impl CommandHandler {
 
                 // Init task waits job close OR close_event happens
                 tokio::task::spawn({
-                    let key = key.clone();
+                    let key = key;
                     let mut task_job = command_to_exec.take_task().unwrap();
                     let sender_commands = self.sender_commands.clone();
                     let running_jobs_arc = self.running_jobs.clone();
