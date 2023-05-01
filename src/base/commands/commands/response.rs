@@ -12,7 +12,7 @@ impl Commands {
                 let response = app.get_data_store().get_response().lock().unwrap().clone();
 
                 // It opens Editor with response Data, and does nothing when finished
-                app.set_vim_mode_with_command(Commands::do_nothing(), response.body);
+                // app.set_vim_mode_with_command(Commands::do_nothing(), response.body);
 
                 Ok(())
             }

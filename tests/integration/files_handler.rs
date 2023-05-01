@@ -24,7 +24,7 @@ mod file_handler {
 
     #[test]
     #[ignore]
-    fn test1_should_create_folders_corretly_when_they_are_not_created() {
+    fn test1_should_create_env_folders_corretly_when_they_are_not_created() {
         assert_eq!(folder_exists("/home/appuser/.local/share/treq"), false);
 
         FileHandler::setup_env_folder().unwrap();
@@ -39,7 +39,7 @@ mod file_handler {
 
     #[test]
     #[ignore]
-    fn test2_should_not_panic_if_folder_already_exist() {
+    fn test2_should_not_panic_if_env_folders_already_exist() {
         assert_eq!(folder_exists("/home/appuser/.local/share/treq"), true);
         assert_eq!(folder_exists("/home/appuser/.local/share/treq/data"), true);
         assert_eq!(
@@ -59,7 +59,7 @@ mod file_handler {
 
     #[test]
     #[ignore]
-    fn test3_should_create_files_corretly() {
+    fn test3_should_create_files_of_file_facades_corretly() {
         assert_eq!(folder_is_empty("/home/appuser/.local/share/treq/data"), true);
         assert_eq!(
             folder_is_empty("/home/appuser/.local/share/treq/requests"),

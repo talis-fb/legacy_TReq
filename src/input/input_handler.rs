@@ -9,8 +9,6 @@ use crate::app::InputMode;
 use crate::base::actions::Actions;
 
 use crate::base::os::handler::FileHandler;
-use crate::base::os::os_commands::external_editor::OsCommandEditor;
-use crate::utils::custom_types::uuid::UUID;
 
 use tokio::task::JoinHandle;
 
@@ -20,12 +18,15 @@ use crate::input::keymaps::normal_mode;
 
 use super::listener::KeyboardListerner;
 
-pub struct InputHandler {
-    // Save files
-    // external_editor: Rc<OsCommandEditor>,
-    files: Rc<Mutex<FileHandler>>,
-    opened_files: HashMap<UUID, UUID>,
+#[mockall::automock]
+pub trait InputHandler {
+    fn update(&mut self, new_input_mode: InputMode);
+    fn set_keymap(&mut self, keyboard_listener: KeyboardListerner);
+    fn open_async_listener(&mut self);
+    fn close_async_listener(&mut self);
+}
 
+pub struct InputDefaultHandler {
     // Listener
     current_listener: Arc<Mutex<KeyboardListerner>>,
     listeners: HashMap<InputMode, KeyboardListerner>,
@@ -38,7 +39,8 @@ pub struct InputHandler {
     task_async_listener: Option<JoinHandle<()>>,
     finisher_async_listener: Option<Sender<()>>,
 }
-impl InputHandler {
+
+impl InputDefaultHandler {
     pub fn init(
         listener: KeyboardListerner,
         // external_editor: Rc<OsCommandEditor>,
@@ -64,9 +66,6 @@ impl InputHandler {
 
         Self {
             current_listener: Arc::new(Mutex::new(listener)),
-            // external_editor,
-            files,
-            opened_files: HashMap::new(),
             last_input_mode_state: None,
             listeners,
             sender_events,
@@ -75,29 +74,21 @@ impl InputHandler {
             finisher_async_listener: None,
         }
     }
+}
 
-    pub fn update(&mut self, new_input_mode: InputMode) {
+impl InputHandler for InputDefaultHandler {
+    fn update(&mut self, new_input_mode: InputMode) {
+        if self.task_async_listener.is_none() && self.finisher_async_listener.is_none() {
+            self.open_async_listener();
+        }
+
         let last_mode = self.last_input_mode_state;
 
         if last_mode.is_none() || last_mode.unwrap() != new_input_mode {
-            // Update new mode
             self.last_input_mode_state = Some(new_input_mode);
 
-            match new_input_mode {
-                InputMode::Vim => {
-                    self.close_async_listener();
-                }
-
-                input_mode => {
-                    if self.task_async_listener.is_none() && self.finisher_async_listener.is_none()
-                    {
-                        self.open_async_listener();
-                    }
-
-                    let listener = self.listeners.get(&input_mode).unwrap();
-                    self.set_keymap(listener.clone());
-                }
-            }
+            let listener = self.listeners.get(&new_input_mode).unwrap();
+            self.set_keymap(listener.clone());
         }
     }
 
@@ -109,7 +100,7 @@ impl InputHandler {
     fn open_async_listener(&mut self) {
         let listener = self.current_listener.clone();
 
-        let (finished_sender, mut finished_listener): (Sender<()>, Receiver<()>) = mpsc::channel(32);
+        let (finished_sender, mut finished_listener) = mpsc::channel::<()>(32);
 
         let queue = self.sender_events.clone();
 
@@ -140,23 +131,19 @@ impl InputHandler {
         self.finisher_async_listener = Some(finished_sender);
     }
 
-    pub fn close_async_listener(&mut self) {
-        let sender = self.finisher_async_listener.take();
-        if sender.is_some() {
+    fn close_async_listener(&mut self) {
+        let finisher_sender = self.finisher_async_listener.take();
+        if let Some(s) = finisher_sender {
             tokio::task::spawn(async move {
-                sender.unwrap().send(()).await;
+                s.send(()).await;
             });
         }
 
         let task = self.task_async_listener.take();
-        if task.is_some() {
-            task.unwrap().abort();
+        if let Some(t) = task {
+            t.abort();
         }
     }
-    pub fn sync_open_vim(&mut self, buffer: String, uuid_edition: &UUID) -> Result<String, String> {
-        todo!()
-    }
-
     // pub fn sync_open_vim(&mut self, buffer: String, uuid_edition: &UUID) -> Result<String, String> {
     //     let mut files = self.files.lock().unwrap();
     //

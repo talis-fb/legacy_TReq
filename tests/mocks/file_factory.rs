@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 
 use super::file_facade::MockFile;
@@ -12,24 +12,46 @@ type BoxTempEditionfile = Box<dyn FileFacade<UUID, String>>;
 type BoxVariablesFile = Box<dyn FileFacade<String, HashMap<String, String>>>;
 
 #[derive(Default)]
-pub struct MockFileFactory;
+pub struct MockFileFactory {
+    requests: HashSet<UUID>,
+    variables: HashSet<String>,
+    temp: HashSet<UUID>,
+}
 
 impl FileFactory for MockFileFactory {
 
-    fn create_request_file(&self, id: UUID, request: Request) -> Result<BoxRequestFile, String> {
+    fn create_request_file(&mut self, id: UUID, request: Request) -> Result<BoxRequestFile, String> {
+        let does_not_contains_before = self.requests.insert(id.clone());
+
+        if !does_not_contains_before {
+            panic!("Creating a file already created");
+        }
+
         Ok(Box::new(MockFile::create(id, request)?))
     }
 
 
     fn create_variables_file(
-        &self,
+        &mut self,
         id: String,
         variables: HashMap<String, String>,
     ) -> Result<BoxVariablesFile, String> {
+        let does_not_contains_before = self.variables.insert(id.clone());
+
+        if !does_not_contains_before {
+            panic!("Creating a file already created");
+        }
+
         Ok(Box::new(MockFile::create(id, variables)?))
     }
 
-    fn create_temp_file(&self, id: UUID, content: String) -> Result<BoxTempEditionfile, String> {
+    fn create_temp_file(&mut self, id: UUID, content: String) -> Result<BoxTempEditionfile, String> {
+        let does_not_contains_before = self.temp.insert(id.clone());
+
+        if !does_not_contains_before {
+            panic!("Creating a file already created");
+        }
+
         Ok(Box::new(MockFile::create(id, content)?))
     }
 

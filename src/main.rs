@@ -13,6 +13,7 @@ use treq::base::os::file_facades::FileFacade;
 use treq::base::os::file_factory::{FileDefaultFactory, FileFactory};
 use treq::base::os::handler::FileHandler;
 use treq::base::os::os_commands::external_editor::ExternalEditor;
+use treq::base::os::os_commands::factory::OsCommandDefaultFactory;
 use treq::base::os::os_commands::{OsCommand, OsCommandTrait};
 use treq::base::stores::MainStore;
 use treq::base::web::client::WebClient;
@@ -36,7 +37,7 @@ use treq::input::listener::KeyboardListerner;
 
 use treq::view::ui::UI;
 
-use treq::input::input_handler::InputHandler;
+use treq::input::input_handler::InputDefaultHandler;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -97,14 +98,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // TODO: Remove this 32
     // TODO: Remove this 32
     // TODO: Remove this 32
-    let (action_queue_sender, mut action_queue_receiver) = mpsc::channel::<Actions>(32);
-    let (commands_queue_sender, mut commands_queue_receiver) = mpsc::channel::<Command>(32);
-    let (os_commands_queue_sender, mut os_commands_queue_receiver) = mpsc::channel::<OsCommand>(32);
+    let (action_queue_sender, action_queue_receiver) = mpsc::channel::<Actions>(32);
+    let (commands_queue_sender, commands_queue_receiver) = mpsc::channel::<Command>(32);
+    let (os_commands_queue_sender, os_commands_queue_receiver) = mpsc::channel::<OsCommand>(32);
 
     let commands = keymaps::normal_mode::keymap_factory();
     let keymap = KeyboardListerner::init(commands);
 
-    let mut input_handler = InputHandler::init(
+    let input_handler = InputDefaultHandler::init(
         keymap,
         // data_store.config.editor.clone(),
         data_store.config.files.clone(),
@@ -128,6 +129,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.set_web_client(web_client);
     app.set_data_store(data_store);
     app.set_renderer(action_queue_sender);
+    app.set_os_commands_queue(os_commands_queue_sender.clone());
+    app.set_os_commands_factory(OsCommandDefaultFactory {});
 
     let command_handler = CommandHandler::init(commands_queue_sender.clone());
 

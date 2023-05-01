@@ -41,6 +41,12 @@ impl UI {
     }
 }
 impl UiTrait for UI {
+    fn restart(&mut self) {
+        let new_ui = Self::init();
+        self.backend = new_ui.backend;
+        self.view_states = new_ui.view_states;
+    }
+
     fn close(&mut self) {
         disable_raw_mode().unwrap();
         execute!(
@@ -67,23 +73,5 @@ impl UiTrait for UI {
         app_view.render(&mut self.backend);
 
         self.backend.draw_all();
-    }
-
-    fn restart(&mut self) {
-        enable_raw_mode().unwrap();
-        let mut stdout = io::stdout();
-        execute!(stdout, EnterAlternateScreen).unwrap_or(());
-        let stdout = io::stdout();
-        let backend = CrosstermBackend::new(stdout);
-        let terminal = Terminal::new(backend).unwrap();
-
-        let backend = BackendTuiRs {
-            terminal,
-            configs: ViewConfig::init(),
-            queue_render: vec![],
-        };
-
-        self.backend = backend;
-        self.view_states = HashMap::new();
     }
 }

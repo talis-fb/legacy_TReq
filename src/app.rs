@@ -1,14 +1,14 @@
 use crate::base::actions::{manager::ActionsManager, Actions};
 use crate::base::commands::Command;
+use crate::base::os::os_commands::factory::OsCommandFactory;
+use crate::base::os::os_commands::{OsCommand, OsCommandTrait};
 use crate::base::states::manager::StateManager;
 use crate::base::states::states::State;
 use crate::base::stores::MainStore;
 use crate::base::web::client::WebClient;
-use crate::base::web::repository::reqwest::ReqwestClientRepository;
 
 use crate::config::configurations::save_files::SaveFiles;
 use crate::input::buffer::InputKeyboardBuffer;
-// use std::sync::mpsc::Sender;
 use tokio::sync::mpsc::Sender;
 use std::sync::Arc;
 
@@ -24,6 +24,8 @@ pub enum InputMode {
 pub struct App {
     pub is_finished: bool,
     pub renderer: Option<Sender<Actions>>,
+    pub os_commands_queue: Option<Sender<OsCommand>>,
+    pub os_commands_factory: Option<Box<dyn OsCommandFactory>>,
 
     // Datas
     pub data_store: Option<MainStore>,
@@ -61,6 +63,12 @@ impl App {
     pub fn set_renderer(&mut self, renderer: Sender<Actions>) {
         self.renderer = Some(renderer)
     }
+    pub fn set_os_commands_queue(&mut self, sender: Sender<OsCommand>) {
+        self.os_commands_queue = Some(sender)
+    }
+    pub fn set_os_commands_factory(&mut self, factory: impl OsCommandFactory + 'static)  {
+        self.os_commands_factory = Some(Box::new(factory));
+    }
 }
 
 // -----------------------------------------
@@ -81,15 +89,30 @@ impl App {
         data_store.set_log_input_mode();
         self.get_input_buffer_mut().set_value(initial_buffer);
     }
-    pub fn set_vim_mode_with_command(&mut self, callback: Command, initial_buffer: String) {
-        self.set_mode(InputMode::Vim);
-        let data_store = self.get_data_store_mut();
-        data_store.input_buffer.command = callback;
 
-        self.get_input_buffer_mut()
-            .set_backup(initial_buffer.clone());
-        self.set_input_buffer_value(initial_buffer);
-    }
+    // pub fn set_vim_mode_with_command(&mut self, callback: Command, initial_buffer: String) {
+    //     // self.set_mode(InputMode::Vim);
+    //
+    //     ExternalEditor {
+    //         command_editor: String::from("vim"),
+    //         path
+    //     }
+    //
+    //     // self.os
+    //
+    //
+    //     // Set command
+    //     let data_store = self.get_data_store_mut();
+    //     data_store.input_buffer.command = callback;
+    //
+    //     // Set initial value
+    //     self.get_input_buffer_mut()
+    //         .set_backup(initial_buffer.clone());
+    //     self.set_input_buffer_value(initial_buffer);
+    //
+    //
+    // }
+
     pub fn get_input_buffer(&mut self) -> &InputKeyboardBuffer {
         &self.get_data_store_mut().input_buffer
     }

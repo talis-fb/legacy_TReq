@@ -7,6 +7,22 @@ use crate::app::App;
 use crate::base::commands::{Command, Commands};
 
 impl Commands {
+    // TODO: Move it to another place
+    pub fn set_input_buffer(content: String) -> Command {
+        struct S {
+            content: String,
+        }
+
+        impl CommandTrait for S {
+            fn execute(&self, app: &mut App) -> Result<(), String> {
+                app.set_input_buffer_value(self.content.clone());
+                Ok(())
+            }
+        }
+
+        Arc::new(Box::new(S { content }))
+    }
+
     pub fn edit_mode_insert_char(c: char) -> Command {
         struct S {
             char: char,

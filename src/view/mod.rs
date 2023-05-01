@@ -7,6 +7,7 @@ pub mod style;
 pub mod ui;
 pub mod views;
 
+#[mockall::automock]
 pub trait UiTrait {
     fn restart(&mut self);
     fn close(&mut self);

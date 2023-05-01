@@ -1,7 +1,10 @@
 use crate::app::App;
 use crate::base::commands::CommandTrait;
 use crate::base::commands::{Command, Commands};
+use crate::base::os::file_factory::FileFactory;
+use crate::base::os::os_commands::OsCommand;
 use crate::base::web::request::METHODS;
+use crate::utils::custom_types::uuid::UUID;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -55,10 +58,42 @@ impl Commands {
                     }
                 }
 
-                app.set_vim_mode_with_command(
-                    Arc::new(Box::new(_S {})),
-                    app.get_data_store().get_request().body.clone(),
-                );
+                let path;
+                {
+                    let store = app.get_data_store_mut();
+                    let mut file_handler = store.config.files.lock().unwrap();
+
+                    let uui = UUID::new();
+                    let temp_file_to_edit = file_handler
+                        .file_factory
+                        .as_mut()
+                        .unwrap()
+                        .create_temp_file(uui.clone(), "SETADO NA MNAO".to_string())?;
+                    let uuid_mesmo = file_handler.add_temp_edition(temp_file_to_edit);
+
+                    path = file_handler
+                        .get_map_files_temp_edition()
+                        .get(&uuid_mesmo)
+                        .unwrap()
+                        .get_path();
+                }
+
+                let fa = app.os_commands_factory.as_ref().unwrap();
+                let cc = fa.external_editor(path, Arc::new(Box::new(_S {}))).unwrap();
+                // let ca = OsCommand::create_sync_from(*cc);
+                let ca = OsCommand::Sync(Arc::new(cc));
+
+                tokio::task::spawn({
+                    let sender = app.os_commands_queue.as_ref().unwrap().clone();
+                    async move {
+                        sender.send(ca).await;
+                    }
+                });
+
+                // app.set_vim_mode_with_command(
+                //     Arc::new(Box::new(_S {})),
+                //     app.get_data_store().get_request().body.clone(),
+                // );
                 Ok(())
             }
         }
@@ -100,7 +135,7 @@ impl Commands {
                     }
                 }
 
-                app.set_vim_mode_with_command(Arc::new(Box::new(_S {})), initial_headers_as_str);
+                // app.set_vim_mode_with_command(Arc::new(Box::new(_S {})), initial_headers_as_str);
                 Ok(())
             }
         }
