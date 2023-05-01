@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::app::App;
+use crate::app::{App, InputMode};
 use crate::base::commands::CommandTrait;
 use crate::base::commands::{Command, Commands};
 use crate::base::web::request::Request;

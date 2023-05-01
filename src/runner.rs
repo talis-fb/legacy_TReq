@@ -5,7 +5,7 @@ use crate::{
     base::{
         actions::Actions,
         commands::{handler::CommandHandler, Command, Commands},
-        os::os_commands::OsCommand,
+        os::os_commands::OsCommand, states::states::{DefaultHelpMode, DefaultEditMode, State},
     },
     input::input_handler::{InputDefaultHandler, InputHandler},
     view::{ui::UI, UiTrait},
@@ -78,6 +78,19 @@ where
     pub fn update_input_handler(&mut self) {
         let input_mode = self.app.get_mode();
         self.input_handler.update(input_mode);
+
+        match input_mode {
+            InputMode::Help => {
+                self.app.set_new_state(DefaultHelpMode::init());
+            }
+
+            InputMode::Insert => {
+                self.app.set_new_state(DefaultEditMode::init());
+            }
+
+            _ => {}
+        }
+
     }
 
     pub async fn proccess(&mut self) {
