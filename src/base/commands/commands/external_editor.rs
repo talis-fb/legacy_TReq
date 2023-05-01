@@ -55,7 +55,7 @@ impl Commands {
                 tokio::task::spawn({
                     let sender = app.os_commands_queue.as_ref().unwrap().clone();
                     async move {
-                        sender.send(os_command).await;
+                        sender.send(os_command).await.ok();
                     }
                 });
 

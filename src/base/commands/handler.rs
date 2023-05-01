@@ -35,7 +35,7 @@ impl CommandHandler {
         log::info!("Added command to queue");
         let sender = self.sender_commands.clone();
         tokio::task::spawn(async move {
-            sender.send(command).await;
+            sender.send(command).await.ok();
         });
     }
 
@@ -85,7 +85,7 @@ impl CommandHandler {
                             val = &mut task_job => {
                                 if let Ok(command_final) = val {
                                     log::info!("    [ok2] Command of ASYNC Job Send");
-                                    sender_commands.send(command_final).await;
+                                    sender_commands.send(command_final).await.ok();
                                 }
                             }
                         }

@@ -187,7 +187,7 @@ impl App {
     pub fn rerender(&self) {
         let sender = self.renderer.as_ref().unwrap().clone();
         tokio::task::spawn(async move {
-            sender.send(Actions::Null).await;
+            sender.send(Actions::Null).await.unwrap();
         });
     }
 }

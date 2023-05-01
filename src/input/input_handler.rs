@@ -135,7 +135,7 @@ impl InputHandler for InputDefaultHandler {
         let finisher_sender = self.finisher_async_listener.take();
         if let Some(s) = finisher_sender {
             tokio::task::spawn(async move {
-                s.send(()).await;
+                s.send(()).await.unwrap();
             });
         }
 

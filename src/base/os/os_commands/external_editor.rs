@@ -45,8 +45,8 @@ impl OsCommandTrait for ExternalEditor {
 
         tokio::task::spawn(async move {
             log::info!("DENTRO DO SPAWN DO EXTERNAL");
-            sender.send(set_input_buffer).await;
-            sender.send(exec_input_buffer).await;
+            sender.send(set_input_buffer).await.ok();
+            sender.send(exec_input_buffer).await.ok();
             log::info!("FIM DO SPAWN DO EXTERNAL");
         });
 
