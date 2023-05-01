@@ -1,17 +1,15 @@
 use crossterm::event::{self, Event};
 use std::collections::HashMap;
 use std::rc::Rc;
-use std::sync::{
-    mpsc::{self, Receiver, Sender},
-    Arc, Mutex,
-};
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
+use tokio::sync::mpsc::{self, Receiver, Sender};
 
 use crate::app::InputMode;
 use crate::base::actions::Actions;
 
-use crate::base::os::file_editor::OsCommandEditor;
 use crate::base::os::handler::FileHandler;
+use crate::base::os::os_commands::external_editor::OsCommandEditor;
 use crate::utils::custom_types::uuid::UUID;
 
 use tokio::task::JoinHandle;
@@ -24,7 +22,7 @@ use super::listener::KeyboardListerner;
 
 pub struct InputHandler {
     // Save files
-    external_editor: Rc<OsCommandEditor>,
+    // external_editor: Rc<OsCommandEditor>,
     files: Rc<Mutex<FileHandler>>,
     opened_files: HashMap<UUID, UUID>,
 
@@ -43,7 +41,7 @@ pub struct InputHandler {
 impl InputHandler {
     pub fn init(
         listener: KeyboardListerner,
-        external_editor: Rc<OsCommandEditor>,
+        // external_editor: Rc<OsCommandEditor>,
         files: Rc<Mutex<FileHandler>>,
         sender_events: Sender<Actions>,
     ) -> Self {
@@ -66,7 +64,7 @@ impl InputHandler {
 
         Self {
             current_listener: Arc::new(Mutex::new(listener)),
-            external_editor,
+            // external_editor,
             files,
             opened_files: HashMap::new(),
             last_input_mode_state: None,
@@ -111,7 +109,7 @@ impl InputHandler {
     fn open_async_listener(&mut self) {
         let listener = self.current_listener.clone();
 
-        let (finished_sender, finished_listener): (Sender<()>, Receiver<()>) = mpsc::channel();
+        let (finished_sender, mut finished_listener): (Sender<()>, Receiver<()>) = mpsc::channel(32);
 
         let queue = self.sender_events.clone();
 
@@ -121,10 +119,13 @@ impl InputHandler {
             while finished_listener.try_recv().is_err() {
                 if event::poll(Duration::from_millis(100)).unwrap() {
                     if let Event::Key(key) = event::read().unwrap() {
-                        let mut keymap = listener.lock().unwrap();
-                        let action = keymap.get_command(key.code).unwrap_or(action_default);
+                        let action;
+                        {
+                            let mut keymap = listener.lock().unwrap();
+                            action = keymap.get_command(key.code).unwrap_or(action_default);
+                        }
 
-                        let res = queue.send(action);
+                        let res = queue.send(action).await;
 
                         if let Err(e) = res {
                             println!("Erro at run command: ...");
@@ -142,13 +143,18 @@ impl InputHandler {
     pub fn close_async_listener(&mut self) {
         let sender = self.finisher_async_listener.take();
         if sender.is_some() {
-            sender.unwrap().send(()).unwrap();
+            tokio::task::spawn(async move {
+                sender.unwrap().send(()).await;
+            });
         }
 
         let task = self.task_async_listener.take();
         if task.is_some() {
             task.unwrap().abort();
         }
+    }
+    pub fn sync_open_vim(&mut self, buffer: String, uuid_edition: &UUID) -> Result<String, String> {
+        todo!()
     }
 
     // pub fn sync_open_vim(&mut self, buffer: String, uuid_edition: &UUID) -> Result<String, String> {

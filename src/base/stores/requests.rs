@@ -2,11 +2,7 @@ use std::{rc::Rc, sync::Mutex};
 
 use crate::{
     base::{
-        os::{
-            file_facades::{FileFacade},
-            file_factory::FileFactory,
-            handler::FileHandler,
-        },
+        os::handler::FileHandler,
         web::request::Request,
     },
     utils::custom_types::uuid::UUID,
@@ -137,7 +133,7 @@ impl RequestStore {
             if !file_handler.get_map_files_request().contains_key(uuid) {
                 let file = file_handler
                     .file_factory
-                    .as_ref()
+                    .as_mut()
                     .unwrap()
                     .create_request_file(uuid.clone(), req.clone())
                     .unwrap();

@@ -25,7 +25,8 @@ use treq::base::states::manager::StateManager;
 use treq::base::states::states::{DefaultEditMode, DefaultHelpMode, DefaultState, State};
 use treq::utils::custom_types::uuid::UUID;
 
-use std::sync::mpsc;
+// use std::sync::mpsc;
+use tokio::sync::mpsc;
 
 use treq::app::{App, InputMode};
 
@@ -77,9 +78,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // other configs
     let view_config = ViewConfig::init();
 
-    let external_editor = Box::new(ExternalEditor::init().unwrap());
+    // let external_editor = Box::new(ExternalEditor::init().unwrap());
 
-    let config_manager = ConfigManager::init(file_handler, view_config, external_editor);
+    let config_manager = ConfigManager::init(file_handler, view_config);
 
     // Init of Data Stores
     let mut data_store = MainStore::init(config_manager);
@@ -92,16 +93,19 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Input
     // ------------------------------------------
     // EVENTS of actions
-    let (action_queue_sender, action_queue_receiver) = mpsc::channel::<Actions>();
-    let (commands_queue_sender, commands_queue_receiver) = mpsc::channel::<Command>();
-    let (os_commands_queue_sender, os_commands_queue_receiver) = mpsc::channel::<OsCommand>();
+    // TODO: Remove this 32
+    // TODO: Remove this 32
+    // TODO: Remove this 32
+    let (action_queue_sender, mut action_queue_receiver) = mpsc::channel::<Actions>(32);
+    let (commands_queue_sender, mut commands_queue_receiver) = mpsc::channel::<Command>(32);
+    let (os_commands_queue_sender, mut os_commands_queue_receiver) = mpsc::channel::<OsCommand>(32);
 
     let commands = keymaps::normal_mode::keymap_factory();
     let keymap = KeyboardListerner::init(commands);
 
     let mut input_handler = InputHandler::init(
         keymap,
-        data_store.config.editor.clone(),
+        // data_store.config.editor.clone(),
         data_store.config.files.clone(),
         action_queue_sender.clone(),
     );
@@ -124,87 +128,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.set_data_store(data_store);
     app.set_renderer(action_queue_sender);
 
-    let mut command_handler = CommandHandler::init(commands_queue_sender, commands_queue_receiver);
+    let mut command_handler = CommandHandler::init(commands_queue_sender.clone());
 
     while !app.is_finished {
         view.render(app.get_data_store());
 
-        // tokio::select! {
-        //     action = action_queue_receiver.recv() => {
-        //
-        //     }
-        //     command = commands_queue_receiver.recv() => {
-        //
-        //     }
-        //     os_command = os_commands_queue_receiver.recv() => {
-        //
-        //     }
-        //     _ = tokio::signal::ctrl_c() => {
-        //
-        //     }
-        //     
-        // }
-
-
-        while let Ok(command) = os_commands_queue_receiver.try_recv() {
-            match command {
-                OsCommand::Sync(comm) => {
-                    view.close();
-
-                    let output = comm.exec(commands_queue_sender)?;
-
-                    view = UI::init();
-                    view.render(app.get_data_store());
-
-                    while action_queue_receiver.try_recv().is_ok() {
-                        log::info!("Clear queue");
-                    }
-                }
-
-                OsCommand::Async(comm) => {
-                    let sender = commands_queue_sender.clone();
-                    tokio::task::spawn(async move {
-                        comm.exec(sender);
-                    });
-                }
-            }
-        }
-
-        match app.get_mode() {
-            InputMode::Vim => {
-                // Closes UI to dont conflit with external APP
-                view.close();
-
-                // Update and open it, getting result
-                input_handler.update(InputMode::Vim);
-                let buffer = input_handler
-                    .sync_open_vim(
-                        app.get_input_buffer_value(),
-                        app.get_data_store().get_request_uuid(),
-                    )
-                    .unwrap();
-
-                // Set Buffer and return to Normal Mode
-                app.set_input_buffer_value(buffer);
-                app.exec_input_buffer_command()?;
-
-                app.set_mode(InputMode::Normal);
-                input_handler.update(InputMode::Normal);
-
-                // Restart UI, set Buffer and return to Normal Mode
-                view = UI::init();
-                view.render(app.get_data_store());
-
-                // Clear queue if some event was catchig by event:read() in external editor
-                while action_queue_receiver.try_recv().is_ok() {
-                    log::info!("Clear queue");
-                }
-            }
-
-            mode => {
-                input_handler.update(mode);
-            }
-        }
+        input_handler.update(app.get_mode());
 
         match app.get_mode() {
             InputMode::Help => {
@@ -218,32 +147,76 @@ async fn main() -> Result<(), Box<dyn Error>> {
             _ => {}
         }
 
-        // Listen queue of user's events to execute --------------------
-        log::info!("Wainting action....");
-        match action_queue_receiver.recv() {
-            Ok(action_to_exec) => {
-                log::info!("Action {:?}", action_to_exec);
+        tokio::select! {
+            _ = tokio::signal::ctrl_c() => {
+                panic!("FOIO");
+            }
+            action = action_queue_receiver.recv() => {
+                log::info!("Action {:?}", action);
 
                 let command = app
-                    .get_command_of_action(action_to_exec)
+                    .get_command_of_action(action.unwrap())
                     .unwrap_or(Commands::do_nothing());
 
                 // Add Command to queue
                 command_handler.add(command);
-
-                // exec it
-                let command_result = command_handler.run(&mut app);
+            }
+            command = commands_queue_receiver.recv() => {
+                let command_result = command_handler.run(command.unwrap(), &mut app);
 
                 if let Err(e) = command_result {
                     app.get_data_store_mut()
                         .set_log_error(String::from("COMMAND ERROR"), e.to_string())
                 }
             }
-            Err(err) => {
-                log::error!("Action ERROR");
-                log::error!("{}", err);
+            os_command = os_commands_queue_receiver.recv() => {
+                match os_command.unwrap() {
+                    OsCommand::Sync(comm) => {
+                        view.close();
+
+                        let output = comm.exec(commands_queue_sender.clone());
+
+                        if let Err(e) = output {
+                            app.get_data_store_mut()
+                                .set_log_error(String::from("OS COMMAND ERROR"), e.to_string())
+                        }
+
+                        view = UI::init();
+                        view.render(app.get_data_store());
+
+                        while action_queue_receiver.try_recv().is_ok() {
+                            log::info!("Clear queue");
+                        }
+                    }
+
+                    OsCommand::Async(comm) => {
+                        let sender = commands_queue_sender.clone();
+                        tokio::task::spawn(async move {
+                            comm.exec(sender).unwrap();
+                        });
+                    }
+                }
             }
+            
         }
+
+
+        // while let Ok(command) = os_commands_queue_receiver.try_recv() {
+        // }
+
+
+        // Listen queue of user's events to execute --------------------
+        // log::info!("Wainting action....");
+        // match action_queue_receiver.recv() {
+        //     Ok(action_to_exec) => {
+        //
+        //         // exec it
+        //     }
+        //     Err(err) => {
+        //         log::error!("Action ERROR");
+        //         log::error!("{}", err);
+        //     }
+        // }
     }
 
     input_handler.close_async_listener();

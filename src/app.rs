@@ -8,7 +8,8 @@ use crate::base::web::repository::reqwest::ReqwestClientRepository;
 
 use crate::config::configurations::save_files::SaveFiles;
 use crate::input::buffer::InputKeyboardBuffer;
-use std::sync::mpsc::Sender;
+// use std::sync::mpsc::Sender;
+use tokio::sync::mpsc::Sender;
 use std::sync::Arc;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
@@ -161,6 +162,9 @@ impl App {
     }
 
     pub fn rerender(&self) {
-        self.renderer.as_ref().unwrap().send(Actions::Null).unwrap();
+        let sender = self.renderer.as_ref().unwrap().clone();
+        tokio::task::spawn(async move {
+            sender.send(Actions::Null).await;
+        });
     }
 }

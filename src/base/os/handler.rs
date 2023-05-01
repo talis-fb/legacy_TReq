@@ -33,8 +33,8 @@ impl FileHandler {
         Ok(())
     }
 
-    pub fn set_file_factory(&mut self, file_factory: Box<dyn FileFactory>) {
-        self.file_factory = Some(file_factory);
+    pub fn set_file_factory(&mut self, file_factory: impl FileFactory + 'static) {
+        self.file_factory = Some(Box::new(file_factory));
     }
 }
 

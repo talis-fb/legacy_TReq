@@ -53,7 +53,7 @@ impl Commands {
                                             data.response_time = elapsed_time.as_secs_f64();
                                         }
 
-                                        renderer.send(Actions::Null).unwrap();
+                                        renderer.send(Actions::Null).await;
                                         log::info!("{} counter", elapsed_time.as_millis());
                                     }
                                     _ = close_timer_listener.recv() => {
@@ -76,7 +76,7 @@ impl Commands {
                     }
 
                     // for re-render
-                    renderer.send(Actions::Null).unwrap();
+                    renderer.send(Actions::Null).await;
 
                     Commands::do_nothing()
                 });
