@@ -3,6 +3,7 @@ use std::rc::Rc;
 use std::sync::Mutex;
 use std::time::Duration;
 use tokio::sync::mpsc::{self, Receiver, Sender};
+use treq::base::os::os_commands::factory::MockOsCommandFactory;
 use treq::input::input_handler::MockInputHandler;
 
 use std::collections::HashMap;
@@ -92,6 +93,9 @@ impl MockApp {
         app.set_data_store(data_store);
         app.set_renderer(queue_actions_sender.clone());
 
+        app.set_os_commands_queue(queue_os_commands_sender.clone());
+        app.set_os_commands_factory(MockOsCommandFactory::new());
+
         let command_handler = CommandHandler::init(queue_commands_sender.clone());
 
         let mut view = MockUiTrait::new();
@@ -117,10 +121,6 @@ impl MockApp {
         }
     }
 
-    pub fn is_finished(&self) -> bool {
-        self.runner.app.is_finished
-    }
-
     pub async fn exec(&mut self, action: Actions) {
         self.push_action(action).await;
         self.run_commands_in_queue().await;
@@ -131,13 +131,13 @@ impl MockApp {
     }
 
     pub async fn run_commands_in_queue(&mut self) {
-        for _ in 0..50 {
+        for _ in 0..15 {
+            self.runner.render();
+            self.runner.update_input_handler();
             tokio::select! {
                 _ = self.runner.proccess() => {},
-                _ = tokio::time::sleep(Duration::from_millis(1)) => {},
+                _ = tokio::time::sleep(Duration::from_millis(0)) => {},
             }
         }
-        self.runner.render();
-        self.runner.update_input_handler();
     }
 }

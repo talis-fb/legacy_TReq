@@ -10,7 +10,7 @@ use treq::base::web::repository::MockHttpClientRepository;
 use treq::base::web::response::Response;
 
 async fn set_input_mode_value(mock_app: &mut MockApp, value: &str) {
-    for _ in 0..100 {
+    for _ in 0..50 {
         mock_app.exec(Actions::TypingErase).await;
     }
     
@@ -58,7 +58,7 @@ async fn should_delete_last_tab_creating_a_default() {
 
     mock_app.exec(Actions::Edit).await;
 
-    set_input_mode_value(&mut mock_app, "Some new value");
+    set_input_mode_value(&mut mock_app, "Some new value").await;
 
     let request_name = mock_app.runner.app.get_data_store().get_request().name.clone();
     assert_eq!(&request_name, "Some new value");
@@ -136,7 +136,7 @@ async fn should_create_and_edit_tabs() {
         "New Request"
     );
 
-    set_input_mode_value(&mut mock_app, "New editing");
+    set_input_mode_value(&mut mock_app, "New editing").await;
 
     assert_eq!(mock_app.runner.app.get_mode(), InputMode::Normal);
 
@@ -162,7 +162,7 @@ async fn should_create_and_edit_tabs() {
 
     mock_app.exec(Actions::Edit).await;
 
-    set_input_mode_value(&mut mock_app, "Edited name");
+    set_input_mode_value(&mut mock_app, "Edited name").await;
 
     assert_eq!(
         get_request_names(&mock_app),
@@ -215,17 +215,17 @@ async fn should_replace_var_fields_url() {
 
     // Create and set key variable
     mock_app.exec(Actions::New).await;
-    set_input_mode_value(&mut mock_app, "variable_name1");
+    set_input_mode_value(&mut mock_app, "variable_name1").await;
 
     // Set value variable
     mock_app.exec(Actions::Edit).await;
-    set_input_mode_value(&mut mock_app, "VALUE_INSIDE_VARIABLE");
+    set_input_mode_value(&mut mock_app, "VALUE_INSIDE_VARIABLE").await;
 
     mock_app.exec(Actions::Quit).await;
 
     mock_app.exec(Actions::GoToUrl).await;
     mock_app.exec(Actions::Edit).await;
-    set_input_mode_value(&mut mock_app, "google.com/search/{{ variable_name1 }}");
+    set_input_mode_value(&mut mock_app, "google.com/search/{{ variable_name1 }}").await;
 
     assert_eq!(
         &mock_app.runner.app.get_data_store().get_request().url,
