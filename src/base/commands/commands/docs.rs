@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::app::App;
 use crate::app::InputMode;
 use crate::base::commands::CommandTrait;
@@ -17,7 +15,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn open_welcome_screen() -> Command {
@@ -30,7 +28,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn doc_up() -> Command {
@@ -49,7 +47,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn doc_down() -> Command {
@@ -68,7 +66,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn doc_exit() -> Command {
@@ -80,6 +78,6 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 }

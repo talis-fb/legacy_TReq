@@ -63,10 +63,10 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {
+        Commands::from(S {
             command,
             uuid,
             initial_value,
-        }))
+        })
     }
 }

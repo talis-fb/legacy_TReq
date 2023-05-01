@@ -103,9 +103,9 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {
+        Commands::from(S {
             task_running: Arc::new(Mutex::new(None)),
-        }))
+        })
     }
 
     pub fn cancel_async_submit() -> Command {
@@ -129,6 +129,6 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 }

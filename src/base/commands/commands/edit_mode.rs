@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::app::InputMode;
 use crate::base::commands::CommandTrait;
 
@@ -20,7 +18,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S { content }))
+        Commands::from(S { content })
     }
 
     pub fn edit_mode_insert_char(c: char) -> Command {
@@ -36,7 +34,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S { char: c }))
+        Commands::from(S { char: c })
     }
 
     pub fn edit_mode_delete_prev_char() -> Command {
@@ -50,7 +48,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn edit_mode_delete_next_char() -> Command {
@@ -64,7 +62,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn edit_mode_delete_till_end() -> Command {
@@ -78,7 +76,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn edit_mode_delete_all() -> Command {
@@ -93,7 +91,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn edit_mode_go_to_prev_char() -> Command {
@@ -107,7 +105,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn edit_mode_go_to_next_char() -> Command {
@@ -121,7 +119,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn edit_mode_go_to_start() -> Command {
@@ -135,7 +133,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn edit_mode_go_to_end() -> Command {
@@ -149,7 +147,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn process_edit_mode() -> Command {
@@ -163,7 +161,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn cancel_edit_mode() -> Command {
@@ -179,7 +177,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn close_edit_mode() -> Command {
@@ -195,6 +193,6 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 }

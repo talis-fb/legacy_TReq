@@ -3,7 +3,6 @@ use crate::base::commands::CommandTrait;
 use crate::base::commands::{Command, Commands};
 use crate::base::states::states::{self, State};
 use crate::view::views::environment::store::OpenedVars;
-use std::sync::Arc;
 
 impl Commands {
     pub fn open_environment_view() -> Command {
@@ -32,7 +31,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn exit_environment_view() -> Command {
@@ -44,7 +43,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn go_to_next_global_env_var() -> Command {
@@ -63,7 +62,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn go_to_prev_global_env_var() -> Command {
@@ -80,7 +79,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn go_to_next_session_env_var() -> Command {
@@ -99,7 +98,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn go_to_prev_session_env_var() -> Command {
@@ -116,7 +115,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn edit_current_global_env_var() -> Command {
@@ -156,12 +155,12 @@ impl Commands {
                     .cloned()
                     .unwrap();
 
-                app.set_input_mode_with_command(Arc::new(Box::new(_S {})), value);
+                app.set_input_mode_with_command(Commands::from(_S {}), value);
                 Ok(())
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn edit_current_session_env_var() -> Command {
@@ -199,12 +198,12 @@ impl Commands {
                     .cloned()
                     .unwrap();
 
-                app.set_input_mode_with_command(Arc::new(Box::new(_S {})), value);
+                app.set_input_mode_with_command(Commands::from(_S {}), value);
                 Ok(())
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn add_global_env_var() -> Command {
@@ -232,12 +231,12 @@ impl Commands {
                     }
                 }
 
-                app.set_input_mode_with_command(Arc::new(Box::new(_S {})), "new_title".to_string());
+                app.set_input_mode_with_command(Commands::from(_S {}), "new_title".to_string());
                 Ok(())
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn add_session_env_var() -> Command {
@@ -263,12 +262,12 @@ impl Commands {
                     }
                 }
 
-                app.set_input_mode_with_command(Arc::new(Box::new(_S {})), "new_title".to_string());
+                app.set_input_mode_with_command(Commands::from(_S {}), "new_title".to_string());
                 Ok(())
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn remove_current_global_env_var() -> Command {
@@ -294,7 +293,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn remove_current_session_env_var() -> Command {
@@ -319,7 +318,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn open_global_env_vars() -> Command {
@@ -332,7 +331,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn open_session_env_vars() -> Command {
@@ -345,7 +344,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn switch_opened_env_vars() -> Command {
@@ -364,6 +363,6 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 }

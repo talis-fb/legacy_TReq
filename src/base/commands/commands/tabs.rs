@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::app::App;
 use crate::base::commands::CommandTrait;
 use crate::base::commands::{Command, Commands};
@@ -15,7 +13,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn go_to_previous_tab() -> Command {
@@ -27,7 +25,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn add_new_tab() -> Command {
@@ -40,7 +38,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn rename_tab() -> Command {
@@ -62,14 +60,14 @@ impl Commands {
                 }
 
                 app.set_input_mode_with_command(
-                    Arc::new(Box::new(_S {})),
+                    Commands::from(_S {}),
                     app.get_data_store().get_request().name.clone(),
                 );
                 Ok(())
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn delete_tab() -> Command {
@@ -81,7 +79,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn go_to_tab(_i: usize) -> Command {
@@ -92,6 +90,6 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 }

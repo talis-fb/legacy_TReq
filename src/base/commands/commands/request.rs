@@ -5,7 +5,6 @@ use crate::base::commands::{Command, Commands};
 use crate::base::web::request::METHODS;
 
 use std::collections::HashMap;
-use std::sync::Arc;
 
 impl Commands {
     pub fn save_request() -> Command {
@@ -27,7 +26,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
     pub fn switch_request_options() -> Command {
         struct S;
@@ -37,7 +36,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
     pub fn edit_request_body_vim() -> Command {
         struct S;
@@ -69,7 +68,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn edit_request_headers_vim() -> Command {
@@ -114,12 +113,12 @@ impl Commands {
 
                 command.execute(app)?;
 
-                // app.set_vim_mode_with_command(Arc::new(Box::new(_S {})), initial_headers_as_str);
+                // app.set_vim_mode_with_command(Commands::from(_S {})), initial_headers_as_str);
                 Ok(())
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
     pub fn switch_request_method() -> Command {
         struct S;
@@ -147,7 +146,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
     pub fn edit_request_url() -> Command {
         struct S;
@@ -168,14 +167,14 @@ impl Commands {
                 }
 
                 app.set_input_mode_with_command(
-                    Arc::new(Box::new(_S {})),
+                    Commands::from(_S {}),
                     app.get_data_store().get_request().url.clone(),
                 );
                 Ok(())
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
     pub fn restart_body_of_file() -> Command {
         struct S;
@@ -196,6 +195,6 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 }

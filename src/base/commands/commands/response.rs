@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::app::App;
 use crate::base::commands::CommandTrait;
 use crate::base::commands::{Command, Commands};
@@ -18,6 +16,6 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 }
