@@ -6,13 +6,14 @@ use std::error::Error;
 use treq::base::actions::manager::ActionsManager;
 use treq::base::actions::Actions;
 use treq::base::commands::handler::CommandHandler;
-use treq::base::commands::Commands;
+use treq::base::commands::{Command, Commands};
 
-use treq::base::os::file_editor::{ExternalEditor, OsCommand};
 use treq::base::os::file_facades::variables::VariablesFile;
 use treq::base::os::file_facades::FileFacade;
 use treq::base::os::file_factory::{FileDefaultFactory, FileFactory};
 use treq::base::os::handler::FileHandler;
+use treq::base::os::os_commands::external_editor::ExternalEditor;
+use treq::base::os::os_commands::{OsCommand, OsCommandTrait};
 use treq::base::stores::MainStore;
 use treq::base::web::client::WebClient;
 use treq::base::web::repository::reqwest::ReqwestClientRepository;
@@ -24,7 +25,7 @@ use treq::base::states::manager::StateManager;
 use treq::base::states::states::{DefaultEditMode, DefaultHelpMode, DefaultState, State};
 use treq::utils::custom_types::uuid::UUID;
 
-use std::sync::mpsc::{self, Receiver, Sender};
+use std::sync::mpsc;
 
 use treq::app::{App, InputMode};
 
@@ -45,7 +46,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     FileHandler::setup_env_folder()
         .expect("Error creating folders of data at '.local/share/treq.'");
     let mut file_handler = FileHandler::default();
-    file_handler.set_file_factory(Box::<FileDefaultFactory>::default());
+    file_handler.set_file_factory(FileDefaultFactory::default());
 
     FileDefaultFactory
         .get_saved_files_request()
@@ -92,6 +93,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // ------------------------------------------
     // EVENTS of actions
     let (action_queue_sender, action_queue_receiver) = mpsc::channel::<Actions>();
+    let (commands_queue_sender, commands_queue_receiver) = mpsc::channel::<Command>();
+    let (os_commands_queue_sender, os_commands_queue_receiver) = mpsc::channel::<OsCommand>();
 
     let commands = keymaps::normal_mode::keymap_factory();
     let keymap = KeyboardListerner::init(commands);
@@ -121,10 +124,51 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.set_data_store(data_store);
     app.set_renderer(action_queue_sender);
 
-    let mut command_handler = CommandHandler::init();
+    let mut command_handler = CommandHandler::init(commands_queue_sender, commands_queue_receiver);
 
     while !app.is_finished {
         view.render(app.get_data_store());
+
+        // tokio::select! {
+        //     action = action_queue_receiver.recv() => {
+        //
+        //     }
+        //     command = commands_queue_receiver.recv() => {
+        //
+        //     }
+        //     os_command = os_commands_queue_receiver.recv() => {
+        //
+        //     }
+        //     _ = tokio::signal::ctrl_c() => {
+        //
+        //     }
+        //     
+        // }
+
+
+        while let Ok(command) = os_commands_queue_receiver.try_recv() {
+            match command {
+                OsCommand::Sync(comm) => {
+                    view.close();
+
+                    let output = comm.exec(commands_queue_sender)?;
+
+                    view = UI::init();
+                    view.render(app.get_data_store());
+
+                    while action_queue_receiver.try_recv().is_ok() {
+                        log::info!("Clear queue");
+                    }
+                }
+
+                OsCommand::Async(comm) => {
+                    let sender = commands_queue_sender.clone();
+                    tokio::task::spawn(async move {
+                        comm.exec(sender);
+                    });
+                }
+            }
+        }
 
         match app.get_mode() {
             InputMode::Vim => {
