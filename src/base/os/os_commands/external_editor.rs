@@ -52,29 +52,4 @@ impl OsCommandTrait for ExternalEditor {
 
         Ok(())
     }
-
-    // Spawn a thread to run process
-    // fn async_open(&self) -> Result<mpsc::Receiver<String>, String> {
-    //     let (sender, receiver) = mpsc::channel::<String>();
-    //
-    //     tokio::task::spawn({
-    //         let path = self.path.clone();
-    //         let command_editor = self.command_editor.clone();
-    //         let self_clone = Self {
-    //             command_editor,
-    //             path,
-    //         };
-    //         async move {
-    //             let output = self_clone.sync_open().unwrap();
-    //             sender.send(output).unwrap();
-    //         }
-    //     });
-    //
-    //     Ok(receiver)
-    // }
-
-    // Todo: Make it verify if command set in EDITOR is valid
-    // fn is_valid(&self) -> bool {
-    //     std::env::var("EDITOR").is_ok()
-    // }
 }

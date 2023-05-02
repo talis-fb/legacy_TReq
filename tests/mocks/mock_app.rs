@@ -10,7 +10,6 @@ use treq::app::App;
 use treq::base::actions::manager::ActionsManager;
 use treq::base::commands::handler::CommandHandler;
 use treq::base::commands::Command;
-// use treq::base::os::file_editor::{MockOsCommand, OsCommandEditor};
 use treq::base::os::os_commands::{MockOsCommandTrait, OsCommand};
 use treq::base::states::manager::StateManager;
 use treq::base::states::states::{DefaultState, State};
@@ -21,7 +20,7 @@ use treq::view::MockUiTrait;
 use treq::{
     base::{
         actions::Actions,
-        os::{file_factory::FileFactory, handler::FileHandler},
+        os::handler::FileHandler,
         stores::MainStore,
         web::request::Request,
     },
@@ -37,9 +36,6 @@ pub struct MockApp {
     pub queue_os_commands_sender: Sender<OsCommand>,
 
     pub history_commands: Vec<Result<(), String>>,
-    // Input Mock
-    // pub buffer_input: String,
-    // pub opened_files: HashMap<UUID, UUID>,
 }
 
 #[cfg(test)]
@@ -98,7 +94,8 @@ impl MockApp {
         view.expect_close().return_const(());
 
         let mut input_handler = MockInputHandler::new();
-        input_handler.expect_update().return_const(());
+        input_handler.expect_update().returning(|_| {});
+        input_handler.expect_close_async_listener().returning(|| {});
 
         let mut runner = Runner::init(app, command_handler, input_handler, view);
 

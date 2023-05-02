@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use treq::base::os::file_facades::FileFacade;
 
 pub struct MockFile<FileID, FileEntity> {
-    id: FileID,
+    _id: FileID,
     value: FileEntity,
 }
 
@@ -36,7 +36,7 @@ where
     fn setup() -> Result<(), String> {
         Ok(())
     }
-    fn create(id: FileID, value: FileEntity) -> Result<Self, String> {
-        Ok(Self { id, value })
+    fn create(_id: FileID, value: FileEntity) -> Result<Self, String> {
+        Ok(Self { _id, value })
     }
 }

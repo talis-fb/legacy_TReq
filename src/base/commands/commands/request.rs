@@ -113,7 +113,6 @@ impl Commands {
 
                 command.execute(app)?;
 
-                // app.set_vim_mode_with_command(Commands::from(_S {})), initial_headers_as_str);
                 Ok(())
             }
         }

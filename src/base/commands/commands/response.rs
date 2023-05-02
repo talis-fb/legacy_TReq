@@ -7,10 +7,13 @@ impl Commands {
         struct S;
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                let _response = app.get_data_store().get_response().lock().unwrap().clone();
+                let command = Commands::open_editor_to_buffer(
+                    Commands::do_nothing(),
+                    app.get_data_store().get_request().body.clone(),
+                    None,
+                );
 
-                // It opens Editor with response Data, and does nothing when finished
-                // app.set_vim_mode_with_command(Commands::do_nothing(), response.body);
+                command.execute(app)?;
 
                 Ok(())
             }
