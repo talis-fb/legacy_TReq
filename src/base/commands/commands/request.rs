@@ -3,6 +3,7 @@ use crate::base::commands::CommandTrait;
 use crate::base::commands::{Command, Commands};
 
 use crate::base::web::request::METHODS;
+use crate::utils::custom_types::uuid::UUID;
 
 use std::collections::HashMap;
 
@@ -56,10 +57,12 @@ impl Commands {
                     }
                 }
 
+                let uuid = format!("TREQ-req-body-{}", app.get_data_store().get_request_uuid().value);
+
                 let command = Commands::open_editor_to_buffer(
                     Commands::from(ProccessOutputInBody {}),
-                    app.get_data_store().get_request().body.clone(),
-                    None,
+                    Some(UUID::from(uuid)),
+                    Some(app.get_data_store().get_request().body.clone()),
                 );
 
                 command.execute(app)?;
@@ -105,10 +108,12 @@ impl Commands {
                     }
                 }
 
+                let uuid = format!("TREQ-req-headers-{}", app.get_data_store().get_request_uuid().value);
+
                 let command = Commands::open_editor_to_buffer(
                     Commands::from(ProccessOutputInHeaders {}),
-                    initial_headers_as_str,
-                    None,
+                    Some(UUID::from(uuid)),
+                    Some(initial_headers_as_str),
                 );
 
                 command.execute(app)?;

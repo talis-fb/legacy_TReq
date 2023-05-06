@@ -2,7 +2,7 @@ use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::path::PathBuf;
 
-#[derive(Clone, Hash, PartialEq, Eq, Debug)]
+#[derive(Default, Clone, Hash, PartialEq, Eq, Debug)]
 pub struct UUID {
     pub value: String,
 }

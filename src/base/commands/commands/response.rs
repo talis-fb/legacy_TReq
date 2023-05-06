@@ -9,8 +9,8 @@ impl Commands {
             fn execute(&self, app: &mut App) -> Result<(), String> {
                 let command = Commands::open_editor_to_buffer(
                     Commands::do_nothing(),
-                    app.get_data_store().get_request().body.clone(),
                     None,
+                    Some(app.get_data_store().get_request().body.clone()),
                 );
 
                 command.execute(app)?;

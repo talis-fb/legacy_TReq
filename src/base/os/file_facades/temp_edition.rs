@@ -2,6 +2,7 @@ use crate::utils::custom_types::uuid::UUID;
 use tempfile::Builder;
 
 use super::FileFacade;
+use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -52,5 +53,19 @@ impl FileFacade<UUID, String> for TempEditionfile {
             .map_err(|e| e.to_string())?;
 
         Ok(temp_file_facade)
+    }
+
+    fn save_content(&mut self, value: String) -> Result<(), String> {
+        let mut file = OpenOptions::new()
+            .create(true)
+            .write(true)
+            .open(self.get_path())
+            .map_err(|e| e.to_string())?;
+
+        file.set_len(0).map_err(|e| e.to_string())?;
+
+        file.write_all(value.as_bytes())
+            .map_err(|e| e.to_string())?;
+        Ok(())
     }
 }

@@ -85,6 +85,10 @@ impl FileHandler {
         key
     }
 
+    pub fn add_request_with_id(&mut self, file: BoxRequestFile, key: UUID) {
+        self.files_request.insert(key, file);
+    }
+
     pub fn get_content_request_file(&mut self, key: &UUID) -> Result<Request, String> {
         self.get_request(key)?.get_content()
     }
@@ -115,6 +119,11 @@ impl FileHandler {
         self.files_variables.insert(key.clone(), file);
         key
     }
+
+    pub fn add_variables_with_id(&mut self, file: BoxVariablesFile, key: UUID) {
+        self.files_variables.insert(key, file);
+    }
+
     pub fn get_content_variable_file(
         &mut self,
         key: &UUID,
@@ -152,6 +161,10 @@ impl FileHandler {
         self.files_temp_edition.insert(key.clone(), file);
         key
     }
+    pub fn add_temp_edition_with_id(&mut self, file: BoxTempEditionfile, key: UUID) {
+        self.files_temp_edition.insert(key, file);
+    }
+
     pub fn get_content_temp_file(&mut self, key: &UUID) -> Result<String, String> {
         self.get_temp_edition(key)?.get_content()
     }
