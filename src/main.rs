@@ -3,6 +3,7 @@
 use std::collections::HashMap;
 use std::error::Error;
 
+use clap::Parser;
 use treq::base::actions::manager::ActionsManager;
 use treq::base::actions::Actions;
 use treq::base::commands::handler::CommandHandler;
@@ -19,6 +20,7 @@ use treq::base::stores::MainStore;
 use treq::base::web::client::WebClient;
 use treq::base::web::repository::reqwest::ReqwestClientRepository;
 use treq::base::web::request::Request;
+use treq::cli::Args;
 use treq::config::configurations::view::ViewConfig;
 use treq::config::manager::ConfigManager;
 
@@ -27,7 +29,6 @@ use treq::base::states::states::{DefaultState, State};
 use treq::runner::Runner;
 use treq::utils::custom_types::uuid::UUID;
 
-// use std::sync::mpsc;
 use tokio::sync::mpsc;
 
 use treq::app::App;
@@ -41,7 +42,11 @@ use treq::input::input_handler::InputDefaultHandler;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    #[cfg(debug_assertions)]
     treq::logger::init_logger();
+
+    // Setup CLI options
+    Args::parse();
 
     // ---------------------------------------------
     // Configurations and Setup of necessary folders

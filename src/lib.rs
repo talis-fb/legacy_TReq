@@ -6,3 +6,4 @@ pub mod logger;
 pub mod runner;
 pub mod utils;
 pub mod view;
+pub mod cli;

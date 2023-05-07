@@ -1,6 +1,4 @@
-// Discomment when you need to log to file app.log
-
-// #[cfg(debug_assertions)]
+#[cfg(debug_assertions)]
 pub fn init_logger() {
     use log::LevelFilter;
     use log4rs::config::{Appender, Config, Root};

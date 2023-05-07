@@ -26,6 +26,7 @@ log = "0.4.17"
 log4rs = "1.2.0"
 tera = "1.18.1"
 mockall = "0.11.4"
+clap = { version = "4.2.7", features = ["derive"] }
 
 [[bin]]
 name = "treq"
