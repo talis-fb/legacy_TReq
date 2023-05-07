@@ -25,6 +25,7 @@ impl WebClient {
         let request_to_do = ValidatorsHandler::from(&request).execute([
             Validators::url_protocol_request(),
             Validators::url_and_body_template_engine(variables),
+            Validators::headers_template_engine(variables),
         ])?;
 
         let Request {

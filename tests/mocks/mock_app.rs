@@ -18,12 +18,7 @@ use treq::base::web::repository::MockHttpClientRepository;
 use treq::runner::Runner;
 use treq::view::MockUiTrait;
 use treq::{
-    base::{
-        actions::Actions,
-        os::handler::FileHandler,
-        stores::MainStore,
-        web::request::Request,
-    },
+    base::{actions::Actions, os::handler::FileHandler, stores::MainStore, web::request::Request},
     config::{configurations::view::ViewConfig, manager::ConfigManager},
     utils::custom_types::uuid::UUID,
 };

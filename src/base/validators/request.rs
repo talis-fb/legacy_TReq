@@ -50,6 +50,37 @@ impl Validators {
 
         Box::new(f)
     }
+
+    pub fn headers_template_engine<'a>(variables: &HashMap<String, String>) -> Validator<Request> {
+        let mut context = Context::new();
+
+        variables.iter().for_each(|(k, v)| {
+            context.insert(k, v);
+        });
+
+        let f = move |req: &mut Request| -> Result<(), String> {
+            let mut tera = Tera::default();
+
+            let headers: HashMap<_, _> = req
+                .headers
+                .clone()
+                .into_iter()
+                .map(|(key, value)| {
+                    let value_rendered = tera
+                        .render_str(&value, &context)
+                        .map_err(|e| e.to_string());
+
+                    (key, value_rendered.unwrap_or(value))
+                })
+                .collect();
+
+            req.headers = headers;
+
+            Ok(())
+        };
+
+        Box::new(f)
+    }
 }
 
 #[cfg(test)]

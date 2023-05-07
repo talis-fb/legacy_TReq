@@ -1,5 +1,9 @@
 use crate::mocks::mock_app::MockApp;
-use treq::base::{actions::Actions, os::os_commands::{MockOsCommandTrait, factory::MockOsCommandFactory}, commands::Commands};
+use treq::base::{
+    actions::Actions,
+    commands::Commands,
+    os::os_commands::{factory::MockOsCommandFactory, MockOsCommandTrait},
+};
 
 pub async fn set_input_mode_value(mock_app: &mut MockApp, value: &str) {
     mock_app.exec(Actions::TypingClearAll).await;
