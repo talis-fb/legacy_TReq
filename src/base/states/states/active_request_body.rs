@@ -20,6 +20,7 @@ impl State for RequestActiveState {
                 (Actions::Switch, Commands::go_to_request_header_section()),
                 (Actions::Up, Commands::go_to_url_section()),
                 (Actions::Right, Commands::go_to_response_body_section()),
+                (Actions::ReloadBody, Commands::restart_body_of_file()),
             ]),
         }
     }

@@ -55,6 +55,10 @@ impl FileFacade<UUID, String> for TempEditionfile {
         Ok(temp_file_facade)
     }
 
+    fn get_content(&self) -> Result<String, String> {
+        std::fs::read_to_string(self.get_path()).map_err(|e| e.to_string())
+    }
+
     fn save_content(&mut self, value: String) -> Result<(), String> {
         let mut file = OpenOptions::new()
             .create(true)

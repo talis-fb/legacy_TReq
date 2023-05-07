@@ -19,6 +19,7 @@ impl State for RequestHeaderActiveState {
                 (Actions::Edit, Commands::edit_request_headers_vim()),
                 (Actions::Switch, Commands::go_to_request_body_section()),
                 (Actions::Up, Commands::go_to_url_section()),
+                (Actions::ReloadBody, Commands::restart_headers_of_file()),
             ]),
         }
     }
