@@ -80,8 +80,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // other configs
     let view_config = ViewConfig::init();
 
-    // let external_editor = Box::new(ExternalEditor::init().unwrap());
-
     let config_manager = ConfigManager::init(file_handler, view_config);
 
     // Init of Data Stores
@@ -94,10 +92,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // ------------------------------------------
     // Input
     // ------------------------------------------
-    // EVENTS of actions
-    // TODO: Remove this 32
-    // TODO: Remove this 32
-    // TODO: Remove this 32
     let (action_queue_sender, action_queue_receiver) = mpsc::channel::<Actions>(32);
     let (commands_queue_sender, commands_queue_receiver) = mpsc::channel::<Command>(32);
     let (os_commands_queue_sender, os_commands_queue_receiver) = mpsc::channel::<OsCommand>(32);
@@ -107,7 +101,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let input_handler = InputDefaultHandler::init(
         keymap,
-        // data_store.config.editor.clone(),
         data_store.config.files.clone(),
         action_queue_sender.clone(),
     );
@@ -147,92 +140,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     runner.close();
-
-    // while !app.is_finished {
-    //     view.render(app.get_data_store());
-    //
-    //     input_handler.update(app.get_mode());
-    //
-    //     match app.get_mode() {
-    //         InputMode::Help => {
-    //             app.set_new_state(DefaultHelpMode::init());
-    //         }
-    //
-    //         InputMode::Insert => {
-    //             app.set_new_state(DefaultEditMode::init());
-    //         }
-    //
-    //         _ => {}
-    //     }
-    //
-    //     tokio::select! {
-    //         action = action_queue_receiver.recv() => {
-    //             log::info!("Action {:?}", action);
-    //
-    //             let command = app
-    //                 .get_command_of_action(action.unwrap())
-    //                 .unwrap_or(Commands::do_nothing());
-    //
-    //             // Add Command to queue
-    //             command_handler.add(command);
-    //         }
-    //         command = commands_queue_receiver.recv() => {
-    //             let command_result = command_handler.run(command.unwrap(), &mut app);
-    //
-    //             if let Err(e) = command_result {
-    //                 app.get_data_store_mut()
-    //                     .set_log_error(String::from("COMMAND ERROR"), e.to_string())
-    //             }
-    //         }
-    //         os_command = os_commands_queue_receiver.recv() => {
-    //             match os_command.unwrap() {
-    //                 OsCommand::Sync(comm) => {
-    //                     view.close();
-    //
-    //                     let output = comm.exec(commands_queue_sender.clone());
-    //
-    //                     if let Err(e) = output {
-    //                         app.get_data_store_mut()
-    //                             .set_log_error(String::from("OS COMMAND ERROR"), e.to_string())
-    //                     }
-    //
-    //                     view = UI::init();
-    //                     view.render(app.get_data_store());
-    //
-    //                     while action_queue_receiver.try_recv().is_ok() {
-    //                         log::info!("Clear queue");
-    //                     }
-    //                 }
-    //
-    //                 OsCommand::Async(comm) => {
-    //                     let sender = commands_queue_sender.clone();
-    //                     tokio::task::spawn(async move {
-    //                         comm.exec(sender).unwrap();
-    //                     });
-    //                 }
-    //             }
-    //         }
-    //
-    //     }
-    //
-    //
-    //     // while let Ok(command) = os_commands_queue_receiver.try_recv() {
-    //     // }
-    //
-    //
-    //     // Listen queue of user's events to execute --------------------
-    //     // log::info!("Wainting action....");
-    //     // match action_queue_receiver.recv() {
-    //     //     Ok(action_to_exec) => {
-    //     //
-    //     //         // exec it
-    //     //     }
-    //     //     Err(err) => {
-    //     //         log::error!("Action ERROR");
-    //     //         log::error!("{}", err);
-    //     //     }
-    //     // }
-    // }
 
     Ok(())
 }

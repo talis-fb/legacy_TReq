@@ -17,7 +17,10 @@ pub struct ExternalEditor {
 
 impl ExternalEditor {
     pub fn init(path: PathBuf, command: Command) -> Result<Self, String> {
-        let command_editor = std::env::var("EDITOR").map_err(|e| e.to_string())?;
+        let treq_editor = std::env::var("TREQ_EDITOR").map_err(|e| e.to_string());
+        let default_editor = std::env::var("EDITOR").map_err(|e| e.to_string());
+
+        let command_editor = treq_editor.unwrap_or(default_editor.unwrap_or("nano".to_string()));
         Ok(Self {
             path,
             command,

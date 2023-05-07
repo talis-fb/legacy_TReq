@@ -27,7 +27,6 @@ async fn should_manage_enviroment() {
         HashMap::from([])
     );
 
-    // (0..100).for_each(|_| {
     mock_app.exec(Actions::Delete).await;
     mock_app.exec(Actions::Delete).await;
     mock_app.exec(Actions::Delete).await;
