@@ -14,6 +14,7 @@ use treq::base::os::file_facades::FileFacade;
 use treq::base::os::file_factory::{FileDefaultFactory, FileFactory};
 use treq::base::os::handler::FileHandler;
 
+use treq::base::os::os_commands::external_editor::ExternalEditor;
 use treq::base::os::os_commands::factory::OsCommandDefaultFactory;
 use treq::base::os::os_commands::OsCommand;
 use treq::base::stores::MainStore;
@@ -47,6 +48,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Setup CLI options
     Args::parse();
+
+    if !ExternalEditor::is_valid() {
+        println!("");
+        println!("-------------------   ERROR: Undefined EDITOR or TREQ_EDITOR   ---------------------- ");
+        println!(" TREQ requires EDITOR or TREQ_EDITOR env variables to setup an external editor");
+        println!("");
+        println!(" For a guide how to do this quickly: https://github.com/talis-fb/TReq/wiki/Editor");
+        println!("-------------------------------------------------------------------------------------- ");
+        println!("");
+        panic!()
+    }
 
     // ---------------------------------------------
     // Configurations and Setup of necessary folders

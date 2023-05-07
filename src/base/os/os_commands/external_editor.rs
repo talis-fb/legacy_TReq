@@ -16,6 +16,12 @@ pub struct ExternalEditor {
 }
 
 impl ExternalEditor {
+    pub fn is_valid() -> bool {
+        let treq_editor = std::env::var("TREQ_EDITOR").is_ok();
+        let default_editor = std::env::var("EDITOR").is_ok();
+        treq_editor || default_editor
+    }
+
     pub fn init(path: PathBuf, command: Command) -> Result<Self, String> {
         let treq_editor = std::env::var("TREQ_EDITOR").map_err(|e| e.to_string());
         let default_editor = std::env::var("EDITOR").map_err(|e| e.to_string());
