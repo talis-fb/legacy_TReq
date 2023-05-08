@@ -7,7 +7,16 @@ license = "GPL-3.0"
 description = "A Client to make HTTP requests for Vim/Terminal Users"
 homepage = "https://github.com/talis-fb/TReq"
 repository = "https://github.com/talis-fb/TReq"
-documentation = "https://github.com/talis-fb/TReq"
+documentation = "https://github.com/talis-fb/TReq/wiki"
+categories = ["command-line-interface"]
+keywords = [
+  "cli",
+  "tui",
+  "http",
+  "client",
+  "terminal",
+  "restful"
+]
 
 [dependencies]
 tui = "0.19"
