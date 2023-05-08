@@ -50,13 +50,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Args::parse();
 
     if !ExternalEditor::is_valid() {
-        println!("");
+        println!();
         println!("-------------------   ERROR: Undefined EDITOR or TREQ_EDITOR   ---------------------- ");
         println!(" TREQ requires EDITOR or TREQ_EDITOR env variables to setup an external editor");
-        println!("");
-        println!(" For a guide how to do this quickly: https://github.com/talis-fb/TReq/wiki/Editor");
+        println!();
+        println!(
+            " For a guide how to do this quickly: https://github.com/talis-fb/TReq/wiki/Editor"
+        );
         println!("-------------------------------------------------------------------------------------- ");
-        println!("");
+        println!();
         panic!()
     }
 

@@ -66,9 +66,8 @@ impl Validators {
                 .clone()
                 .into_iter()
                 .map(|(key, value)| {
-                    let value_rendered = tera
-                        .render_str(&value, &context)
-                        .map_err(|e| e.to_string());
+                    let value_rendered =
+                        tera.render_str(&value, &context).map_err(|e| e.to_string());
 
                     (key, value_rendered.unwrap_or(value))
                 })

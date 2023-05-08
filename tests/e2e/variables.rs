@@ -181,7 +181,15 @@ async fn should_replace_var_fields_body() {
         (res.body.clone(), res.headers.clone())
     };
 
-    assert_eq!( &response_body, "Body: Some body with value_inside_variable value");
-    assert_eq!( response_header, HashMap::from([("some_header".to_string(), "VALUE_INSIDE_VARIABLE".to_string())]));
-
+    assert_eq!(
+        &response_body,
+        "Body: Some body with value_inside_variable value"
+    );
+    assert_eq!(
+        response_header,
+        HashMap::from([(
+            "some_header".to_string(),
+            "VALUE_INSIDE_VARIABLE".to_string()
+        )])
+    );
 }

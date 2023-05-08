@@ -15,8 +15,6 @@ pub trait OsCommandTrait {
 pub enum OsCommand {
     Sync(Arc<Box<dyn OsCommandTrait + Send + Sync>>),
     Async(Arc<Box<dyn OsCommandTrait + Send + Sync>>),
-    // Sync(Arc<Box<dyn OsCommandTrait + Send + Sync>>),
-    // Async(Arc<Box<dyn OsCommandTrait + Send + Sync>>),
 }
 
 impl OsCommand {
@@ -34,19 +32,3 @@ impl OsCommand {
         OsCommand::Async(Arc::new(Box::new(value)))
     }
 }
-
-// pub struct Opa;
-// impl OsCommandTrait<i32, i64> for Opa {
-//     fn is_valid(&self) -> bool {
-//         todo!()
-//     }
-//     fn sync_open(&self,args:i32) -> Result<i64,String> {
-//         todo!()
-//     }
-//     fn async_open(&self,args:i32) -> Result<mpsc::Receiver<i64>,String> {
-//         todo!()
-//     }
-//     fn init() -> Result<Self,String>where Self:Sized {
-//         todo!()
-//     }
-// }
