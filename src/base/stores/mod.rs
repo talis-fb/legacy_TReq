@@ -65,9 +65,6 @@ impl MainStore {
             last_response,
             config,
         }
-
-        // let requests = RequestStore::init(dd.config.saved_requests);
-        // dd.requests = requests;
     }
 
     // Logs

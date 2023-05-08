@@ -43,22 +43,4 @@ impl EnvironmentStore {
         file_handler.save_content_variable_file(&self.id_file, self.global.clone())?;
         Ok(())
     }
-
-    // pub fn get_value(&self, key: &String) -> Option<String> {
-    //     let value_in_session = self.session.get(key);
-    //
-    //     if value_in_session.is_some() {
-    //         value_in_session.cloned()
-    //     } else {
-    //         self.global.get(key).cloned()
-    //     }
-    // }
-    //
-    // pub fn set_value(&mut self, key: String, value: String) {
-    //      self.session.insert(key, value);
-    // }
-    //
-    // pub fn set_value_globally(&mut self, key: String, value: String) {
-    //      self.global.insert(key, value);
-    // }
 }

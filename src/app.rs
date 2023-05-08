@@ -6,8 +6,6 @@ use crate::base::states::manager::StateManager;
 use crate::base::states::states::State;
 use crate::base::stores::MainStore;
 use crate::base::web::client::WebClient;
-
-use crate::config::configurations::save_files::SaveFiles;
 use crate::input::buffer::InputKeyboardBuffer;
 use std::sync::Arc;
 use tokio::sync::mpsc::Sender;
@@ -29,7 +27,6 @@ pub struct App {
 
     // Datas
     pub data_store: Option<MainStore>,
-    pub save_files: Option<SaveFiles>,
 
     // States
     pub state_manager: Option<StateManager>,
@@ -47,9 +44,6 @@ pub struct App {
 impl App {
     pub fn set_data_store(&mut self, data_store: MainStore) {
         self.data_store = Some(data_store)
-    }
-    pub fn set_save_file(&mut self, save_files: SaveFiles) {
-        self.save_files = Some(save_files)
     }
     pub fn set_state_manager(&mut self, state_manager: StateManager) {
         self.state_manager = Some(state_manager)
@@ -89,29 +83,6 @@ impl App {
         data_store.set_log_input_mode();
         self.get_input_buffer_mut().set_value(initial_buffer);
     }
-
-    // pub fn set_vim_mode_with_command(&mut self, callback: Command, initial_buffer: String) {
-    //     // self.set_mode(InputMode::Vim);
-    //
-    //     ExternalEditor {
-    //         command_editor: String::from("vim"),
-    //         path
-    //     }
-    //
-    //     // self.os
-    //
-    //
-    //     // Set command
-    //     let data_store = self.get_data_store_mut();
-    //     data_store.input_buffer.command = callback;
-    //
-    //     // Set initial value
-    //     self.get_input_buffer_mut()
-    //         .set_backup(initial_buffer.clone());
-    //     self.set_input_buffer_value(initial_buffer);
-    //
-    //
-    // }
 
     pub fn get_input_buffer(&mut self) -> &InputKeyboardBuffer {
         &self.get_data_store_mut().input_buffer
