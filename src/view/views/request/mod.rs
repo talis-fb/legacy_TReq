@@ -23,7 +23,7 @@ pub struct RequestView<'a> {
 }
 
 impl RequestView<'_> {
-    pub fn prepare_render<'b>(states: &mut ViewStates, store: &'b MainStore) {
+    pub fn prepare_render<'b>(_states: &mut ViewStates, _store: &'b MainStore) {
         // let state_json = states.entry(KEY_STATE.to_string()).or_default();
         // let last_state: Result<State, serde_json::Error> = serde_json::from_str(state_json);
         //

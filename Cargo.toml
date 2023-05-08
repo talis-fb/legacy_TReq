@@ -1,13 +1,22 @@
 [package]
 name = "treq"
 authors = [ "Talis-Fb" ]
-version = "0.3.1"
+version = "0.4.0"
 edition = "2021"
 license = "GPL-3.0"
 description = "A Client to make HTTP requests for Vim/Terminal Users"
 homepage = "https://github.com/talis-fb/TReq"
 repository = "https://github.com/talis-fb/TReq"
-documentation = "https://github.com/talis-fb/TReq"
+documentation = "https://github.com/talis-fb/TReq/wiki"
+categories = ["command-line-interface"]
+keywords = [
+  "cli",
+  "tui",
+  "http",
+  "client",
+  "terminal",
+  "restful"
+]
 
 [dependencies]
 tui = "0.19"
@@ -25,6 +34,8 @@ regex = "1.7.1"
 log = "0.4.17"
 log4rs = "1.2.0"
 tera = "1.18.1"
+mockall = "0.11.4"
+clap = { version = "4.2.7", features = ["derive"] }
 
 [[bin]]
 name = "treq"

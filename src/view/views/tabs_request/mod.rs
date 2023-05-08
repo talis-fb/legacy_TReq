@@ -5,11 +5,6 @@ use crate::view::views::ViewStates;
 use crate::{base::stores::MainStore, view::components::Component};
 use tui::layout::Rect;
 
-static KEY_STATE: &str = "request_view__";
-fn state_key(key: &str) -> String {
-    KEY_STATE.to_string() + key
-}
-
 pub struct TabRequestView<'a> {
     pub area: Rect,
     pub store: &'a MainStore,
@@ -17,7 +12,7 @@ pub struct TabRequestView<'a> {
 }
 
 impl TabRequestView<'_> {
-    pub fn prepare_render<'b>(states: &mut ViewStates, store: &'b MainStore) {
+    pub fn prepare_render<'b>(_states: &mut ViewStates, _store: &'b MainStore) {
         // Does nothing for while
     }
 }

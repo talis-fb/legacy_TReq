@@ -1,17 +1,14 @@
 use crossterm::event::{self, Event};
 use std::collections::HashMap;
 use std::rc::Rc;
-use std::sync::{
-    mpsc::{self, Receiver, Sender},
-    Arc, Mutex,
-};
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
+use tokio::sync::mpsc::{self, Sender};
 
 use crate::app::InputMode;
 use crate::base::actions::Actions;
-use crate::base::os::file_edition_handler::FileEditionHandler;
-use crate::config::configurations::external_editor::ExternalEditor;
-use crate::utils::custom_types::uuid::UUID;
+
+use crate::base::os::handler::FileHandler;
 
 use tokio::task::JoinHandle;
 
@@ -20,13 +17,16 @@ use crate::input::keymaps::insert_mode;
 use crate::input::keymaps::normal_mode;
 
 use super::listener::KeyboardListerner;
-use std::process::{Command as OSCommand, Stdio};
 
-pub struct InputHandler {
-    // Save files
-    configuration: Rc<ExternalEditor>,
-    files: Rc<Mutex<FileEditionHandler>>,
+#[mockall::automock]
+pub trait InputHandler {
+    fn update(&mut self, new_input_mode: InputMode);
+    fn set_keymap(&mut self, keyboard_listener: KeyboardListerner);
+    fn open_async_listener(&mut self);
+    fn close_async_listener(&mut self);
+}
 
+pub struct InputDefaultHandler {
     // Listener
     current_listener: Arc<Mutex<KeyboardListerner>>,
     listeners: HashMap<InputMode, KeyboardListerner>,
@@ -39,11 +39,12 @@ pub struct InputHandler {
     task_async_listener: Option<JoinHandle<()>>,
     finisher_async_listener: Option<Sender<()>>,
 }
-impl InputHandler {
+
+impl InputDefaultHandler {
     pub fn init(
         listener: KeyboardListerner,
-        configuration: Rc<ExternalEditor>,
-        files: Rc<Mutex<FileEditionHandler>>,
+        // external_editor: Rc<OsCommandEditor>,
+        _files: Rc<Mutex<FileHandler>>,
         sender_events: Sender<Actions>,
     ) -> Self {
         let listeners = HashMap::from([
@@ -61,12 +62,10 @@ impl InputHandler {
             ),
         ]);
 
-        let current_listener = listeners.get(&InputMode::Normal);
+        let _current_listener = listeners.get(&InputMode::Normal);
 
         Self {
             current_listener: Arc::new(Mutex::new(listener)),
-            configuration,
-            files,
             last_input_mode_state: None,
             listeners,
             sender_events,
@@ -75,40 +74,21 @@ impl InputHandler {
             finisher_async_listener: None,
         }
     }
-    pub fn close(&mut self) {
-        let sender = self.finisher_async_listener.take();
-        if sender.is_some() {
-            sender.unwrap().send(()).unwrap();
+}
+
+impl InputHandler for InputDefaultHandler {
+    fn update(&mut self, new_input_mode: InputMode) {
+        if self.task_async_listener.is_none() && self.finisher_async_listener.is_none() {
+            self.open_async_listener();
         }
 
-        let task = self.task_async_listener.take();
-        if task.is_some() {
-            task.unwrap().abort();
-        }
-    }
-
-    pub fn update(&mut self, new_input_mode: InputMode) {
         let last_mode = self.last_input_mode_state;
 
         if last_mode.is_none() || last_mode.unwrap() != new_input_mode {
-            // Update new mode
             self.last_input_mode_state = Some(new_input_mode);
 
-            match new_input_mode {
-                InputMode::Vim => {
-                    self.close();
-                }
-
-                input_mode => {
-                    if self.task_async_listener.is_none() && self.finisher_async_listener.is_none()
-                    {
-                        self.open_async_listener();
-                    }
-
-                    let listener = self.listeners.get(&input_mode).unwrap();
-                    self.set_keymap(listener.clone());
-                }
-            }
+            let listener = self.listeners.get(&new_input_mode).unwrap();
+            self.set_keymap(listener.clone());
         }
     }
 
@@ -120,7 +100,7 @@ impl InputHandler {
     fn open_async_listener(&mut self) {
         let listener = self.current_listener.clone();
 
-        let (finished_sender, finished_listener): (Sender<()>, Receiver<()>) = mpsc::channel();
+        let (finished_sender, mut finished_listener) = mpsc::channel::<()>(32);
 
         let queue = self.sender_events.clone();
 
@@ -130,10 +110,13 @@ impl InputHandler {
             while finished_listener.try_recv().is_err() {
                 if event::poll(Duration::from_millis(100)).unwrap() {
                     if let Event::Key(key) = event::read().unwrap() {
-                        let mut keymap = listener.lock().unwrap();
-                        let action = keymap.get_command(key.code).unwrap_or(action_default);
+                        let action;
+                        {
+                            let mut keymap = listener.lock().unwrap();
+                            action = keymap.get_command(key.code).unwrap_or(action_default);
+                        }
 
-                        let res = queue.send(action);
+                        let res = queue.send(action).await;
 
                         if let Err(e) = res {
                             println!("Erro at run command: ...");
@@ -148,24 +131,17 @@ impl InputHandler {
         self.finisher_async_listener = Some(finished_sender);
     }
 
-    pub fn sync_open_vim(&mut self, buffer: String, uuid: &UUID) -> Result<String, String> {
-        self.files
-            .lock()
-            .unwrap()
-            .save_content(uuid, buffer)
-            .unwrap();
-        let file_path = self.files.lock().unwrap().get_path(uuid)?;
+    fn close_async_listener(&mut self) {
+        let finisher_sender = self.finisher_async_listener.take();
+        if let Some(s) = finisher_sender {
+            tokio::task::spawn(async move {
+                s.send(()).await.unwrap();
+            });
+        }
 
-        let mut child = OSCommand::new(&self.configuration.editor)
-            .arg(file_path.clone())
-            .stdin(Stdio::inherit())
-            .stdout(Stdio::inherit())
-            .stderr(Stdio::inherit())
-            .spawn()
-            .expect("failed to execute child");
-
-        let status = child.wait().expect("failed to wait on child");
-
-        std::fs::read_to_string(file_path).map_err(|e| e.to_string())
+        let task = self.task_async_listener.take();
+        if let Some(t) = task {
+            t.abort();
+        }
     }
 }

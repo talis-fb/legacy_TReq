@@ -71,14 +71,6 @@ mod tests {
         Box::new(f)
     }
 
-    fn validator_to_pop_str() -> Validator<String> {
-        let f = |parameter: &mut String| {
-            parameter.pop();
-            Ok(())
-        };
-        Box::new(f)
-    }
-
     #[test]
     fn should_execute_a_single_validator() {
         let value = String::from("Mew");
@@ -118,7 +110,7 @@ mod tests {
 
     // Ignoring errors TEST CASES
     fn validator_to_throw_error() -> Validator<String> {
-        let f = |parameter: &mut String| Err("".to_string());
+        let f = |_parameter: &mut String| Err("".to_string());
         Box::new(f)
     }
 

@@ -22,10 +22,6 @@ pub struct Response {
 }
 
 impl Response {
-    fn replace(&mut self, new_response: Response) {
-        *self = new_response;
-    }
-
     pub fn default_internal_error(err: String) -> Self {
         Self {
             status: 77, // A STATUS CODE INTERNAL TO INTERNAL ERROR

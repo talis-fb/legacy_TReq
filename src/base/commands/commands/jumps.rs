@@ -1,8 +1,7 @@
+use crate::app::App;
 use crate::base::commands::CommandTrait;
+use crate::base::commands::{Command, Commands};
 use crate::base::states::states::{self, State};
-use crate::commands::{Command, Commands};
-use crate::App;
-use std::sync::Arc;
 
 impl Commands {
     pub fn go_to_tab_section() -> Command {
@@ -14,7 +13,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
     pub fn go_to_url_section() -> Command {
         struct S;
@@ -25,7 +24,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
     pub fn go_to_request_body_section() -> Command {
         struct S;
@@ -37,7 +36,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
     pub fn go_to_request_header_section() -> Command {
         struct S;
@@ -49,7 +48,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
     pub fn go_to_response_body_section() -> Command {
         struct S;
@@ -61,7 +60,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
     pub fn go_to_response_headers_section() -> Command {
         struct S;
@@ -73,7 +72,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
     pub fn go_to_log_section() -> Command {
         struct S;
@@ -84,6 +83,6 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 }

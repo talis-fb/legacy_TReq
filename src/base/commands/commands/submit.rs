@@ -1,14 +1,14 @@
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-use tokio::sync::mpsc::{self};
+use tokio::sync::mpsc;
 use tokio::task::JoinHandle;
 
+use crate::app::App;
 use crate::base::actions::Actions;
+use crate::base::commands::{Command, Commands};
 use crate::base::commands::{CommandTrait, CommandType};
 use crate::base::web::response::{Response, ResponseStage};
-use crate::commands::{Command, Commands};
-use crate::App;
 
 impl Commands {
     pub fn async_submit() -> Command {
@@ -23,7 +23,7 @@ impl Commands {
                 let request = app.data_store.as_ref().unwrap().get_request();
                 let response_data_store = app.data_store.as_ref().unwrap().get_response();
 
-                let data_store = app.get_data_store().clone();
+                let _data_store = app.get_data_store().clone();
 
                 let renderer = app.renderer.as_ref().unwrap().clone();
 
@@ -53,7 +53,7 @@ impl Commands {
                                             data.response_time = elapsed_time.as_secs_f64();
                                         }
 
-                                        renderer.send(Actions::Null).unwrap();
+                                        renderer.send(Actions::Null).await.ok();
                                         log::info!("{} counter", elapsed_time.as_millis());
                                     }
                                     _ = close_timer_listener.recv() => {
@@ -76,7 +76,7 @@ impl Commands {
                     }
 
                     // for re-render
-                    renderer.send(Actions::Null).unwrap();
+                    renderer.send(Actions::Null).await.ok();
 
                     Commands::do_nothing()
                 });
@@ -103,17 +103,17 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {
+        Commands::from(S {
             task_running: Arc::new(Mutex::new(None)),
-        }))
+        })
     }
 
     pub fn cancel_async_submit() -> Command {
         struct S;
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                let client = app.client_web.as_ref().unwrap().clone();
-                let request = app.data_store.as_ref().unwrap().get_request();
+                let _client = app.client_web.as_ref().unwrap().clone();
+                let _request = app.data_store.as_ref().unwrap().get_request();
                 let response_data_store = app.data_store.as_ref().unwrap().get_response();
 
                 let mut response = response_data_store.lock().unwrap();
@@ -129,6 +129,6 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 }

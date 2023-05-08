@@ -1,6 +1,6 @@
-use crate::actions::Actions;
+use crate::base::actions::Actions;
+use crate::base::commands::Commands;
 use crate::base::states::states::{CommandsMap, State, StatesNames};
-use crate::commands::Commands;
 use std::collections::HashMap;
 
 pub struct DefaultState {
@@ -33,6 +33,7 @@ impl State for DefaultState {
                     Actions::GoToResponseBody,
                     Commands::go_to_response_body_section(),
                 ),
+                (Actions::GoToUrl, Commands::go_to_url_section()),
                 (Actions::GoToLogs, Commands::go_to_log_section()),
                 (Actions::GoToEnvironment, Commands::open_environment_view()),
                 (Actions::RenameTab, Commands::rename_tab()),

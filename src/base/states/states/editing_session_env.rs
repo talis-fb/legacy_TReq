@@ -1,6 +1,6 @@
-use crate::actions::Actions;
+use crate::base::actions::Actions;
+use crate::base::commands::Commands;
 use crate::base::states::states::{CommandsMap, State, StatesNames};
-use crate::commands::Commands;
 use std::collections::HashMap;
 
 pub struct EditingSessionEnvState {
