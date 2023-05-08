@@ -15,7 +15,7 @@ pub struct LogView<'a> {
 }
 
 impl LogView<'_> {
-    pub fn prepare_render<'b>(states: &mut ViewStates, store: &'b MainStore) {
+    pub fn prepare_render<'b>(_states: &mut ViewStates, _store: &'b MainStore) {
         // Does nothing for while
     }
 }

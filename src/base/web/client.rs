@@ -6,19 +6,14 @@ use super::repository::HttpClientRepository;
 use super::request::METHODS;
 use super::{request::Request, response::Response};
 
-pub struct WebClient<T: HttpClientRepository> {
-    http_client: T,
-    response: Option<Response>,
+pub struct WebClient {
+    pub http_client: Box<dyn HttpClientRepository>,
 }
 
-impl<T> WebClient<T>
-where
-    T: HttpClientRepository,
-{
-    pub fn init(repository: T) -> Self {
+impl WebClient {
+    pub fn init<T: HttpClientRepository + 'static>(repository: T) -> Self {
         Self {
-            http_client: repository,
-            response: None,
+            http_client: Box::new(repository),
         }
     }
 
@@ -30,6 +25,7 @@ where
         let request_to_do = ValidatorsHandler::from(&request).execute([
             Validators::url_protocol_request(),
             Validators::url_and_body_template_engine(variables),
+            Validators::headers_template_engine(variables),
         ])?;
 
         let Request {

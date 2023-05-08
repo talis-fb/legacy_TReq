@@ -53,7 +53,7 @@ impl HttpClientRepository for ReqwestClientRepository {
     async fn call_get(
         &self,
         url: String,
-        headers: HashMap<String, String>,
+        _headers: HashMap<String, String>,
     ) -> Result<Response, String> {
         let client = Client::new();
         let response = client.get(url).send().await.map_err(|e| e.to_string())?;

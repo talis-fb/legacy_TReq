@@ -19,7 +19,7 @@ impl ViewConfig {
     }
 
     pub fn grow_right_block(&mut self) {
-        let (left, right) = &mut self.dimension_horizontal_blocks;
+        let (_left, right) = &mut self.dimension_horizontal_blocks;
         if *right < MAX_GROW {
             *right += 1;
         }
@@ -27,7 +27,7 @@ impl ViewConfig {
     }
 
     pub fn grow_left_block(&mut self) {
-        let (left, right) = &mut self.dimension_horizontal_blocks;
+        let (left, _right) = &mut self.dimension_horizontal_blocks;
         if *left < MAX_GROW {
             *left += 1;
         }

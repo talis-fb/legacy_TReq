@@ -1,8 +1,6 @@
-use std::sync::Arc;
-
+use crate::app::App;
 use crate::base::commands::CommandTrait;
-use crate::commands::{Command, Commands};
-use crate::App;
+use crate::base::commands::{Command, Commands};
 
 impl Commands {
     pub fn grow_right_ui() -> Command {
@@ -19,7 +17,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn grow_left_ui() -> Command {
@@ -36,6 +34,6 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 }

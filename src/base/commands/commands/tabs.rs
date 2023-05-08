@@ -1,9 +1,7 @@
-use std::sync::Arc;
-
+use crate::app::App;
 use crate::base::commands::CommandTrait;
+use crate::base::commands::{Command, Commands};
 use crate::base::web::request::Request;
-use crate::commands::{Command, Commands};
-use crate::App;
 
 impl Commands {
     pub fn go_to_next_tab() -> Command {
@@ -15,7 +13,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn go_to_previous_tab() -> Command {
@@ -27,20 +25,20 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn add_new_tab() -> Command {
         struct S;
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                let req = Request::default();
+                let _req = Request::default();
                 app.get_data_store_mut().add_request();
                 Ok(())
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn rename_tab() -> Command {
@@ -62,14 +60,14 @@ impl Commands {
                 }
 
                 app.set_input_mode_with_command(
-                    Arc::new(Box::new(_S {})),
+                    Commands::from(_S {}),
                     app.get_data_store().get_request().name.clone(),
                 );
                 Ok(())
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn delete_tab() -> Command {
@@ -81,17 +79,17 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
-    pub fn go_to_tab(i: usize) -> Command {
+    pub fn go_to_tab(_i: usize) -> Command {
         struct S;
         impl CommandTrait for S {
-            fn execute(&self, app: &mut App) -> Result<(), String> {
+            fn execute(&self, _app: &mut App) -> Result<(), String> {
                 Ok(())
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 }

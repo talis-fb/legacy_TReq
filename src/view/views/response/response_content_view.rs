@@ -29,7 +29,7 @@ impl Component for ResposeEditionView<'_> {
                 block.current = 0;
             }
             StatesResEditionView::HeadersOpened => {
-                let title_text = block.texts[1].0;
+                let _title_text = block.texts[1].0;
                 block.texts[1].0 = "HEADERS";
                 block.current = 1;
             }

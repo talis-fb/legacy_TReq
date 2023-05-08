@@ -28,7 +28,7 @@ impl Component for RequestEditionView<'_> {
                 block.current = 0;
             }
             StatesReqEditionView::HeadersOpened => {
-                let title_text = block.texts[1].0;
+                let _title_text = block.texts[1].0;
                 block.texts[1].0 = "HEADERS";
                 block.current = 1;
             }

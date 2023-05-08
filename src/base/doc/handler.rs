@@ -32,9 +32,7 @@ impl DocReaderHandler {
     }
 
     pub fn go_to_prev_row(&mut self) {
-        if self.position > usize::MIN {
-            self.position -= 1;
-        }
+        self.position = self.position.saturating_sub(1);
     }
 
     pub fn go_to_start(&mut self) {

@@ -12,7 +12,7 @@ pub mod response_status_view;
 pub mod store;
 use store::StatesResEditionView;
 
-static KEY_STATE: &str = "response_view__state";
+// static KEY_STATE: &str = "response_view__state";
 // ------------------------
 
 pub struct ResponseView<'a> {
@@ -22,7 +22,7 @@ pub struct ResponseView<'a> {
 }
 
 impl ResponseView<'_> {
-    pub fn prepare_render<'b>(states: &mut ViewStates, store: &'b MainStore) {
+    pub fn prepare_render<'b>(_states: &mut ViewStates, _store: &'b MainStore) {
         // let response_arc = store.get_response();
         // let response = response_arc.lock().unwrap();
         //

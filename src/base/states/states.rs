@@ -1,6 +1,6 @@
 use super::names::StatesNames;
-use crate::actions::Actions;
-use crate::commands::Command;
+use crate::base::actions::Actions;
+use crate::base::commands::Command;
 use std::collections::HashMap;
 use std::rc::Rc;
 

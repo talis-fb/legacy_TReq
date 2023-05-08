@@ -1,31 +1,29 @@
-use std::sync::Arc;
-
+use crate::app::App;
 use crate::app::InputMode;
 use crate::base::commands::CommandTrait;
-use crate::commands::{Command, Commands};
-use crate::App;
+use crate::base::commands::{Command, Commands};
 
 impl Commands {
     pub fn do_nothing() -> Command {
         struct S;
         impl CommandTrait for S {
-            fn execute(&self, app: &mut App) -> Result<(), String> {
+            fn execute(&self, _app: &mut App) -> Result<(), String> {
                 Ok(())
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn err() -> Command {
         struct S;
         impl CommandTrait for S {
-            fn execute(&self, app: &mut App) -> Result<(), String> {
+            fn execute(&self, _app: &mut App) -> Result<(), String> {
                 Err("Ai".to_string())
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn undo_state() -> Command {
@@ -37,7 +35,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn show_help() -> Command {
@@ -50,7 +48,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn quit() -> Command {
@@ -62,6 +60,6 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 }

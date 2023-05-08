@@ -12,7 +12,7 @@ use crate::view::components::Component;
 use crate::view::views::app::AppView;
 use crate::view::views::ViewStates;
 
-use super::renderer::tui_rs::BackendTuiRs;
+use super::{renderer::tui_rs::BackendTuiRs, UiTrait};
 
 pub struct UI {
     backend: BackendTuiRs,
@@ -39,8 +39,15 @@ impl UI {
             view_states: HashMap::new(),
         }
     }
+}
+impl UiTrait for UI {
+    fn restart(&mut self) {
+        let new_ui = Self::init();
+        self.backend = new_ui.backend;
+        self.view_states = new_ui.view_states;
+    }
 
-    pub fn close(&mut self) {
+    fn close(&mut self) {
         disable_raw_mode().unwrap();
         execute!(
             self.backend.terminal.backend_mut(),
@@ -51,7 +58,7 @@ impl UI {
         self.backend.terminal.show_cursor().unwrap();
     }
 
-    pub fn render(&mut self, data_store: &MainStore) {
+    fn render(&mut self, data_store: &MainStore) {
         self.backend.terminal.autoresize().unwrap();
         let screen_area = self.backend.terminal.get_frame().size();
 

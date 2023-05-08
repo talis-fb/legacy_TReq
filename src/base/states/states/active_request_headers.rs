@@ -1,6 +1,6 @@
-use crate::actions::Actions;
+use crate::base::actions::Actions;
+use crate::base::commands::Commands;
 use crate::base::states::states::{CommandsMap, State, StatesNames};
-use crate::commands::Commands;
 use std::collections::HashMap;
 
 pub struct RequestHeaderActiveState {
@@ -19,6 +19,7 @@ impl State for RequestHeaderActiveState {
                 (Actions::Edit, Commands::edit_request_headers_vim()),
                 (Actions::Switch, Commands::go_to_request_body_section()),
                 (Actions::Up, Commands::go_to_url_section()),
+                (Actions::ReloadBody, Commands::restart_headers_of_file()),
             ]),
         }
     }

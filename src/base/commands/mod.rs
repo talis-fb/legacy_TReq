@@ -35,5 +35,10 @@ pub type Command = Arc<Box<dyn CommandTrait + Send + Sync>>;
 
 mod commands;
 pub struct Commands;
+impl Commands {
+    pub fn from<T: CommandTrait + Send + Sync + 'static>(command: T) -> Command {
+        Arc::new(Box::new(command))
+    }
+}
 
 pub mod handler;

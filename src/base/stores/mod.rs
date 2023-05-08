@@ -54,20 +54,17 @@ impl MainStore {
         let last_response = Arc::new(Mutex::new(Response::default()));
 
         Self {
-            requests: RequestStore::init(config.saved_requests.clone()),
-            environment: EnvironmentStore::init(config.global_variables.clone()),
+            requests: RequestStore::init(config.files.clone()),
+            environment: EnvironmentStore::init(config.files.clone()).unwrap(),
             view: ViewStore::init(),
-            last_response,
             current_state: StatesNames::Default,
             mode: InputMode::Normal,
             input_buffer: InputKeyboardBuffer::init(),
             log: Log::default(),
             doc_reader: None,
+            last_response,
             config,
         }
-
-        // let requests = RequestStore::init(dd.config.saved_requests);
-        // dd.requests = requests;
     }
 
     // Logs

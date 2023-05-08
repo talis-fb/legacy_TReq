@@ -1,6 +1,6 @@
-use crate::actions::Actions;
+use crate::base::actions::Actions;
+use crate::base::commands::Commands;
 use crate::base::states::states::{CommandsMap, State, StatesNames};
-use crate::commands::Commands;
 use std::collections::HashMap;
 
 pub struct ResponseBodyActiveState {
@@ -16,7 +16,7 @@ impl State for ResponseBodyActiveState {
     fn init() -> Self {
         Self {
             maps: HashMap::from([
-                (Actions::Edit, Commands::edit_response_vim()),
+                (Actions::Edit, Commands::edit_response_body_vim()),
                 (Actions::Switch, Commands::go_to_response_headers_section()),
                 (Actions::Left, Commands::go_to_request_body_section()),
                 (Actions::Up, Commands::go_to_tab_section()),

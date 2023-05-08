@@ -1,16 +1,15 @@
+use crate::app::App;
 use crate::base::commands::CommandTrait;
+use crate::base::commands::{Command, Commands};
 use crate::base::states::states::{self, State};
-use crate::commands::{Command, Commands};
 use crate::view::views::environment::store::OpenedVars;
-use crate::App;
-use std::sync::Arc;
 
 impl Commands {
     pub fn open_environment_view() -> Command {
         struct S;
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
-                let store = app.get_data_store_mut();
+                let _store = app.get_data_store_mut();
 
                 // TODO:
                 // Probaly this will fail, once it clone keys to View Store in
@@ -32,7 +31,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn exit_environment_view() -> Command {
@@ -44,7 +43,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn go_to_next_global_env_var() -> Command {
@@ -63,7 +62,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn go_to_prev_global_env_var() -> Command {
@@ -80,7 +79,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn go_to_next_session_env_var() -> Command {
@@ -99,7 +98,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn go_to_prev_session_env_var() -> Command {
@@ -116,7 +115,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn edit_current_global_env_var() -> Command {
@@ -129,7 +128,11 @@ impl Commands {
                         let new_value = app.get_input_buffer_value();
 
                         let store = app.get_data_store_mut();
-                        let var_key_active = store.view.environment.get_current_var_key();
+                        let var_key_active = store
+                            .view
+                            .environment
+                            .get_current_var_key()
+                            .ok_or("no var key".to_string())?;
                         let value = store.environment.global.get_mut(&var_key_active).unwrap();
                         *value = new_value;
 
@@ -140,7 +143,11 @@ impl Commands {
                 }
 
                 let store = app.get_data_store_mut();
-                let var_key_active = store.view.environment.get_current_var_key();
+                let var_key_active = store
+                    .view
+                    .environment
+                    .get_current_var_key()
+                    .ok_or("no var key".to_string())?;
                 let value = store
                     .environment
                     .global
@@ -148,12 +155,12 @@ impl Commands {
                     .cloned()
                     .unwrap();
 
-                app.set_input_mode_with_command(Arc::new(Box::new(_S {})), value);
+                app.set_input_mode_with_command(Commands::from(_S {}), value);
                 Ok(())
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn edit_current_session_env_var() -> Command {
@@ -166,7 +173,11 @@ impl Commands {
                         let new_value = app.get_input_buffer_value();
 
                         let store = app.get_data_store_mut();
-                        let var_key_active = store.view.environment.get_current_var_key();
+                        let var_key_active = store
+                            .view
+                            .environment
+                            .get_current_var_key()
+                            .ok_or("no var key".to_string())?;
                         let value = store.environment.session.get_mut(&var_key_active).unwrap();
                         *value = new_value;
 
@@ -175,7 +186,11 @@ impl Commands {
                 }
 
                 let store = app.get_data_store_mut();
-                let var_key_active = store.view.environment.get_current_var_key();
+                let var_key_active = store
+                    .view
+                    .environment
+                    .get_current_var_key()
+                    .ok_or("no var key".to_string())?;
                 let value = store
                     .environment
                     .session
@@ -183,12 +198,12 @@ impl Commands {
                     .cloned()
                     .unwrap();
 
-                app.set_input_mode_with_command(Arc::new(Box::new(_S {})), value);
+                app.set_input_mode_with_command(Commands::from(_S {}), value);
                 Ok(())
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn add_global_env_var() -> Command {
@@ -199,7 +214,7 @@ impl Commands {
                 impl CommandTrait for _S {
                     fn execute(&self, app: &mut App) -> Result<(), String> {
                         let new_key_value = app.get_input_buffer_value();
-                        let value = app
+                        let _value = app
                             .get_data_store_mut()
                             .environment
                             .global
@@ -216,12 +231,12 @@ impl Commands {
                     }
                 }
 
-                app.set_input_mode_with_command(Arc::new(Box::new(_S {})), "new_title".to_string());
+                app.set_input_mode_with_command(Commands::from(_S {}), "new_title".to_string());
                 Ok(())
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn add_session_env_var() -> Command {
@@ -232,7 +247,7 @@ impl Commands {
                 impl CommandTrait for _S {
                     fn execute(&self, app: &mut App) -> Result<(), String> {
                         let new_key_value = app.get_input_buffer_value();
-                        let value = app
+                        let _value = app
                             .get_data_store_mut()
                             .environment
                             .session
@@ -247,12 +262,12 @@ impl Commands {
                     }
                 }
 
-                app.set_input_mode_with_command(Arc::new(Box::new(_S {})), "new_title".to_string());
+                app.set_input_mode_with_command(Commands::from(_S {}), "new_title".to_string());
                 Ok(())
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn remove_current_global_env_var() -> Command {
@@ -260,7 +275,11 @@ impl Commands {
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
                 let store = app.get_data_store_mut();
-                let current_key = store.view.environment.get_current_var_key();
+                let current_key = store
+                    .view
+                    .environment
+                    .get_current_var_key()
+                    .ok_or("no var key".to_string())?;
                 store.environment.global.remove(&current_key);
 
                 let store = app.get_data_store_mut();
@@ -274,7 +293,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn remove_current_session_env_var() -> Command {
@@ -282,7 +301,12 @@ impl Commands {
         impl CommandTrait for S {
             fn execute(&self, app: &mut App) -> Result<(), String> {
                 let store = app.get_data_store_mut();
-                let current_key = store.view.environment.get_current_var_key();
+                let current_key = store
+                    .view
+                    .environment
+                    .get_current_var_key()
+                    .ok_or("no var key".to_string())?;
+
                 store.environment.session.remove(&current_key);
 
                 let store = app.get_data_store_mut();
@@ -294,7 +318,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn open_global_env_vars() -> Command {
@@ -307,7 +331,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn open_session_env_vars() -> Command {
@@ -320,7 +344,7 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 
     pub fn switch_opened_env_vars() -> Command {
@@ -339,6 +363,6 @@ impl Commands {
             }
         }
 
-        Arc::new(Box::new(S {}))
+        Commands::from(S {})
     }
 }

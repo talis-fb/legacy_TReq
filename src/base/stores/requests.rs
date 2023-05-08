@@ -1,41 +1,34 @@
 use std::{rc::Rc, sync::Mutex};
 
 use crate::{
-    base::web::request::Request,
-    config::configurations::{save_files::SaveFiles, Configuration, ConfigurationEditable},
+    base::{os::handler::FileHandler, web::request::Request},
     utils::custom_types::uuid::UUID,
 };
 
 #[derive(Clone)]
 pub struct RequestStore {
-    save_files: Rc<Mutex<SaveFiles>>,
+    file_handler: Rc<Mutex<FileHandler>>,
     requests: Vec<(UUID, Request)>,
     current_ind: usize,
 }
 
 impl RequestStore {
-    pub fn init(save_files: Rc<Mutex<SaveFiles>>) -> Self {
-        let save_files_cc = save_files.clone();
-        let mut save_files_content = save_files_cc.lock().unwrap();
+    pub fn init(file_handler: Rc<Mutex<FileHandler>>) -> Self {
+        let binding = file_handler.clone();
+        let save_files_cc = binding.lock().unwrap();
 
-        let mut map_saved_files = save_files_content.get_map();
-        if map_saved_files.is_empty() {
-            save_files_content
-                .set(&UUID::new(), &Request::default())
-                .unwrap();
-            map_saved_files = save_files_content.get_map();
-        }
+        let map_saved_files = save_files_cc.get_map_files_request();
 
         let requests: Vec<(UUID, Request)> = map_saved_files
             .iter()
-            .map(|(k, v)| {
-                let req = save_files_content.get_as_entity(k).unwrap();
-                (k.clone(), req)
+            .filter_map(|(id, req_file)| {
+                let req_entity = req_file.get_content().ok()?;
+                Some((id.clone(), req_entity))
             })
             .collect();
 
         Self {
-            save_files,
+            file_handler,
             requests,
             current_ind: 0,
         }
@@ -69,16 +62,16 @@ impl RequestStore {
             i - 1
         };
 
-        let mut save_files = self.save_files.lock().unwrap();
-        if save_files.exist(&uuid) {
-            save_files.remove(&uuid)?;
+        let mut file_handler = self.file_handler.lock().unwrap();
+        if file_handler.get_map_files_request().contains_key(&uuid) {
+            file_handler.delete_request_file(&uuid)?;
         }
 
         Ok(())
     }
 
     pub fn goto_request(&mut self, index: usize) -> Option<()> {
-        let key = self.requests.get(index)?;
+        let _key = self.requests.get(index)?;
         self.current_ind = index;
         Some(())
     }
@@ -109,13 +102,8 @@ impl RequestStore {
         &key.0
     }
 
-    fn get_request_mut(&mut self) -> &mut Request {
-        let req = self.requests.get_mut(self.current_ind).unwrap();
-        &mut req.1
-    }
-
     pub fn get_requests(&self) -> Vec<&Request> {
-        self.requests.iter().map(|(uuid, req)| req).collect()
+        self.requests.iter().map(|(_uuid, req)| req).collect()
     }
 
     pub fn request_ind(&self) -> usize {
@@ -134,11 +122,29 @@ impl RequestStore {
     }
 
     pub fn save_current_request(&mut self) -> Result<(), String> {
-        let (uuid, req) = self.requests.get(self.current_ind).unwrap();
-        self.save_files.lock().unwrap().set(uuid, req)?;
+        let (uuid, req) = self.requests.get_mut(self.current_ind).unwrap();
+
+        {
+            let mut file_handler = self.file_handler.lock().unwrap();
+
+            if !file_handler.get_map_files_request().contains_key(uuid) {
+                let file = file_handler
+                    .file_factory
+                    .as_mut()
+                    .unwrap()
+                    .create_request_file(uuid.clone(), req.clone())
+                    .unwrap();
+
+                let new_uuid = file_handler.add_request(file);
+
+                // Update UUID in 'requests' vector
+                *uuid = new_uuid;
+            }
+
+            file_handler.save_content_request_file(uuid, req.clone())?;
+        }
 
         // Now mark it as saved
-        let req = self.get_request_mut();
         req.has_changed = false;
         Ok(())
     }

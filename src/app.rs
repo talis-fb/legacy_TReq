@@ -1,15 +1,14 @@
 use crate::base::actions::{manager::ActionsManager, Actions};
 use crate::base::commands::Command;
+use crate::base::os::os_commands::factory::OsCommandFactory;
+use crate::base::os::os_commands::OsCommand;
 use crate::base::states::manager::StateManager;
 use crate::base::states::states::State;
 use crate::base::stores::MainStore;
 use crate::base::web::client::WebClient;
-use crate::base::web::repository::reqwest::ReqwestClientRepository;
-
-use crate::config::configurations::save_files::SaveFiles;
 use crate::input::buffer::InputKeyboardBuffer;
-use std::sync::mpsc::Sender;
 use std::sync::Arc;
+use tokio::sync::mpsc::Sender;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub enum InputMode {
@@ -23,10 +22,11 @@ pub enum InputMode {
 pub struct App {
     pub is_finished: bool,
     pub renderer: Option<Sender<Actions>>,
+    pub os_commands_queue: Option<Sender<OsCommand>>,
+    pub os_commands_factory: Option<Box<dyn OsCommandFactory>>,
 
     // Datas
     pub data_store: Option<MainStore>,
-    pub save_files: Option<SaveFiles>,
 
     // States
     pub state_manager: Option<StateManager>,
@@ -35,7 +35,7 @@ pub struct App {
     pub action_manager: Option<ActionsManager>,
 
     // Web Client
-    pub client_web: Option<Arc<WebClient<ReqwestClientRepository>>>,
+    pub client_web: Option<Arc<WebClient>>,
 }
 
 // ---------------------------------------
@@ -45,20 +45,23 @@ impl App {
     pub fn set_data_store(&mut self, data_store: MainStore) {
         self.data_store = Some(data_store)
     }
-    pub fn set_save_file(&mut self, save_files: SaveFiles) {
-        self.save_files = Some(save_files)
-    }
     pub fn set_state_manager(&mut self, state_manager: StateManager) {
         self.state_manager = Some(state_manager)
     }
     pub fn set_action_manager(&mut self, action_manager: ActionsManager) {
         self.action_manager = Some(action_manager)
     }
-    pub fn set_web_client(&mut self, client: WebClient<ReqwestClientRepository>) {
+    pub fn set_web_client(&mut self, client: WebClient) {
         self.client_web = Some(Arc::new(client))
     }
     pub fn set_renderer(&mut self, renderer: Sender<Actions>) {
         self.renderer = Some(renderer)
+    }
+    pub fn set_os_commands_queue(&mut self, sender: Sender<OsCommand>) {
+        self.os_commands_queue = Some(sender)
+    }
+    pub fn set_os_commands_factory(&mut self, factory: impl OsCommandFactory + 'static) {
+        self.os_commands_factory = Some(Box::new(factory));
     }
 }
 
@@ -80,15 +83,7 @@ impl App {
         data_store.set_log_input_mode();
         self.get_input_buffer_mut().set_value(initial_buffer);
     }
-    pub fn set_vim_mode_with_command(&mut self, callback: Command, initial_buffer: String) {
-        self.set_mode(InputMode::Vim);
-        let data_store = self.get_data_store_mut();
-        data_store.input_buffer.command = callback;
 
-        self.get_input_buffer_mut()
-            .set_backup(initial_buffer.clone());
-        self.set_input_buffer_value(initial_buffer);
-    }
     pub fn get_input_buffer(&mut self) -> &InputKeyboardBuffer {
         &self.get_data_store_mut().input_buffer
     }
@@ -161,6 +156,9 @@ impl App {
     }
 
     pub fn rerender(&self) {
-        self.renderer.as_ref().unwrap().send(Actions::Null).unwrap();
+        let sender = self.renderer.as_ref().unwrap().clone();
+        tokio::task::spawn(async move {
+            sender.send(Actions::Null).await.unwrap();
+        });
     }
 }
