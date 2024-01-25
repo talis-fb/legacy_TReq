@@ -4,7 +4,13 @@
 
 # TReq
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/talis-fb/treq/cd.yml)
+> **🚨🚨🚨 This repository is no longer actively maintained 🚨🚨🚨**
+> 
+> The development of this project has been moved to this repository...
+> 
+> **New Repository:** [New Repository Link](https://github.com/talis-fb/treq)
+
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/talis-fb/legacy_treq/cd.yml)
 ![GitHub repo size](https://img.shields.io/github/repo-size/talis-fb/treq)
 ![AUR version](https://img.shields.io/aur/version/treq-bin)
 
